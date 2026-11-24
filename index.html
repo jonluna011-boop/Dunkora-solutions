@@ -102,23 +102,13 @@
         /* Escenario inicial cinematográfico que se desvanece suavemente al hacer scroll */
         #cinema-intro-stage {
             position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
+            inset: 0;
             z-index: 0;
             pointer-events: none;
             overflow: hidden;
             opacity: var(--intro-fade, 1);
             transition: opacity 0.22s ease-out;
             will-change: opacity;
-        }
-
-        @media (min-width: 768px) {
-            #cinema-intro-stage {
-                left: 48%;
-                width: 52%;
-            }
         }
 
         #cinema-orbital-img {
@@ -134,19 +124,10 @@
             will-change: transform;
         }
 
-        #cinema-orbital-canvas {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            filter: invert(var(--orbital-invert));
-            mix-blend-mode: var(--orbital-blend);
-        }
-
         .cinema-card {
             background: var(--bg-surface);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             border: 1px solid var(--border-subtle);
             transition: border-color 0.3s ease, background-color 0.3s ease;
         }
@@ -204,18 +185,12 @@
         class="no-print fixed top-0 left-0 z-50 h-[2px] w-0 btn-contrast pointer-events-none transition-[width] duration-100 ease-out"></div>
 
     <!-- Movimiento cinematográfico inicial con imagen + partículas y estelas que se desvanece al hacer scroll -->
+    <!-- Movimiento cinematográfico inicial con imagen que se desvanece al hacer scroll -->
     <div id="cinema-intro-stage" aria-hidden="true" class="no-print">
-        <!-- Ruta del video de fondo (reemplaza "./tu-video.mp4" por la ruta de tu archivo .mp4 en el repo) -->
-        <video id="cinema-orbital-video" autoplay loop muted playsinline
-            class="absolute inset-0 h-full w-full object-cover opacity-90"
-            style="filter: invert(var(--orbital-invert)) contrast(1.05); mix-blend-mode: var(--orbital-blend);">
-            <source src="./tu-video.mp4" type="video/mp4">
-        </video>
         <img id="cinema-orbital-img"
-            src="descarga (1).jpg"
+            src="./fondo-filamentos.jpg"
             alt=""
             onerror="this.style.display='none';">
-        <canvas id="cinema-orbital-canvas"></canvas>
         <div class="cinema-vignette absolute inset-0"></div>
     </div>
 
@@ -795,8 +770,8 @@
     </footer>
 
     <!-- Modal de comprobante PDF de cotización personalizada -->
-    <div id="pdf-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-6 backdrop-blur-sm overflow-y-auto">
-        <div id="pdf-modal-card" style="font-family: Arial, Helvetica, sans-serif;" class="w-full max-w-2xl rounded-xl border border-slate-300 bg-white text-slate-900 p-6 sm:p-8 space-y-5 shadow-[0_24px_65px_rgba(0,0,0,0.65)]">
+    <div id="pdf-modal" onclick="handlePdfBackdropClick(event)" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-6 backdrop-blur-sm overflow-y-auto">
+        <div id="pdf-modal-card" onclick="event.stopPropagation()" style="font-family: Arial, Helvetica, sans-serif;" class="w-full max-w-2xl rounded-xl border border-slate-300 bg-white text-slate-900 p-6 sm:p-8 space-y-5 shadow-[0_24px_65px_rgba(0,0,0,0.65)]">
             <div class="flex flex-wrap items-start justify-between gap-4 border-b-2 border-slate-900 pb-4">
                 <div>
                     <div class="flex items-center gap-2.5">
@@ -814,7 +789,7 @@
                         <span id="pdf-status">Estado: Registrado en Panel</span>
                     </div>
                 </div>
-                <button type="button" onclick="closePdfPreviewModal()"
+                <button type="button" onclick="closePdfPreviewModal()" aria-label="Cerrar comprobante PDF"
                     class="no-print rounded-lg border border-slate-300 bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">
                     Cerrar ✕
                 </button>
@@ -854,10 +829,16 @@
                 <p class="max-w-md text-[11px] text-slate-600 leading-relaxed">
                     La cotización económica se elabora a medida con base en las funciones solicitadas. Conserva este comprobante o descárgalo en PDF.
                 </p>
-                <button type="button" onclick="window.print()"
-                    class="no-print inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-xs font-semibold text-white hover:bg-slate-800 transition-colors cursor-pointer shrink-0">
-                    <span>Descargar / Imprimir PDF</span>
-                </button>
+                <div class="no-print flex flex-wrap items-center gap-2.5 shrink-0">
+                    <button type="button" onclick="closePdfPreviewModal()"
+                        class="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer">
+                        Seguir explorando
+                    </button>
+                    <button type="button" onclick="window.print()"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-xs font-semibold text-white hover:bg-slate-800 transition-colors cursor-pointer">
+                        <span>Descargar / Imprimir PDF</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -868,29 +849,8 @@
         ========================================================================= */
         function initIntroOrbitalMotion() {
             const stage = document.getElementById('cinema-intro-stage');
-            const videoEl = document.getElementById('cinema-orbital-video');
             const imgEl = document.getElementById('cinema-orbital-img');
-            const canvas = document.getElementById('cinema-orbital-canvas');
             const progressBar = document.getElementById('scroll-progress-bar');
-
-            const syncVideoState = () => {
-                if (!videoEl) return;
-                const hasVideoSource = videoEl.readyState >= 2 || (videoEl.currentSrc && !videoEl.currentSrc.endsWith('/tu-video.mp4'));
-                if (hasVideoSource) {
-                    if (imgEl) imgEl.style.display = 'none';
-                    if (canvas) canvas.style.opacity = '0.25';
-                }
-            };
-
-            if (videoEl) {
-                videoEl.addEventListener('loadeddata', syncVideoState);
-                videoEl.addEventListener('canplay', syncVideoState);
-                videoEl.addEventListener('error', () => {
-                    videoEl.style.display = 'none';
-                    if (imgEl && imgEl.src) imgEl.style.display = '';
-                    if (canvas) canvas.style.opacity = '1';
-                });
-            }
 
             const updateScrollFade = () => {
                 const y = window.scrollY || window.pageYOffset || 0;
@@ -909,36 +869,7 @@
             };
 
             updateScrollFade();
-            syncVideoState();
             window.addEventListener('scroll', updateScrollFade, { passive: true });
-
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            if (!ctx) return;
-
-            let width = 0;
-            let height = 0;
-
-            const resizeCanvas = () => {
-                const dpr = Math.min(window.devicePixelRatio || 1, 2);
-                width = window.innerWidth;
-                height = window.innerHeight;
-                canvas.width = width * dpr;
-                canvas.height = height * dpr;
-                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            };
-
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
-
-            const particles = Array.from({ length: 135 }, (_, i) => ({
-                angle: (i / 135) * Math.PI * 2 + (i % 7) * 0.25,
-                radius: 35 + ((i * 37) % 440),
-                speed: (0.0018 + (i % 9) * 0.00028) * (i % 2 === 0 ? 1 : -1),
-                size: (i % 11 === 0) ? 2.6 : ((i % 4 === 0) ? 1.5 : 0.9),
-                alpha: 0.22 + ((i * 19) % 65) / 100,
-                trailLen: (i % 13 === 0) ? 7 : 0
-            }));
 
             let tick = 0;
 
@@ -951,36 +882,6 @@
                     const rotDeg = Math.sin(tick * 0.0035) * 2.4;
                     const scale = 1.04 + Math.cos(tick * 0.0045) * 0.03;
                     imgEl.style.transform = `translate3d(${driftX.toFixed(1)}px, ${driftY.toFixed(1)}px, 0) rotate(${rotDeg.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
-                }
-
-                ctx.clearRect(0, 0, width, height);
-                const cx = width * 0.56;
-                const cy = height * 0.48;
-
-                for (let i = 0; i < particles.length; i++) {
-                    const p = particles[i];
-                    p.angle += p.speed;
-
-                    const px = cx + Math.cos(p.angle) * p.radius * 0.92;
-                    const py = cy + Math.sin(p.angle) * p.radius * 1.12;
-
-                    if (p.trailLen > 0) {
-                        for (let s = 1; s <= p.trailLen; s++) {
-                            const prevAngle = p.angle - p.speed * s * 6;
-                            const tx = cx + Math.cos(prevAngle) * p.radius * 0.92;
-                            const ty = cy + Math.sin(prevAngle) * p.radius * 1.12;
-                            const stepRatio = 1 - s / (p.trailLen + 1);
-                            ctx.fillStyle = `rgba(255, 255, 255, ${(p.alpha * stepRatio * 0.75).toFixed(3)})`;
-                            ctx.beginPath();
-                            ctx.arc(tx, ty, Math.max(0.7, p.size * stepRatio), 0, Math.PI * 2);
-                            ctx.fill();
-                        }
-                    }
-
-                    ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha.toFixed(3)})`;
-                    ctx.beginPath();
-                    ctx.arc(px, py, p.size, 0, Math.PI * 2);
-                    ctx.fill();
                 }
 
                 requestAnimationFrame(renderFrame);
@@ -1525,6 +1426,18 @@
             const modal = document.getElementById('pdf-modal');
             if (modal) modal.classList.add('hidden');
         }
+
+        function handlePdfBackdropClick(event) {
+            if (event && event.target && event.target.id === 'pdf-modal') {
+                closePdfPreviewModal();
+            }
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closePdfPreviewModal();
+            }
+        });
 
         function bindAppointmentForm() {
             const form = document.getElementById('appointment-form');
