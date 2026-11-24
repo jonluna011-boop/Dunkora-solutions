@@ -102,13 +102,23 @@
         /* Escenario inicial cinematográfico que se desvanece suavemente al hacer scroll */
         #cinema-intro-stage {
             position: fixed;
-            inset: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
             z-index: 0;
             pointer-events: none;
             overflow: hidden;
             opacity: var(--intro-fade, 1);
             transition: opacity 0.22s ease-out;
             will-change: opacity;
+        }
+
+        @media (min-width: 768px) {
+            #cinema-intro-stage {
+                left: 48%;
+                width: 52%;
+            }
         }
 
         #cinema-orbital-img {
@@ -135,8 +145,8 @@
 
         .cinema-card {
             background: var(--bg-surface);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             border: 1px solid var(--border-subtle);
             transition: border-color 0.3s ease, background-color 0.3s ease;
         }
@@ -197,9 +207,9 @@
     <div id="cinema-intro-stage" aria-hidden="true" class="no-print">
         <!-- Ruta del video de fondo (reemplaza "./tu-video.mp4" por la ruta de tu archivo .mp4 en el repo) -->
         <video id="cinema-orbital-video" autoplay loop muted playsinline
-            class="absolute inset-0 h-full w-full object-cover opacity-80"
-            style="filter: invert(var(--orbital-invert)) contrast(1.12); mix-blend-mode: var(--orbital-blend);">
-            <source src="./fondo-filamentos.mp4.mp4" type="video/mp4">
+            class="absolute inset-0 h-full w-full object-cover opacity-90"
+            style="filter: invert(var(--orbital-invert)) contrast(1.05); mix-blend-mode: var(--orbital-blend);">
+            <source src="./tu-video.mp4" type="video/mp4">
         </video>
         <img id="cinema-orbital-img"
             src="descarga (1).jpg"
@@ -858,9 +868,29 @@
         ========================================================================= */
         function initIntroOrbitalMotion() {
             const stage = document.getElementById('cinema-intro-stage');
+            const videoEl = document.getElementById('cinema-orbital-video');
             const imgEl = document.getElementById('cinema-orbital-img');
             const canvas = document.getElementById('cinema-orbital-canvas');
             const progressBar = document.getElementById('scroll-progress-bar');
+
+            const syncVideoState = () => {
+                if (!videoEl) return;
+                const hasVideoSource = videoEl.readyState >= 2 || (videoEl.currentSrc && !videoEl.currentSrc.endsWith('/tu-video.mp4'));
+                if (hasVideoSource) {
+                    if (imgEl) imgEl.style.display = 'none';
+                    if (canvas) canvas.style.opacity = '0.25';
+                }
+            };
+
+            if (videoEl) {
+                videoEl.addEventListener('loadeddata', syncVideoState);
+                videoEl.addEventListener('canplay', syncVideoState);
+                videoEl.addEventListener('error', () => {
+                    videoEl.style.display = 'none';
+                    if (imgEl && imgEl.src) imgEl.style.display = '';
+                    if (canvas) canvas.style.opacity = '1';
+                });
+            }
 
             const updateScrollFade = () => {
                 const y = window.scrollY || window.pageYOffset || 0;
@@ -879,6 +909,7 @@
             };
 
             updateScrollFade();
+            syncVideoState();
             window.addEventListener('scroll', updateScrollFade, { passive: true });
 
             if (!canvas) return;
