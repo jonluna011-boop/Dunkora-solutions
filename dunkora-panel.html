@@ -559,7 +559,6 @@
         const STORE_KEY = 'dunkora_solutions_protocolo_v1';
         const CHANNEL_NAME = 'dunkora_solutions_sync_channel';
 
-        // Inicia submissions vacío para registrar clientes reales desde cero
         const INITIAL_STATE = {
             theme: 'dark',
             activeTab: 'llegadas',
@@ -591,7 +590,6 @@
         let state = cargarEstado();
         let activeSubmissionId = null;
         let syncChannel = null;
-        // Hook opcional para persistir o actualizar documentos en Firestore cuando esté conectado
         window.cloudSyncHook = null;
 
         function normalizarTelefono(tel) {
@@ -643,9 +641,7 @@
                 if (cloudAction && typeof window.cloudSyncHook === 'function') {
                     window.cloudSyncHook(cloudAction, state);
                 }
-            } catch (_err) {
-                // Evita romper el flujo si localStorage está restringido
-            }
+            } catch (_err) {}
         }
 
         function aplicarTema() {
@@ -1337,8 +1333,8 @@
         const colRef = collection(db, 'submissions');
         const q = query(colRef, orderBy('createdAtServer', 'desc'));
         const statusEl = document.getElementById('sync-status-label');
+        let hasReceivedNonEmptySnapshot = false;
 
-        // Guarda o actualiza cada trámite usando su id estable para no duplicar documentos al editar
         window.cloudSyncHook = async function (action) {
             if (!action || action.type !== 'UPSERT_SUBMISSION' || !action.submission?.id) return;
             try {
@@ -1363,11 +1359,14 @@
             (snapshot) => {
                 const cloudItems = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
                 if (typeof state !== 'undefined' && typeof renderTodo === 'function') {
-                    state.submissions = cloudItems;
-                    try {
-                        localStorage.setItem(STORE_KEY, JSON.stringify(state));
-                    } catch (_err) {}
-                    renderTodo();
+                    if (cloudItems.length > 0 || !hasReceivedNonEmptySnapshot) {
+                        if (cloudItems.length > 0) hasReceivedNonEmptySnapshot = true;
+                        state.submissions = cloudItems;
+                        try {
+                            localStorage.setItem(STORE_KEY, JSON.stringify(state));
+                        } catch (_err) {}
+                        renderTodo();
+                    }
                     if (statusEl) statusEl.textContent = 'Conectado a Firestore • Tiempo real';
                 }
             },
