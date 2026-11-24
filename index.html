@@ -1,0 +1,2053 @@
+<!DOCTYPE html>
+<html lang="es" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dunkora Solutions — Desarrollo Web, Aplicaciones y Agentes de IA</title>
+    <!-- Tipografía Inter y JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            cyan: '#06b6d4',
+                            indigo: '#6366f1',
+                            violet: '#8b5cf6',
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body {
+            background-color: #060911;
+            color: #f3f4f6;
+            font-family: 'Inter', system-ui, sans-serif;
+            overflow-x: hidden;
+            position: relative;
+        }
+        /* Cuadrícula tecnológica fija en todo el fondo con cuadros ligeramente más compactos */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: var(--grid-opacity, 0.52);
+            transition: opacity 0.25s ease-out;
+            background-size: 32px 32px;
+            background-position: 0px 0px;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+        }
+        header, main, footer {
+            position: relative;
+            z-index: 1;
+        }
+        /* Tarjeta translúcida con borde sutil */
+        .glass-panel {
+            background: rgba(13, 19, 33, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            transition: border-color 0.28s ease, box-shadow 0.28s ease, background-color 0.28s ease;
+        }
+        .glass-panel:hover {
+            border-color: rgba(34, 211, 238, 0.22);
+            box-shadow: 0 18px 42px -18px rgba(6, 182, 212, 0.16);
+        }
+        /* Suavizado visual en inputs, selects y textareas sin alterar su funcionalidad */
+        input:not([type="checkbox"]),
+        select,
+        textarea {
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+        input:not([type="checkbox"]):focus,
+        select:focus,
+        textarea:focus {
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.14);
+        }
+        /* Animación bidireccional dinámica tipo flip/flop al bajar y subir */
+        .scroll-reveal {
+            opacity: 0;
+            transform: perspective(1000px) translateY(30px) rotateX(-7deg) scale(0.975);
+            transform-origin: center top;
+            transition:
+                opacity 0.52s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.58s cubic-bezier(0.34, 1.36, 0.64, 1);
+            will-change: opacity, transform;
+        }
+        .scroll-reveal.flip-up {
+            transform: perspective(1000px) translateY(-26px) rotateX(7deg) scale(0.975);
+            transform-origin: center bottom;
+        }
+        .scroll-reveal.is-visible {
+            opacity: 1;
+            transform: perspective(1000px) translateY(0px) rotateX(0deg) scale(1);
+        }
+        /* Flotación suave con rebote ligero para tarjetas destacadas */
+        @keyframes stack-float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+        .stack-float {
+            animation: stack-float 1.8s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+            will-change: transform;
+        }
+        /* Halos de luz ambiental detrás del contenido */
+        .ambient-glow-left {
+            background: radial-gradient(ellipse at center, rgba(6, 182, 212, 0.14) 0%, rgba(14, 165, 233, 0.06) 45%, transparent 75%);
+            filter: blur(78px);
+        }
+        .ambient-glow-right {
+            background: radial-gradient(ellipse at center, rgba(79, 70, 229, 0.17) 0%, rgba(6, 182, 212, 0.07) 48%, transparent 76%);
+            filter: blur(84px);
+        }
+        /* Estilos exclusivos para impresión / exportación a PDF */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #111827 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            #pdf-modal-card {
+                box-shadow: none !important;
+                border: 1px solid #cbd5e1 !important;
+                background: #ffffff !important;
+                color: #0f172a !important;
+                padding: 20px !important;
+                max-width: 100% !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-cyan-500/30 selection:text-cyan-200">
+    <!-- Barra superior sutil de progreso de lectura -->
+    <div id="scroll-progress-bar" aria-hidden="true"
+        class="no-print fixed top-0 left-0 z-50 h-[2px] w-0 bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 pointer-events-none transition-[width] duration-150 ease-out"></div>
+
+    <!-- Luces ambientales persistentes en toda la página -->
+    <div aria-hidden="true" class="no-print pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div class="absolute -top-28 left-1/4 h-[28rem] w-[36rem] -translate-x-1/2 rounded-full ambient-glow-left"></div>
+        <div class="absolute top-16 right-0 lg:right-6 h-[30rem] w-[34rem] rounded-full ambient-glow-right"></div>
+        <div class="absolute bottom-[-6rem] left-1/3 h-[26rem] w-[32rem] rounded-full ambient-glow-left"></div>
+    </div>
+
+    <!-- Barra de navegación superior -->
+    <header class="no-print sticky top-0 z-40 border-b border-white/10 bg-[#060911]/85 backdrop-blur-md">
+        <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+            <!-- Marca Dunkora Solutions con isotipo DK estilo DUNKORA -->
+            <a href="#top" class="flex items-center gap-3 group">
+                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500/20 via-sky-500/10 to-indigo-500/25 border border-cyan-400/35 shadow-lg shadow-cyan-500/15 group-hover:border-cyan-300/60 transition-colors">
+                    <svg class="h-6 w-6" viewBox="0 0 36 28" fill="none" aria-label="DK">
+                        <defs>
+                            <linearGradient id="dkBrandGrad" x1="2" y1="3" x2="34" y2="25" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#22d3ee"/>
+                                <stop offset="55%" stop-color="#38bdf8"/>
+                                <stop offset="100%" stop-color="#818cf8"/>
+                            </linearGradient>
+                        </defs>
+                        <!-- Letra D con puente curvo conectado estilo DUNKORA -->
+                        <path d="M4.5 5.5H10.5C13.6 5.5 15.8 7.6 15.8 14C15.8 20.4 13.6 22.5 10.5 22.5H4.5V5.5Z"
+                            stroke="url(#dkBrandGrad)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M15.8 11.2C17.3 11.2 18.2 9.4 18.2 6.2"
+                            stroke="#22d3ee" stroke-width="2.3" stroke-linecap="round"/>
+                        <!-- Letra K estilizada con trazo fluido y remate redondeado -->
+                        <path d="M21.5 5.5V22.5M31.5 5.5L23.6 14L31.8 22.5"
+                            stroke="url(#dkBrandGrad)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="leading-tight">
+                    <span class="block text-sm font-extrabold tracking-wider text-white">DUNKORA</span>
+                    <span class="block font-mono text-[10px] font-semibold tracking-[0.22em] text-cyan-400">SOLUTIONS</span>
+                </div>
+            </a>
+
+            <!-- Enlaces de navegación en escritorio -->
+            <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-gray-300">
+                <a href="#diagnostico" class="hover:text-cyan-400 transition-colors">Diagnóstico</a>
+                <a href="#servicios" class="hover:text-cyan-400 transition-colors">Servicios</a>
+                <a href="#portafolio" class="hover:text-cyan-400 transition-colors">Casos de Éxito</a>
+                <a href="#cotizador" class="hover:text-cyan-400 transition-colors">Cotizador</a>
+                <a href="#mantenimiento" class="hover:text-cyan-400 transition-colors">Mantenimiento</a>
+                <a href="#citas" class="hover:text-cyan-400 transition-colors">Citas</a>
+            </nav>
+
+            <!-- Botón Agente IA y menú móvil -->
+            <div class="flex items-center gap-3">
+                <button type="button" onclick="toggleAssistant(true)"
+                    class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-indigo-600 px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 hover:opacity-95 transition-opacity cursor-pointer">
+                    <span class="h-2 w-2 rounded-full bg-emerald-300 animate-pulse"></span>
+                    <span>Agente IA</span>
+                </button>
+                <button type="button" onclick="toggleMobileMenu()" aria-label="Abrir menú"
+                    class="md:hidden inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 p-2.5 text-gray-200 hover:bg-white/10 cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Menú desplegable en móvil -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-white/10 bg-[#090e1a] px-4 py-4 space-y-2 text-sm">
+            <a href="#diagnostico" onclick="toggleMobileMenu(false)" class="block rounded-lg px-3 py-2 text-gray-200 hover:bg-white/5">Diagnóstico</a>
+            <a href="#servicios" onclick="toggleMobileMenu(false)" class="block rounded-lg px-3 py-2 text-gray-200 hover:bg-white/5">Servicios</a>
+            <a href="#portafolio" onclick="toggleMobileMenu(false)" class="block rounded-lg px-3 py-2 text-gray-200 hover:bg-white/5">Casos de Éxito</a>
+            <a href="#cotizador" onclick="toggleMobileMenu(false)" class="block rounded-lg px-3 py-2 text-gray-200 hover:bg-white/5">Cotizador</a>
+            <a href="#mantenimiento" onclick="toggleMobileMenu(false)" class="block rounded-lg px-3 py-2 text-gray-200 hover:bg-white/5">Mantenimiento</a>
+            <a href="#citas" onclick="toggleMobileMenu(false)" class="block rounded-lg px-3 py-2 text-gray-200 hover:bg-white/5">Citas</a>
+        </div>
+    </header>
+
+    <main id="top" class="flex-1">
+        <!-- Hero principal -->
+        <section class="tech-grid relative overflow-hidden pt-14 pb-16 sm:pt-20 sm:pb-24">
+            <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="grid gap-10 lg:grid-cols-12 lg:items-center">
+                    <div class="lg:col-span-7 space-y-6">
+                        <div class="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1.5 text-xs font-medium text-cyan-300">
+                            <span>⚡</span>
+                            <span>Ingeniería Web • Aplicaciones • Agentes de IA</span>
+                        </div>
+
+                        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.08]">
+                            No solo hacemos que se vea bien.
+                            <span class="bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent">
+                                Hacemos que funcione
+                            </span>
+                            e impulse tu negocio.
+                        </h1>
+
+                        <p class="max-w-2xl text-base sm:text-lg text-gray-300 leading-relaxed">
+                            En <strong class="text-white">Dunkora Solutions</strong> desarrollamos sitios web, aplicaciones a medida y agentes de IA funcionales diseñados para resolver cuellos de botella reales, atender clientes y optimizar operaciones.
+                        </p>
+
+                        <div class="flex flex-wrap gap-3 pt-1">
+                            <a href="#diagnostico"
+                                class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 hover:opacity-95 transition-opacity">
+                                Diagnosticar Mi Empresa
+                            </a>
+                            <a href="#cotizador"
+                                class="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
+                                Cotizar Proyecto
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta técnica de arquitectura -->
+                    <div class="lg:col-span-5">
+                        <div class="glass-panel stack-float max-w-md mx-auto lg:ml-auto rounded-2xl p-4 space-y-3 shadow-2xl border border-cyan-500/20">
+                            <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="h-2.5 w-2.5 rounded-full bg-rose-400/80"></span>
+                                    <span class="h-2.5 w-2.5 rounded-full bg-amber-400/80"></span>
+                                    <span class="h-2.5 w-2.5 rounded-full bg-emerald-400/80"></span>
+                                </div>
+                                <span class="font-mono text-[11px] text-gray-300">dunkora-agent-core.ts</span>
+                                <span class="rounded border border-emerald-400/35 bg-emerald-500/15 px-2 py-0.5 font-mono text-[9px] font-bold tracking-wider text-emerald-300">
+                                    ONLINE
+                                </span>
+                            </div>
+
+                            <pre class="overflow-x-auto rounded-xl bg-gray-950/90 border border-white/10 p-3 font-mono text-[11px] text-gray-200 leading-snug"><code><span class="text-indigo-400">const</span> <span class="text-cyan-300">dunkoraSystem</span> = <span class="text-indigo-400">await</span> <span class="text-sky-300">initArchitecture</span>({
+  <span class="text-gray-300">frontend</span>: <span class="text-emerald-300">'UltraFast_UI'</span>,
+  <span class="text-gray-300">database</span>: <span class="text-emerald-300">'Firebase_Realtime'</span>,
+  <span class="text-gray-300">aiAgent</span>: <span class="text-amber-300">true</span>, <span class="text-gray-500">// Ventas 24/7</span>
+});</code></pre>
+
+                            <div class="rounded-xl border border-white/10 bg-gray-950/80 p-3 space-y-2.5">
+                                <div class="flex items-center justify-between text-[11px]">
+                                    <span class="inline-flex items-center gap-1.5 text-gray-300 font-medium">
+                                        <span class="h-2 w-2 rounded-full bg-cyan-400"></span>
+                                        <span>Flujo de Automatización Activo</span>
+                                    </span>
+                                    <span class="font-mono font-semibold text-cyan-400">99.9% Uptime</span>
+                                </div>
+
+                                <div class="grid grid-cols-3 gap-2 text-center">
+                                    <div class="rounded-lg border border-white/10 bg-[#080d18] p-2">
+                                        <span class="block font-mono text-[10px] font-bold text-cyan-400">1. Lead Web</span>
+                                        <span class="block text-[9px] text-gray-400 mt-0.5">Captura</span>
+                                    </div>
+                                    <div class="rounded-lg border border-white/10 bg-[#080d18] p-2">
+                                        <span class="block font-mono text-[10px] font-bold text-indigo-400">2. Agente IA</span>
+                                        <span class="block text-[9px] text-gray-400 mt-0.5">Califica &amp; Cotiza</span>
+                                    </div>
+                                    <div class="rounded-lg border border-white/10 bg-[#080d18] p-2">
+                                        <span class="block font-mono text-[10px] font-bold text-emerald-400">3. Cierre CRM</span>
+                                        <span class="block text-[9px] text-gray-400 mt-0.5">Venta Lista</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de diagnóstico de problemática de empresa -->
+        <section id="diagnostico" class="scroll-reveal py-16 sm:py-20 border-t border-white/10">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="max-w-3xl mx-auto text-center space-y-3 mb-10">
+                    <span class="inline-block rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1 font-mono text-xs font-semibold uppercase tracking-widest text-cyan-400">
+                        Diagnóstico Inteligente Dunkora
+                    </span>
+                    <h2 class="text-2xl sm:text-4xl font-bold text-white">Cuéntanos el problema de tu empresa</h2>
+                    <p class="text-sm sm:text-base text-gray-300 leading-relaxed">
+                        Muchos negocios creen que necesitan una página web cuando en realidad
+                        <span class="font-semibold text-cyan-400">pierden clientes porque nadie les contesta rápido</span>
+                        (eso se resuelve con un Agente de IA) o tienen
+                        <span class="font-semibold text-indigo-400">caos administrativo y rotación de personal</span>
+                        (eso requiere un Sistema a medida). Cuéntanos qué ocurre en tu operación para recomendarte la solución exacta y evitar que inviertas en lo equivocado.
+                    </p>
+                </div>
+
+                <div class="grid gap-6 lg:grid-cols-12 items-start">
+                    <!-- Formulario de diagnóstico -->
+                    <form id="diagnostic-form" novalidate class="glass-panel rounded-2xl p-6 space-y-5 lg:col-span-7">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
+                                1. Situaciones que afectan hoy a tu empresa (opcional)
+                            </p>
+                            <div class="flex flex-wrap gap-2.5">
+                                <button type="button" data-symptom="Pérdida de clientes / No contestamos a tiempo"
+                                    class="symptom-chip rounded-xl border border-white/10 bg-gray-950/80 px-3.5 py-2 text-xs font-medium text-gray-200 hover:border-cyan-400/50 transition-colors cursor-pointer">
+                                    📉 Pérdida de clientes / Tardamos en responder
+                                </button>
+                                <button type="button" data-symptom="Rotación de empleados / Capacitación lenta"
+                                    class="symptom-chip rounded-xl border border-white/10 bg-gray-950/80 px-3.5 py-2 text-xs font-medium text-gray-200 hover:border-cyan-400/50 transition-colors cursor-pointer">
+                                    👥 Rotación de empleados
+                                </button>
+                                <button type="button" data-symptom="Problemas administrativos / Procesos manuales"
+                                    class="symptom-chip rounded-xl border border-white/10 bg-gray-950/80 px-3.5 py-2 text-xs font-medium text-gray-200 hover:border-cyan-400/50 transition-colors cursor-pointer">
+                                    📊 Problemas administrativos
+                                </button>
+                                <button type="button" data-symptom="Falta de presencia digital / Captación limitada"
+                                    class="symptom-chip rounded-xl border border-white/10 bg-gray-950/80 px-3.5 py-2 text-xs font-medium text-gray-200 hover:border-cyan-400/50 transition-colors cursor-pointer">
+                                    🌐 Falta de presencia digital
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="diag-problem" class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
+                                2. Describe qué está pasando en tu operación
+                            </label>
+                            <textarea id="diag-problem" rows="4"
+                                placeholder="Ej. Nos llegan mensajes pero tardamos horas en responder y se enfrían los prospectos; o tenemos mucha rotación y los procesos se quedan en hojas sueltas..."
+                                class="w-full rounded-xl border border-white/10 bg-gray-950/85 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-cyan-500 focus:outline-none"></textarea>
+                        </div>
+
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label for="diag-name" class="block text-xs font-semibold text-gray-300 mb-1.5">
+                                    Tu nombre
+                                </label>
+                                <input id="diag-name" type="text" placeholder="Ej. Valeria Ramírez"
+                                    class="w-full rounded-xl border border-white/10 bg-gray-950/85 px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:border-cyan-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label for="diag-email" class="block text-xs font-semibold text-gray-300 mb-1.5">
+                                    Correo electrónico
+                                </label>
+                                <input id="diag-email" type="email" placeholder="contacto@tuempresa.com"
+                                    class="w-full rounded-xl border border-white/10 bg-gray-950/85 px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:border-cyan-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label for="diag-whatsapp" class="block text-xs font-semibold text-gray-300 mb-1.5">
+                                    Número de WhatsApp
+                                </label>
+                                <input id="diag-whatsapp" type="tel" placeholder="Ej. 477 123 4567"
+                                    class="w-full rounded-xl border border-white/10 bg-gray-950/85 px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:border-cyan-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label for="diag-company" class="block text-xs font-semibold text-gray-300 mb-1.5">
+                                    Nombre de tu empresa (opcional)
+                                </label>
+                                <input id="diag-company" type="text" placeholder="Ej. Comercializadora Bajío"
+                                    class="w-full rounded-xl border border-white/10 bg-gray-950/85 px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:border-cyan-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <p id="diag-validation-msg" class="hidden rounded-xl border border-amber-400/40 bg-amber-500/10 px-4 py-2.5 text-xs font-medium text-amber-200"></p>
+
+                        <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+                            <button type="submit"
+                                class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 hover:opacity-95 transition-opacity cursor-pointer">
+                                Enviar Diagnóstico
+                            </button>
+                            <a href="#citas" class="text-xs font-semibold text-cyan-400 hover:text-cyan-300">
+                                ¿Prefieres revisarlo en vivo? Agendar cita →
+                            </a>
+                        </div>
+                    </form>
+
+                    <!-- Panel lateral: la solución se define tras revisar o en cita -->
+                    <div class="glass-panel stack-float rounded-2xl p-6 space-y-5 lg:col-span-5 border border-cyan-500/20">
+                        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                            <span class="font-mono text-xs text-cyan-400">ANÁLISIS DUNKORA</span>
+                            <span id="diag-status-badge" class="rounded-md border border-white/10 bg-white/5 px-2.5 py-0.5 font-mono text-[11px] text-gray-300">
+                                Pendiente de envío
+                            </span>
+                        </div>
+
+                        <div id="diag-result-box" class="space-y-4">
+                            <h3 class="text-lg font-bold text-white leading-snug">
+                                La solución la definimos contigo después de analizar tu caso o en tu cita
+                            </h3>
+                            <p class="text-sm text-gray-300 leading-relaxed">
+                                No lanzamos respuestas genéricas antes de entender tu operación. Revisamos lo que ocurre en tu negocio y te proponemos la alternativa correcta —sitio web, aplicación a medida o agente de IA— una vez analizado tu diagnóstico o durante la reunión.
+                            </p>
+                            <div class="rounded-xl bg-gray-950/85 border border-white/10 p-4 space-y-2.5 text-xs text-gray-300">
+                                <p class="font-mono text-[11px] font-semibold uppercase tracking-wider text-cyan-400">
+                                    ¿Cómo trabajamos tu diagnóstico?
+                                </p>
+                                <p><span class="font-mono text-cyan-400 font-bold">01.</span> Recibimos tu problemática, nombre y datos de contacto.</p>
+                                <p><span class="font-mono text-indigo-400 font-bold">02.</span> Analizamos dónde está el cuello de botella real.</p>
+                                <p><span class="font-mono text-emerald-400 font-bold">03.</span> Te compartimos la solución o la revisamos en cita por Zoom o presencial.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de servicios -->
+        <section id="servicios" class="scroll-reveal py-16 sm:py-20 border-t border-white/10">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="max-w-2xl space-y-2 mb-10">
+                    <span class="text-xs font-semibold uppercase tracking-widest text-cyan-400">Capacidades</span>
+                    <h2 class="text-2xl sm:text-4xl font-bold text-white">Soluciones Construidas para Operar</h2>
+                    <p class="text-sm sm:text-base text-gray-300">
+                        Combinamos diseño limpio, ingeniería de software y automatización con IA para resolver necesidades concretas.
+                    </p>
+                </div>
+
+                <div class="grid gap-6 md:grid-cols-3">
+                    <div class="glass-panel rounded-2xl p-6 space-y-3">
+                        <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 font-mono text-sm font-bold">01</span>
+                        <h3 class="text-lg font-bold text-white">Páginas Web y Landing Pages</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed">
+                            Sitios rápidos, responsivos y claros para presentar servicios, captar prospectos y guiar al usuario hacia la acción correcta.
+                        </p>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6 space-y-3">
+                        <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/15 text-indigo-400 font-mono text-sm font-bold">02</span>
+                        <h3 class="text-lg font-bold text-white">Aplicaciones Web y Sistemas</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed">
+                            Paneles administrativos, seguimiento de órdenes, inventarios y flujos internos que ordenan el trabajo diario de tu equipo.
+                        </p>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6 space-y-3">
+                        <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/15 text-violet-400 font-mono text-sm font-bold">03</span>
+                        <h3 class="text-lg font-bold text-white">Chatbots y Agentes de IA</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed">
+                            Asistentes entrenados con tu información y reglas de negocio para responder preguntas, filtrar consultas y dar seguimiento continuo.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de casos de éxito -->
+        <section id="portafolio" class="scroll-reveal py-16 sm:py-20 border-t border-white/10">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-8">
+                    <div class="space-y-2">
+                        <span class="text-xs font-semibold uppercase tracking-widest text-cyan-400">Casos de Éxito</span>
+                        <h2 id="portfolio-heading" class="text-2xl sm:text-4xl font-bold text-white">Proyectos Destacados</h2>
+                        <p class="text-sm sm:text-base text-gray-300">
+                            Mostramos primero los casos más relevantes; cambia a <strong class="text-white">Ver todos los casos</strong> para explorar el catálogo completo y visitar el enlace del cliente.
+                        </p>
+                    </div>
+
+                    <div class="inline-flex rounded-xl border border-white/10 bg-gray-950/80 p-1 self-start sm:self-auto">
+                        <button type="button" data-view="featured"
+                            class="portfolio-tab rounded-lg bg-cyan-500/20 px-4 py-2 text-xs font-semibold text-cyan-300 transition-colors cursor-pointer">
+                            Destacados
+                        </button>
+                        <button type="button" data-view="all"
+                            class="portfolio-tab rounded-lg px-4 py-2 text-xs font-semibold text-gray-300 hover:text-white transition-colors cursor-pointer">
+                            Ver todos los casos
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-2 mb-8">
+                    <button type="button" data-category="all"
+                        class="category-btn rounded-full border border-cyan-500/40 bg-cyan-500/15 px-3.5 py-1.5 text-xs font-semibold text-cyan-300 cursor-pointer">
+                        Todos
+                    </button>
+                    <button type="button" data-category="web"
+                        class="category-btn rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-xs font-semibold text-gray-300 hover:bg-white/10 cursor-pointer">
+                        Web / Apps
+                    </button>
+                    <button type="button" data-category="ia"
+                        class="category-btn rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-xs font-semibold text-gray-300 hover:bg-white/10 cursor-pointer">
+                        Agentes de IA
+                    </button>
+                </div>
+
+                <div id="projects-grid" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3"></div>
+            </div>
+        </section>
+
+        <!-- Cotizador interactivo enriquecido -->
+        <section id="cotizador" class="scroll-reveal py-16 sm:py-20 border-t border-white/10">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="max-w-2xl space-y-2 mb-8">
+                    <span class="text-xs font-semibold uppercase tracking-widest text-cyan-400">Estimación Rápida</span>
+                    <h2 class="text-2xl sm:text-4xl font-bold text-white">Cotizador de Proyecto</h2>
+                    <p class="text-sm sm:text-base text-gray-300">
+                        Elige los módulos que necesitas para calcular un estimado base, registrar tus datos de contacto y generar tu comprobante en PDF.
+                    </p>
+                </div>
+
+                <div class="grid gap-6 lg:grid-cols-12 items-start">
+                    <!-- Columna izquierda: selección de módulos + correo + WhatsApp -->
+                    <div class="glass-panel rounded-2xl p-6 space-y-4 lg:col-span-7">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                            1. Selecciona módulos del proyecto
+                        </p>
+
+                        <label class="flex items-center justify-between rounded-xl border border-white/10 bg-gray-950/80 p-4 cursor-pointer hover:border-cyan-500/35 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" class="quote-option h-4 w-4 accent-cyan-500" data-label="Página Web" data-price="8500" checked>
+                                <div>
+                                    <span class="block text-sm font-semibold text-white">Página Web</span>
+                                    <span class="block text-xs text-gray-400">Diseño responsivo, estructura comercial y secciones clave</span>
+                                </div>
+                            </div>
+                            <span class="font-mono text-sm text-cyan-400">$8,500</span>
+                        </label>
+
+                        <label class="flex items-center justify-between rounded-xl border border-white/10 bg-gray-950/80 p-4 cursor-pointer hover:border-cyan-500/35 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" class="quote-option h-4 w-4 accent-cyan-500" data-label="Aplicación Web" data-price="14500">
+                                <div>
+                                    <span class="block text-sm font-semibold text-white">Aplicación Web</span>
+                                    <span class="block text-xs text-gray-400">Flujos operativos, paneles de control y gestión de datos</span>
+                                </div>
+                            </div>
+                            <span class="font-mono text-sm text-cyan-400">$14,500</span>
+                        </label>
+
+                        <label class="flex items-center justify-between rounded-xl border border-white/10 bg-gray-950/80 p-4 cursor-pointer hover:border-cyan-500/35 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" class="quote-option h-4 w-4 accent-cyan-500" data-label="Chatbot / Agente de IA" data-price="11000">
+                                <div>
+                                    <span class="block text-sm font-semibold text-white">Chatbot / Agente de IA</span>
+                                    <span class="block text-xs text-gray-400">Asistente conversacional entrenado para atención y guía</span>
+                                </div>
+                            </div>
+                            <span class="font-mono text-sm text-cyan-400">$11,000</span>
+                        </label>
+
+                        <form id="quote-request-form" class="pt-4 border-t border-white/10 space-y-4">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                                2. Datos para registrar y generar comprobante PDF
+                            </p>
+                            <div class="grid gap-4 sm:grid-cols-2">
+                                <div>
+                                    <label for="quote-email" class="block text-xs font-semibold text-gray-300 mb-1.5">
+                                        Correo Electrónico *
+                                    </label>
+                                    <input id="quote-email" type="email" required placeholder="tu@correo.com"
+                                        class="w-full rounded-xl border border-white/10 bg-gray-950/85 px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:border-cyan-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label for="quote-whatsapp" class="block text-xs font-semibold text-gray-300 mb-1.5">
+                                        Número de WhatsApp *
+                                    </label>
+                                    <input id="quote-whatsapp" type="tel" required placeholder="Ej. 477 123 4567"
+                                        class="w-full rounded-xl border border-white/10 bg-gray-950/85 px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:border-cyan-500 focus:outline-none">
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap gap-3">
+                                <button type="submit"
+                                    class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 hover:opacity-95 transition-opacity cursor-pointer">
+                                    Guardar Cotización y Generar PDF
+                                </button>
+                                <button type="button" onclick="sendQuoteToAssistant()"
+                                    class="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors cursor-pointer">
+                                    Consultar con Agente IA
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Columna derecha: resumen enriquecido con estilo Dunkora -->
+                    <div class="glass-panel stack-float rounded-2xl p-6 space-y-5 lg:col-span-5 border border-cyan-500/25">
+                        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                            <span class="font-mono text-xs text-cyan-400">dunkora-quote.summary</span>
+                            <span class="rounded-md border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-0.5 font-mono text-[10px] font-semibold text-cyan-300">
+                                MXN
+                            </span>
+                        </div>
+
+                        <div class="flex items-baseline justify-between">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Estimado Base</span>
+                            <span id="quote-total" class="text-3xl font-extrabold bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent">
+                                $8,500 MXN
+                            </span>
+                        </div>
+
+                        <div class="rounded-xl bg-gray-950/85 border border-white/10 p-4 space-y-3">
+                            <p class="font-mono text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+                                Desglose de módulos
+                            </p>
+                            <ul id="quote-breakdown-list" class="space-y-2 text-xs text-gray-200">
+                                <li class="flex items-center justify-between">
+                                    <span>Página Web</span>
+                                    <span class="font-mono text-cyan-300">$8,500 MXN</span>
+                                </li>
+                            </ul>
+                            <p id="quote-selected-summary" class="pt-2 border-t border-white/10 text-xs text-gray-400">
+                                Incluye: Página Web.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="rounded-xl border border-white/10 bg-gray-950/60 p-3">
+                                <span class="block text-[10px] font-semibold uppercase tracking-wider text-gray-400">Tiempo estimado</span>
+                                <span id="quote-timeline" class="block text-xs font-bold text-white mt-1">1 a 2 semanas</span>
+                            </div>
+                            <div class="rounded-xl border border-white/10 bg-gray-950/60 p-3">
+                                <span class="block text-[10px] font-semibold uppercase tracking-wider text-gray-400">Formato</span>
+                                <span id="quote-format-label" class="block text-xs font-bold text-emerald-300 mt-1">Comprobante PDF</span>
+                            </div>
+                        </div>
+
+                        <ul class="space-y-1.5 text-xs text-gray-300">
+                            <li class="flex items-center gap-2">
+                                <span class="text-cyan-400 font-bold">✓</span>
+                                <span>Diseño adaptable a móvil, tablet y escritorio</span>
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="text-cyan-400 font-bold">✓</span>
+                                <span>Alcance refinado tras revisar tu diagnóstico o cita</span>
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="text-cyan-400 font-bold">✓</span>
+                                <span>Folio generado para descargar o imprimir en PDF</span>
+                            </li>
+                        </ul>
+
+                        <div id="quote-feedback" class="hidden rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs text-emerald-200 space-y-2.5">
+                            <p id="quote-feedback-text"></p>
+                            <button type="button" onclick="openPdfPreviewModal()"
+                                class="rounded-lg bg-emerald-400 px-3.5 py-1.5 text-xs font-bold text-gray-950 hover:bg-emerald-300 transition-colors cursor-pointer">
+                                Abrir / Imprimir PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Planes de Mantenimiento y Soporte -->
+        <section id="mantenimiento" class="scroll-reveal py-16 sm:py-24 border-t border-white/10">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="max-w-3xl mx-auto text-center space-y-3 mb-14">
+                    <span class="font-mono text-xs font-bold uppercase tracking-[0.2em] text-cyan-400">
+                        CONTINUIDAD OPERATIVA
+                    </span>
+                    <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+                        Planes de Mantenimiento y Soporte
+                    </h2>
+                    <p class="text-sm sm:text-base text-gray-300 leading-relaxed">
+                        El software evoluciona cada día. Mantén tu plataforma rápida, blindada contra fallos y con sus APIs de IA siempre actualizadas.
+                    </p>
+                </div>
+
+                <div class="grid gap-6 lg:grid-cols-3 items-stretch">
+                    <!-- Plan Básico -->
+                    <div class="glass-panel rounded-2xl p-7 flex flex-col justify-between border border-white/10">
+                        <div class="space-y-5">
+                            <div>
+                                <span class="font-mono text-[11px] font-bold uppercase tracking-widest text-gray-400">
+                                    ESENCIAL
+                                </span>
+                                <h3 class="text-2xl font-bold text-white mt-1">Plan Básico</h3>
+                            </div>
+
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-4xl font-extrabold text-white">$800</span>
+                                <span class="text-xs font-medium text-gray-400">MXN / mes</span>
+                            </div>
+
+                            <p class="text-xs text-gray-300 leading-relaxed min-h-[2.5rem]">
+                                Ideal para sitios corporativos y landing pages informativas.
+                            </p>
+
+                            <ul class="space-y-3 border-t border-white/10 pt-5 text-xs text-gray-200">
+                                <li class="flex items-start gap-2.5">
+                                    <span class="text-cyan-400 font-bold">✓</span>
+                                    <span>Monitoreo de disponibilidad 24/7</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="text-cyan-400 font-bold">✓</span>
+                                    <span>Copias de seguridad semanales y certificados SSL</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="text-cyan-400 font-bold">✓</span>
+                                    <span>Ajustes menores de texto y contenido al mes</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="pt-7">
+                            <a href="#citas" onclick="selectMaintenancePlan('Plan Básico ($800 MXN/mes)')"
+                                class="block w-full text-center rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-xs font-semibold text-white hover:bg-white/10 transition-colors">
+                                Elegir Plan Básico
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Plan Pro + IA (Más Popular) -->
+                    <div class="glass-panel relative rounded-2xl p-7 flex flex-col justify-between border-2 border-cyan-400/70 shadow-2xl shadow-cyan-500/10">
+                        <div class="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                            <span class="rounded-full bg-gradient-to-r from-sky-500 to-blue-600 px-3.5 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-white shadow-md">
+                                MÁS POPULAR
+                            </span>
+                        </div>
+
+                        <div class="space-y-5">
+                            <div>
+                                <span class="font-mono text-[11px] font-bold uppercase tracking-widest text-cyan-400">
+                                    CRECIMIENTO
+                                </span>
+                                <h3 class="text-2xl font-bold text-white mt-1">Plan Pro + IA</h3>
+                            </div>
+
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-4xl font-extrabold text-white">$1,600</span>
+                                <span class="text-xs font-medium text-gray-400">MXN / mes</span>
+                            </div>
+
+                            <p class="text-xs text-gray-300 leading-relaxed min-h-[2.5rem]">
+                                Perfecto para E-Commerce, sistemas activos y negocios con Agente IA.
+                            </p>
+
+                            <ul class="space-y-3 border-t border-white/10 pt-5 text-xs text-gray-200">
+                                <li class="flex items-start gap-2.5">
+                                    <span class="text-cyan-400 font-bold">✓</span>
+                                    <span>Todo lo incluido en el Plan Básico</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="text-cyan-400 font-bold">✓</span>
+                                    <span>Re-entrenamiento y ajuste mensual del Agente de IA</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="text-cyan-400 font-bold">✓</span>
+                                    <span>Soporte prioritario y optimización continua de rendimiento</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="pt-7">
+                            <a href="#citas" onclick="selectMaintenancePlan('Plan Pro + IA ($1,600 MXN/mes)')"
+                                class="block w-full text-center rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 px-4 py-3 text-xs font-semibold text-white shadow-lg shadow-cyan-500/20 hover:opacity-95 transition-opacity">
+                                Elegir Plan Pro + IA
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Plan Enterprise -->
+                    <div class="glass-panel rounded-2xl p-7 flex flex-col justify-between border border-white/10">
+                        <div class="space-y-5">
+                            <div>
+                                <span class="font-mono text-[11px] font-bold uppercase tracking-widest text-indigo-400">
+                                    ESCALA TOTAL
+                                </span>
+                                <h3 class="text-2xl font-bold text-white mt-1">Plan Enterprise</h3>
+                            </div>
+
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-4xl font-extrabold text-white">$3,200</span>
+                                <span class="text-xs font-medium text-gray-400">MXN / mes</span>
+                            </div>
+
+                            <p class="text-xs text-gray-300 leading-relaxed min-h-[2.5rem]">
+                                Para plataformas SaaS, alta demanda y flujos complejos de IA.
+                            </p>
+
+                            <ul class="space-y-3 border-t border-white/10 pt-5 text-xs text-gray-200">
+                                <li class="flex items-start gap-2.5">
+                                    <span class="text-cyan-400 font-bold">✓</span>
+                                    <span>Todo lo incluido en el Plan Pro</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="text-cyan-400 font-bold">✓</span>
+                                    <span>Desarrollo de nuevas funciones mensuales y automatizaciones</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="text-cyan-400 font-bold">✓</span>
+                                    <span>Arquitectura dedicada, auditoría de seguridad y SLA directo</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="pt-7">
+                            <a href="#citas" onclick="selectMaintenancePlan('Plan Enterprise ($3,200 MXN/mes)')"
+                                class="block w-full text-center rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-xs font-semibold text-white hover:bg-white/10 transition-colors">
+                                Elegir Plan Enterprise
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de agendamiento de citas (Zoom o Presencial) -->
+        <section id="citas" class="scroll-reveal py-16 sm:py-20 border-t border-white/10">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="max-w-2xl space-y-2 mb-8">
+                    <span class="text-xs font-semibold uppercase tracking-widest text-cyan-400">Reunión de Trabajo</span>
+                    <h2 class="text-2xl sm:text-4xl font-bold text-white">Agendar Cita por Zoom o Presencial</h2>
+                    <p class="text-sm sm:text-base text-gray-300">
+                        Revisamos tu caso, resolvemos dudas y definimos juntos el camino técnico ideal para tu empresa.
+                    </p>
+                </div>
+
+                <div class="grid gap-6 lg:grid-cols-12 items-start">
+                    <form id="appointment-form" class="glass-panel rounded-2xl p-6 lg:col-span-7 space-y-5">
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label for="appt-modality" class="block text-xs font-semibold text-gray-300 mb-1.5">
+                                    Modalidad de la cita *
+                                </label>
+                                <select id="appt-modality"
+                                    class="w-full rounded-xl border border-white/10 bg-gray-950/85 px-3.5 py-2.5 text-sm text-white focus:border-cyan-500 focus:outline-none">
+                                    <option value="Zoom (Videollamada)">Zoom (Videollamada)</option>
+                                    <option value="Presencial">Presencial</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="appt-email" class="block text-xs font-semibold text-gray-300 mb-1.5">
+                                    Correo electrónico *
+                                </label>
+                                <input id="appt-email" type="email" required placeholder="tu@correo.com"
+                                    class="w-full rounded-xl border border-white/10 bg-gray-950/85 px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:border-cyan-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid gap-4 sm:grid-cols-3">
+                            <div>
+                                <label for="appt-name" class="block text-xs font-semibold text-gray-300 mb-1.5">
+                                    Tu nombre *
+                                </label>
+                                <input id="appt-name" type="text" required placeholder="Ej. Carlos Mendoza"
+                                    class="w-full rounded-xl border border-white/10 bg-gray-950/85 px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:border-cyan-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label for="appt-date" class="block text-xs font-semibold text-gray-300 mb-1.5">
+                                    Fecha preferida *
+                                </label>
+                                <input id="appt-date" type="date" required
+                                    class="w-full rounded-xl border border-white/10 bg-gray-950/85 px-3.5 py-2.5 text-sm text-white focus:border-cyan-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label for="appt-time" class="block text-xs font-semibold text-gray-300 mb-1.5">
+                                    Horario *
+                                </label>
+                                <input id="appt-time" type="time" required value="11:00"
+                                    class="w-full rounded-xl border border-white/10 bg-gray-950/85 px-3.5 py-2.5 text-sm text-white focus:border-cyan-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="appt-notes" class="block text-xs font-semibold text-gray-300 mb-1.5">
+                                Tema principal a tratar (opcional)
+                            </label>
+                            <input id="appt-notes" type="text" placeholder="Ej. Revisar diagnóstico de atención al cliente o cotización de app web"
+                                class="w-full rounded-xl border border-white/10 bg-gray-950/85 px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:border-cyan-500 focus:outline-none">
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-4">
+                            <button type="submit"
+                                class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 hover:opacity-95 transition-opacity cursor-pointer">
+                                Solicitar Cita
+                            </button>
+                            <span id="appt-feedback" class="text-xs text-emerald-300 font-medium"></span>
+                        </div>
+                    </form>
+
+                    <!-- Cuadro lateral explicativo de la cita -->
+                    <aside class="glass-panel rounded-2xl p-6 lg:col-span-5 space-y-4 border border-cyan-500/20">
+                        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                            <span class="font-mono text-xs font-bold uppercase tracking-wider text-cyan-400">¿Por qué agendar?</span>
+                            <span class="rounded-md border border-cyan-400/30 bg-cyan-500/10 px-2.5 py-0.5 font-mono text-[10px] font-semibold text-cyan-300">
+                                1 a 1
+                            </span>
+                        </div>
+
+                        <h3 class="text-lg font-bold text-white leading-snug">
+                            Aterrizamos tu operación antes de invertir
+                        </h3>
+                        <p class="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                            Una sesión directa evita comprar funciones innecesarias: revisamos tu diagnóstico o cotización en vivo y definimos qué construir primero.
+                        </p>
+
+                        <ul class="space-y-2.5 pt-1 text-xs text-gray-200">
+                            <li class="flex items-start gap-2.5">
+                                <span class="text-cyan-400 font-bold">✓</span>
+                                <span><strong class="text-white">Para qué es:</strong> validar el cuello de botella real, aclarar alcances y resolver dudas técnicas.</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <span class="text-cyan-400 font-bold">✓</span>
+                                <span><strong class="text-white">Por qué conviene:</strong> obtienes un plan claro, tiempos realistas y un presupuesto ajustado a tu caso.</span>
+                            </li>
+                        </ul>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="no-print border-t border-white/10 bg-[#05080f] py-8">
+        <div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8 text-xs text-gray-400">
+            <p>© <span id="year-label">2026</span> Dunkora Solutions. Desarrollo Web, Aplicaciones y Agentes de IA.</p>
+            <p class="font-mono text-[11px] text-cyan-400/80">DUNKORA SOLUTIONS • ARQUITECTURA FUNCIONAL</p>
+        </div>
+    </footer>
+
+    <!-- Modal de comprobante PDF de cotización tipo hoja blanca impresa -->
+    <div id="pdf-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-3 sm:p-6 backdrop-blur-sm overflow-y-auto">
+        <div id="pdf-modal-card" style="font-family: Arial, Helvetica, sans-serif;" class="w-full max-w-2xl rounded-xl border border-slate-300 bg-white text-slate-900 p-6 sm:p-8 space-y-5 shadow-[0_24px_65px_rgba(0,0,0,0.65)]">
+            <!-- Encabezado tipo hoja formal en blanco -->
+            <div class="flex flex-wrap items-start justify-between gap-4 border-b-2 border-slate-900 pb-4">
+                <div>
+                    <div class="flex items-center gap-2.5">
+                        <span style="font-family: Arial, Helvetica, sans-serif;" class="text-xs font-bold uppercase tracking-[0.2em] text-slate-900">DUNKORA SOLUTIONS</span>
+                        <span style="font-family: Arial, Helvetica, sans-serif;" class="rounded border border-slate-800 bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase text-slate-800">
+                            COTIZACIÓN FORMAL
+                        </span>
+                    </div>
+                    <h3 style="font-family: Arial, Helvetica, sans-serif;" class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-950 mt-1">
+                        Hoja de Estimación de Proyecto
+                    </h3>
+                    <div style="font-family: Arial, Helvetica, sans-serif;" class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-600 mt-1.5">
+                        <span id="pdf-folio">Folio: DNK-0000</span>
+                        <span id="pdf-date">Fecha: —</span>
+                        <span id="pdf-hash">Ref: VER-0000</span>
+                    </div>
+                </div>
+                <button type="button" onclick="closePdfPreviewModal()"
+                    style="font-family: Arial, Helvetica, sans-serif;"
+                    class="no-print rounded-lg border border-slate-300 bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">
+                    Cerrar ✕
+                </button>
+            </div>
+
+            <!-- Datos del cliente y vigencia en hoja blanca -->
+            <div style="font-family: Arial, Helvetica, sans-serif;" class="grid gap-3 sm:grid-cols-3 text-xs bg-slate-50 rounded-lg p-3.5 border border-slate-200">
+                <div>
+                    <span class="text-[10px] uppercase tracking-wider text-slate-500 block">Correo del cliente</span>
+                    <span id="pdf-email" class="font-semibold text-slate-900 mt-0.5 block break-all">—</span>
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase tracking-wider text-slate-500 block">WhatsApp</span>
+                    <span id="pdf-whatsapp" class="font-semibold text-slate-900 mt-0.5 block">—</span>
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase tracking-wider text-slate-500 block">Vigencia / Entrega</span>
+                    <span id="pdf-validity" class="font-semibold text-slate-900 mt-0.5 block">15 días • 1 a 2 sem.</span>
+                </div>
+            </div>
+
+            <!-- Tabla de conceptos tipo documento impreso -->
+            <div style="font-family: Arial, Helvetica, sans-serif;" class="space-y-1.5">
+                <div class="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-600 border-b border-slate-300 pb-1.5 px-1">
+                    <span>Concepto / Alcance</span>
+                    <span>Importe (MXN)</span>
+                </div>
+                <div id="pdf-modules" class="divide-y divide-slate-200 border-b border-slate-300 text-xs text-slate-800"></div>
+            </div>
+
+            <!-- Observaciones y total -->
+            <div style="font-family: Arial, Helvetica, sans-serif;" class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pt-1">
+                <p class="max-w-md text-[11px] text-slate-600 leading-relaxed">
+                    Documento de estimación emitido por Dunkora Solutions. Alcance final sujeto a revisión de diagnóstico o sesión por Zoom / presencial.
+                </p>
+                <div class="sm:text-right shrink-0">
+                    <span class="text-[10px] uppercase tracking-wider text-slate-500 block">Total Estimado</span>
+                    <span id="pdf-total" class="text-2xl sm:text-3xl font-extrabold text-slate-950">
+                        $8,500 MXN
+                    </span>
+                </div>
+            </div>
+
+            <!-- Botón de impresión -->
+            <div style="font-family: Arial, Helvetica, sans-serif;" class="no-print flex items-center justify-between border-t border-slate-200 pt-4">
+                <span class="text-[11px] text-slate-500">Listo para imprimir o guardar en PDF</span>
+                <button type="button" onclick="window.print()"
+                    class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-xs font-semibold text-white hover:bg-slate-800 transition-colors cursor-pointer">
+                    <span>Imprimir / Guardar PDF</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón y panel flotante del Agente IA -->
+    <div id="ai-floating-root" class="no-print fixed bottom-5 right-5 z-40">
+        <button id="ai-launcher-btn" type="button"
+            class="fixed bottom-5 right-5 z-40 flex items-center gap-2.5 rounded-full bg-gradient-to-r from-cyan-500 to-indigo-600 px-4 py-3 text-xs sm:text-sm font-semibold text-white shadow-xl shadow-cyan-500/25 cursor-grab active:cursor-grabbing select-none touch-none">
+            <span class="h-2.5 w-2.5 rounded-full bg-emerald-300"></span>
+            <span>Dunkora IA</span>
+        </button>
+
+        <div id="ai-drawer" class="hidden fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] max-w-sm rounded-2xl border border-white/15 bg-[#0b111e]/95 backdrop-blur-xl shadow-2xl overflow-hidden">
+            <div id="ai-drawer-header" class="flex items-center justify-between border-b border-white/10 bg-gradient-to-r from-cyan-500/15 to-indigo-500/15 px-4 py-3 cursor-grab active:cursor-grabbing select-none touch-none">
+                <div>
+                    <p class="text-sm font-bold text-white">Agente IA • Dunkora</p>
+                    <p class="text-[11px] text-cyan-300">Arrastra para mover • Orientación sobre web, apps y IA</p>
+                </div>
+                <button type="button" onclick="toggleAssistant(false)"
+                    class="rounded-lg p-1.5 text-gray-300 hover:bg-white/10 cursor-pointer">✕</button>
+            </div>
+
+            <div id="ai-messages" class="max-h-72 overflow-y-auto p-4 space-y-3 text-xs">
+                <div class="rounded-xl bg-white/5 border border-white/10 p-3 text-gray-200 leading-relaxed">
+                    ¡Hola! Soy el asistente de <strong class="text-white">Dunkora Solutions</strong>. Puedo orientarte sobre páginas web, aplicaciones a medida o agentes de IA según lo que necesite tu negocio.
+                </div>
+            </div>
+
+            <form id="ai-form" class="flex items-center gap-2 border-t border-white/10 p-3 bg-gray-950/80">
+                <input id="ai-input" type="text" placeholder="Escribe tu pregunta..."
+                    class="flex-1 rounded-xl border border-white/10 bg-gray-900 px-3 py-2 text-xs text-white placeholder-gray-500 focus:border-cyan-500 focus:outline-none">
+                <button type="submit"
+                    class="rounded-xl bg-cyan-500 px-3.5 py-2 text-xs font-bold text-gray-950 hover:bg-cyan-400 cursor-pointer">
+                    Enviar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Catálogo de casos de éxito: featured: true define los más relevantes al inicio
+        const PROJECTS = [
+            {
+                id: 'darkor-store',
+                code: 'DARKOR STORE',
+                badge: 'Producción',
+                stack: 'v2.4 Live',
+                subtitle: 'E-Commerce & Panel Operativo',
+                title: 'Tienda Online y Control de Inventario',
+                description: 'Plataforma de venta en línea con catálogo dinámico, control de existencias y flujo ágil de pedidos para operación diaria.',
+                category: 'web',
+                featured: true,
+                clientUrl: 'https://ejemplo-darkor-store.dunkora.mx'
+            },
+            {
+                id: 'agente-ventas-247',
+                code: 'AGENTE VENTAS 24/7',
+                badge: 'IA Activa',
+                stack: 'LLM + Flujos',
+                subtitle: 'Asistente Conversacional Funcional',
+                title: 'Agente de Atención y Calificación',
+                description: 'Asistente inteligente configurado para responder dudas frecuentes, orientar prospectos y canalizar oportunidades sin demoras.',
+                category: 'ia',
+                featured: true,
+                clientUrl: 'https://ejemplo-agente-ia.dunkora.mx'
+            },
+            {
+                id: 'gestion-tecnica-pro',
+                code: 'GESTIÓN TÉCNICA PRO',
+                badge: 'Sistema Web',
+                stack: 'Real-Time Sync',
+                subtitle: 'Control de Órdenes y Seguimiento',
+                title: 'Sistema de Gestión Operativa',
+                description: 'Aplicación web para administrar órdenes de servicio, estados en tiempo real y reportes claros para dirección y equipo.',
+                category: 'web',
+                featured: true,
+                clientUrl: 'https://ejemplo-gestion-pro.dunkora.mx'
+            },
+            {
+                id: 'soporte-operativo-ia',
+                code: 'COPILOTO INTERNO IA',
+                badge: 'Automatización',
+                stack: 'Base de Conocimiento',
+                subtitle: 'Consulta Rápida de Procesos',
+                title: 'Asistente de Procesos y Soporte',
+                description: 'Apoyo conversacional para consultar políticas, pasos operativos y respuestas estándar, reduciendo fricción en equipos en crecimiento.',
+                category: 'ia',
+                featured: false,
+                clientUrl: 'https://ejemplo-copiloto-ia.dunkora.mx'
+            },
+            {
+                id: 'portal-citas-clinica',
+                code: 'AGENDA & PORTAL WEB',
+                badge: 'Web App',
+                stack: 'Booking Flow',
+                subtitle: 'Sitio Corporativo y Reservas',
+                title: 'Portal de Servicios y Agenda',
+                description: 'Sitio web con información clara por especialidad y flujo organizado para solicitar citas sin saturar la línea telefónica.',
+                category: 'web',
+                featured: false,
+                clientUrl: 'https://ejemplo-portal-citas.dunkora.mx'
+            }
+        ];
+
+        let currentPortfolioView = 'featured'; // 'featured' | 'all'
+        let currentPortfolioCategory = 'all'; // 'all' | 'web' | 'ia'
+        let selectedSymptoms = [];
+        let lastQuoteRecord = {
+            folio: 'DNK-1042',
+            email: '',
+            whatsapp: '',
+            items: [{ label: 'Página Web', price: 8500 }],
+            total: 8500
+        };
+        const aiConversationHistory = [];
+
+        // Escapa caracteres especiales para evitar inyección HTML
+        function escapeText(value) {
+            return String(value || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // Renderiza las tarjetas de proyectos según vista ("featured" o "all") y categoría
+        function renderProjects() {
+            const grid = document.getElementById('projects-grid');
+            const heading = document.getElementById('portfolio-heading');
+            if (!grid) return;
+
+            if (heading) {
+                heading.textContent = currentPortfolioView === 'featured'
+                    ? 'Proyectos Destacados'
+                    : 'Todos los Casos de Éxito';
+            }
+
+            const filtered = PROJECTS.filter((project) => {
+                const viewMatch = currentPortfolioView === 'all' || project.featured;
+                const categoryMatch = currentPortfolioCategory === 'all' || project.category === currentPortfolioCategory;
+                return viewMatch && categoryMatch;
+            });
+
+            if (!filtered.length) {
+                grid.innerHTML = `
+                    <div class="glass-panel rounded-2xl p-6 text-sm text-gray-300 col-span-full">
+                        No hay proyectos en esta combinación de filtros. Cambia a "Todos" o "Ver todos los casos".
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map((project) => `
+                <article class="scroll-reveal is-visible glass-panel rounded-2xl overflow-hidden flex flex-col justify-between border border-white/10 hover:border-cyan-400/40 transition-colors">
+                    <div>
+                        <div class="bg-gradient-to-br from-cyan-500/20 via-indigo-500/15 to-gray-950 p-5 border-b border-white/10 space-y-3">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="rounded-md border border-cyan-400/30 bg-cyan-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-200">
+                                    ${escapeText(project.badge)}
+                                </span>
+                                <span class="font-mono text-[11px] text-gray-300">${escapeText(project.stack)}</span>
+                            </div>
+                            <div>
+                                <h3 class="font-mono text-base font-extrabold tracking-wide text-white">${escapeText(project.code)}</h3>
+                                <p class="text-xs font-medium text-cyan-300 mt-0.5">${escapeText(project.subtitle)}</p>
+                            </div>
+                        </div>
+
+                        <div class="p-6 space-y-2.5">
+                            <h4 class="text-lg font-bold text-white">${escapeText(project.title)}</h4>
+                            <p class="text-sm text-gray-300 leading-relaxed">${escapeText(project.description)}</p>
+                        </div>
+                    </div>
+
+                    <div class="px-6 pb-6 pt-2 flex items-center justify-between border-t border-white/5">
+                        <span class="font-mono text-[11px] uppercase tracking-wider text-gray-400">Resultado en vivo</span>
+                        <a href="${escapeText(project.clientUrl)}" target="_blank" rel="noopener noreferrer"
+                            class="inline-flex items-center gap-1.5 rounded-lg border border-cyan-400/30 bg-cyan-500/10 px-3.5 py-1.5 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/20 transition-colors">
+                            <span>Ver proyecto del cliente</span>
+                            <span aria-hidden="true">↗</span>
+                        </a>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        // Vincula botones de pestañas (Destacados / Ver todos los casos) y filtros de categoría
+        function bindPortfolioFilters() {
+            document.querySelectorAll('.portfolio-tab').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const view = btn.getAttribute('data-view');
+                    if (!view) return;
+                    currentPortfolioView = view;
+
+                    document.querySelectorAll('.portfolio-tab').forEach((tab) => {
+                        const active = tab === btn;
+                        tab.classList.toggle('bg-cyan-500/20', active);
+                        tab.classList.toggle('text-cyan-300', active);
+                        tab.classList.toggle('text-gray-300', !active);
+                    });
+
+                    renderProjects();
+                });
+            });
+
+            document.querySelectorAll('.category-btn').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const cat = btn.getAttribute('data-category');
+                    if (!cat) return;
+                    currentPortfolioCategory = cat;
+
+                    document.querySelectorAll('.category-btn').forEach((cBtn) => {
+                        const active = cBtn === btn;
+                        cBtn.classList.toggle('border-cyan-500/40', active);
+                        cBtn.classList.toggle('bg-cyan-500/15', active);
+                        cBtn.classList.toggle('text-cyan-300', active);
+                        cBtn.classList.toggle('border-white/10', !active);
+                        cBtn.classList.toggle('bg-white/5', !active);
+                        cBtn.classList.toggle('text-gray-300', !active);
+                    });
+
+                    renderProjects();
+                });
+            });
+        }
+
+        // Vincula síntomas rápidos y validación amigable del diagnóstico sin mostrar "obligatorio"
+        function bindDiagnosticForm() {
+            document.querySelectorAll('.symptom-chip').forEach((chip) => {
+                chip.addEventListener('click', () => {
+                    const symptom = chip.getAttribute('data-symptom') || '';
+                    const idx = selectedSymptoms.indexOf(symptom);
+                    if (idx >= 0) {
+                        selectedSymptoms.splice(idx, 1);
+                        chip.classList.remove('border-cyan-400', 'bg-cyan-500/15', 'text-cyan-200');
+                    } else {
+                        selectedSymptoms.push(symptom);
+                        chip.classList.add('border-cyan-400', 'bg-cyan-500/15', 'text-cyan-200');
+                    }
+                });
+            });
+
+            const form = document.getElementById('diagnostic-form');
+            if (!form) return;
+
+            const requiredFields = [
+                { id: 'diag-problem', message: 'describir qué está pasando en tu operación' },
+                { id: 'diag-name', message: 'escribir tu nombre' },
+                { id: 'diag-email', message: 'ingresar un correo electrónico válido' },
+                { id: 'diag-whatsapp', message: 'escribir tu número de WhatsApp' }
+            ];
+
+            const validationEl = document.getElementById('diag-validation-msg');
+
+            requiredFields.forEach(({ id }) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', () => {
+                        el.classList.remove('border-rose-400/70');
+                        if (validationEl) validationEl.classList.add('hidden');
+                    });
+                }
+            });
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const nameInput = document.getElementById('diag-name');
+                const emailInput = document.getElementById('diag-email');
+                const whatsappInput = document.getElementById('diag-whatsapp');
+                const companyInput = document.getElementById('diag-company');
+                const problemInput = document.getElementById('diag-problem');
+                const badge = document.getElementById('diag-status-badge');
+                const resultBox = document.getElementById('diag-result-box');
+
+                const missing = [];
+                let firstInvalidEl = null;
+
+                requiredFields.forEach(({ id, message }) => {
+                    const el = document.getElementById(id);
+                    const val = el && 'value' in el ? String(el.value || '').trim() : '';
+                    const badEmail = id === 'diag-email' && (!val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val));
+                    if (!val || badEmail) {
+                        if (el) el.classList.add('border-rose-400/70');
+                        if (!firstInvalidEl) firstInvalidEl = el;
+                        missing.push(message);
+                    }
+                });
+
+                if (missing.length > 0) {
+                    if (validationEl) {
+                        validationEl.textContent = `Falta por completar: debes ${missing.join(', ')}.`;
+                        validationEl.classList.remove('hidden');
+                    }
+                    if (firstInvalidEl && 'focus' in firstInvalidEl) firstInvalidEl.focus();
+                    return;
+                }
+
+                if (validationEl) validationEl.classList.add('hidden');
+
+                const problemText = problemInput instanceof HTMLTextAreaElement ? problemInput.value.trim() : '';
+                const nameText = nameInput instanceof HTMLInputElement ? nameInput.value.trim() : '';
+                const emailText = emailInput instanceof HTMLInputElement ? emailInput.value.trim() : '';
+                const whatsappText = whatsappInput instanceof HTMLInputElement ? whatsappInput.value.trim() : '';
+                const companyText = companyInput instanceof HTMLInputElement ? companyInput.value.trim() : '';
+
+                if (badge) {
+                    badge.textContent = 'Agente IA activo';
+                    badge.className = 'rounded-md border border-cyan-400/40 bg-cyan-500/15 px-2.5 py-0.5 font-mono text-[11px] text-cyan-300';
+                }
+
+                if (resultBox) {
+                    resultBox.innerHTML = `
+                        <div class="rounded-xl border border-cyan-400/30 bg-cyan-500/10 p-4 space-y-2">
+                            <p class="text-sm font-bold text-white">Agente IA notificó a ${escapeText(nameText)}</p>
+                            <p class="text-xs text-cyan-100 leading-relaxed">
+                                Nuestro Agente IA ya abrió tu caso en el chat y confirmó que recibimos tu información${companyText ? ` de <strong>${escapeText(companyText)}</strong>` : ''} (${escapeText(emailText)} • WhatsApp ${escapeText(whatsappText)}).
+                            </p>
+                        </div>
+                        <p class="text-sm text-gray-300 leading-relaxed">
+                            Revisa el chat del Agente IA para seguir conversando sobre tu operación o agenda una cita por Zoom o presencial cuando gustes.
+                        </p>
+                        <div class="flex flex-wrap gap-2.5">
+                            <button type="button" onclick="toggleAssistant(true)"
+                                class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 px-4 py-2.5 text-xs font-semibold text-white hover:opacity-95 transition-opacity cursor-pointer">
+                                Abrir chat del Agente IA
+                            </button>
+                            <a href="#citas" class="inline-flex items-center justify-center rounded-xl bg-white/10 border border-white/15 px-4 py-2.5 text-xs font-semibold text-white hover:bg-white/15 transition-colors">
+                                Agendar cita →
+                            </a>
+                        </div>
+                    `;
+                }
+
+                notifyAssistantWithDiagnostic({
+                    name: nameText,
+                    company: companyText,
+                    email: emailText,
+                    whatsapp: whatsappText,
+                    problem: problemText,
+                    symptoms: [...selectedSymptoms]
+                });
+            });
+        }
+
+        // Recalcula el cotizador, desglose y tiempo estimado
+        function updateQuote() {
+            let total = 0;
+            const selectedItems = [];
+
+            document.querySelectorAll('.quote-option').forEach((cb) => {
+                if (cb instanceof HTMLInputElement && cb.checked) {
+                    const price = Number(cb.getAttribute('data-price') || 0);
+                    const label = cb.getAttribute('data-label') || 'Módulo';
+                    total += price;
+                    selectedItems.push({ label, price });
+                }
+            });
+
+            const totalEl = document.getElementById('quote-total');
+            const summaryEl = document.getElementById('quote-selected-summary');
+            const breakdownEl = document.getElementById('quote-breakdown-list');
+            const timelineEl = document.getElementById('quote-timeline');
+
+            if (totalEl) totalEl.textContent = `$${total.toLocaleString('es-MX')} MXN`;
+
+            if (breakdownEl) {
+                breakdownEl.innerHTML = selectedItems.length
+                    ? selectedItems.map((item) => `
+                        <li class="flex items-center justify-between">
+                            <span>${escapeText(item.label)}</span>
+                            <span class="font-mono text-cyan-300">$${item.price.toLocaleString('es-MX')} MXN</span>
+                        </li>
+                    `).join('')
+                    : '<li class="text-gray-400">Selecciona al menos un módulo.</li>';
+            }
+
+            if (summaryEl) {
+                summaryEl.textContent = selectedItems.length
+                    ? `Incluye: ${selectedItems.map((i) => i.label).join(' + ')}.`
+                    : 'Sin módulos seleccionados actualmente.';
+            }
+
+            if (timelineEl) {
+                timelineEl.textContent = selectedItems.length >= 3
+                    ? '3 a 5 semanas'
+                    : selectedItems.length === 2
+                        ? '2 a 4 semanas'
+                        : selectedItems.length === 1
+                            ? '1 a 2 semanas'
+                            : 'Por definir';
+            }
+
+            return { total, selectedItems };
+        }
+
+        // Vincula cambios en checkboxes y envío de cotización para generar comprobante PDF
+        function bindQuoteForm() {
+            document.querySelectorAll('.quote-option').forEach((cb) => {
+                cb.addEventListener('change', updateQuote);
+            });
+
+            const form = document.getElementById('quote-request-form');
+            if (!form) return;
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const { total, selectedItems } = updateQuote();
+                if (!selectedItems.length) {
+                    const fb = document.getElementById('quote-feedback');
+                    const fbText = document.getElementById('quote-feedback-text');
+                    if (fb && fbText) {
+                        fb.classList.remove('hidden');
+                        fbText.textContent = 'Selecciona al menos un módulo antes de generar tu cotización.';
+                    }
+                    return;
+                }
+
+                const emailEl = document.getElementById('quote-email');
+                const whatsappEl = document.getElementById('quote-whatsapp');
+                const email = emailEl instanceof HTMLInputElement ? emailEl.value.trim() : '';
+                const whatsapp = whatsappEl instanceof HTMLInputElement ? whatsappEl.value.trim() : '';
+
+                const folio = `DNK-${Math.floor(1000 + Math.random() * 9000)}`;
+                lastQuoteRecord = { folio, email, whatsapp, items: selectedItems, total };
+
+                const fb = document.getElementById('quote-feedback');
+                const fbText = document.getElementById('quote-feedback-text');
+                if (fb && fbText) {
+                    fb.classList.remove('hidden');
+                    fbText.textContent = `Cotización ${folio} lista por $${total.toLocaleString('es-MX')} MXN para ${email} (${whatsapp}).`;
+                }
+
+                notifyAssistantWithQuote({ folio, email, whatsapp, items: selectedItems, total });
+            });
+        }
+
+        // Abre el modal de hoja blanca imprimible con los datos de la cotización actual
+        function openPdfPreviewModal() {
+            const { total, selectedItems } = updateQuote();
+            const record = lastQuoteRecord.email ? lastQuoteRecord : {
+                ...lastQuoteRecord,
+                items: selectedItems.length ? selectedItems : [{ label: 'Página Web', price: 8500 }],
+                total: total || 8500,
+                email: 'Por registrar',
+                whatsapp: 'Por registrar'
+            };
+
+            const modal = document.getElementById('pdf-modal');
+            const folioEl = document.getElementById('pdf-folio');
+            const dateEl = document.getElementById('pdf-date');
+            const hashEl = document.getElementById('pdf-hash');
+            const emailEl = document.getElementById('pdf-email');
+            const whatsappEl = document.getElementById('pdf-whatsapp');
+            const validityEl = document.getElementById('pdf-validity');
+            const modulesEl = document.getElementById('pdf-modules');
+            const totalEl = document.getElementById('pdf-total');
+
+            const now = new Date();
+            const formattedDate = now.toLocaleDateString('es-MX', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+            const numericFolio = String(record.folio || 'DNK-1042').replace(/\D/g, '') || '1042';
+            const verifyCode = `VER-${numericFolio}${String(record.total || 0).slice(-2)}`;
+
+            const timelineText = selectedItems.length >= 3
+                ? '3 a 5 sem.'
+                : selectedItems.length === 2
+                    ? '2 a 4 sem.'
+                    : '1 a 2 sem.';
+
+            if (folioEl) folioEl.textContent = `Folio: ${record.folio}`;
+            if (dateEl) dateEl.textContent = `Fecha: ${formattedDate}`;
+            if (hashEl) hashEl.textContent = `Ref: ${verifyCode}`;
+            if (emailEl) emailEl.textContent = record.email || 'Por registrar';
+            if (whatsappEl) whatsappEl.textContent = record.whatsapp || 'Por registrar';
+            if (validityEl) validityEl.textContent = `15 días • ${timelineText}`;
+
+            if (modulesEl) {
+                modulesEl.innerHTML = record.items.map((item, idx) => `
+                    <div style="font-family: Arial, Helvetica, sans-serif;" class="flex items-center justify-between py-2.5 px-1">
+                        <div class="flex items-center gap-2.5">
+                            <span class="text-[11px] font-bold text-slate-400">${String(idx + 1).padStart(2, '0')}</span>
+                            <span class="font-medium text-slate-900">${escapeText(item.label)}</span>
+                        </div>
+                        <span class="font-semibold text-slate-900">$${Number(item.price).toLocaleString('es-MX')} MXN</span>
+                    </div>
+                `).join('');
+            }
+            if (totalEl) totalEl.textContent = `$${Number(record.total).toLocaleString('es-MX')} MXN`;
+
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        // Cierra el modal de cotización
+        function closePdfPreviewModal() {
+            const modal = document.getElementById('pdf-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        // Envía el resumen actual del cotizador al Agente IA
+        function sendQuoteToAssistant() {
+            const { total, selectedItems } = updateQuote();
+            const summary = selectedItems.length
+                ? `${selectedItems.map((i) => i.label).join(' + ')} (estimado $${total.toLocaleString('es-MX')} MXN)`
+                : 'aún sin módulos seleccionados';
+            toggleAssistant(true);
+            pushChatMessage('user', `Quiero orientación sobre esta cotización: ${summary}.`);
+            pushChatMessage(
+                'assistant',
+                `Con ${summary}, podemos ajustar el alcance según tu operación real. Si buscas captación y presencia rápida, la web es base; si necesitas flujos internos o atención continua, sumamos aplicación o agente de IA.`
+            );
+        }
+
+        // Prellena el tema de la cita cuando el usuario elige un plan de mantenimiento
+        function selectMaintenancePlan(planLabel) {
+            const notesInput = document.getElementById('appt-notes');
+            if (notesInput instanceof HTMLInputElement) {
+                notesInput.value = `Interesado en ${planLabel}`;
+            }
+        }
+
+        // Vincula el formulario de citas (Zoom o Presencial)
+        function bindAppointmentForm() {
+            const form = document.getElementById('appointment-form');
+            if (!form) return;
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const modalityEl = document.getElementById('appt-modality');
+                const emailEl = document.getElementById('appt-email');
+                const nameEl = document.getElementById('appt-name');
+                const dateEl = document.getElementById('appt-date');
+                const timeEl = document.getElementById('appt-time');
+                const notesEl = document.getElementById('appt-notes');
+                const feedbackEl = document.getElementById('appt-feedback');
+
+                const modality = modalityEl instanceof HTMLSelectElement ? modalityEl.value : 'Zoom (Videollamada)';
+                const email = emailEl instanceof HTMLInputElement ? emailEl.value.trim() : '';
+                const name = nameEl instanceof HTMLInputElement ? nameEl.value.trim() : '';
+                const date = dateEl instanceof HTMLInputElement ? dateEl.value : '';
+                const time = timeEl instanceof HTMLInputElement ? timeEl.value : '';
+                const notes = notesEl instanceof HTMLInputElement ? notesEl.value.trim() : '';
+
+                if (feedbackEl) {
+                    feedbackEl.textContent = `Solicitud registrada para ${name} (${email}) en modalidad ${modality} el ${date} a las ${time}.`;
+                }
+
+                notifyAssistantWithAppointment({ name, email, modality, date, time, notes });
+            });
+        }
+
+        // Menú móvil
+        function toggleMobileMenu(forceState) {
+            const menu = document.getElementById('mobile-menu');
+            if (!menu) return;
+            if (typeof forceState === 'boolean') {
+                menu.classList.toggle('hidden', !forceState);
+            } else {
+                menu.classList.toggle('hidden');
+            }
+        }
+
+        // Panel del Agente IA
+        let isDraggingAssistant = false;
+        let hasDraggedAssistant = false;
+        let dragTargetEl = null;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+
+        // Convierte un elemento fixed a coordenadas explícitas top/left dentro del viewport
+        function pinElementToViewport(el, left, top) {
+            if (!el) return;
+            const rect = el.getBoundingClientRect();
+            const width = rect.width || el.offsetWidth || 160;
+            const height = rect.height || el.offsetHeight || 48;
+            const margin = 12;
+            const maxLeft = Math.max(margin, window.innerWidth - width - margin);
+            const maxTop = Math.max(margin, window.innerHeight - height - margin);
+            const clampedLeft = Math.min(Math.max(margin, left), maxLeft);
+            const clampedTop = Math.min(Math.max(margin, top), maxTop);
+
+            el.style.left = `${clampedLeft}px`;
+            el.style.top = `${clampedTop}px`;
+            el.style.right = 'auto';
+            el.style.bottom = 'auto';
+        }
+
+        // Acomoda el drawer cerca del botón si aún no ha sido movido manualmente
+        function positionDrawerNearLauncher() {
+            const launcher = document.getElementById('ai-launcher-btn');
+            const drawer = document.getElementById('ai-drawer');
+            if (!launcher || !drawer || drawer.dataset.userMoved === 'true') return;
+
+            const lRect = launcher.getBoundingClientRect();
+            const dWidth = Math.min(384, window.innerWidth - 24);
+            const dHeight = drawer.offsetHeight || 390;
+
+            let left = lRect.right - dWidth;
+            let top = lRect.top - dHeight - 12;
+            if (top < 12) {
+                top = lRect.bottom + 12;
+            }
+            pinElementToViewport(drawer, left, top);
+        }
+
+        // Habilita arrastre libre por pointer/mouse/touch en el botón y en la cabecera del chat
+        function bindDraggableAssistant() {
+            const launcher = document.getElementById('ai-launcher-btn');
+            const drawer = document.getElementById('ai-drawer');
+            const header = document.getElementById('ai-drawer-header');
+
+            const startDrag = (clientX, clientY, targetEl, markDrawerMoved, pointerSource) => {
+                if (!targetEl) return;
+                const rect = targetEl.getBoundingClientRect();
+                pinElementToViewport(targetEl, rect.left, rect.top);
+                const pinnedRect = targetEl.getBoundingClientRect();
+
+                dragTargetEl = targetEl;
+                dragStartX = clientX;
+                dragStartY = clientY;
+                dragOffsetX = clientX - pinnedRect.left;
+                dragOffsetY = clientY - pinnedRect.top;
+                isDraggingAssistant = true;
+                hasDraggedAssistant = false;
+                targetEl.style.transition = 'none';
+
+                if (pointerSource && typeof pointerSource.setPointerCapture === 'function' && typeof pointerSource.pointerId === 'number') {
+                    try {
+                        pointerSource.setPointerCapture(pointerSource.pointerId);
+                    } catch (_err) {
+                        // Ignora si el navegador no permite captura en este origen
+                    }
+                }
+
+                if (markDrawerMoved && drawer) {
+                    drawer.dataset.userMoved = 'true';
+                }
+            };
+
+            const moveDrag = (clientX, clientY) => {
+                if (!isDraggingAssistant || !dragTargetEl) return;
+                const nextLeft = clientX - dragOffsetX;
+                const nextTop = clientY - dragOffsetY;
+
+                if (Math.hypot(clientX - dragStartX, clientY - dragStartY) > 4) {
+                    hasDraggedAssistant = true;
+                }
+
+                pinElementToViewport(dragTargetEl, nextLeft, nextTop);
+
+                if (dragTargetEl.id === 'ai-launcher-btn' && drawer && !drawer.classList.contains('hidden') && drawer.dataset.userMoved !== 'true') {
+                    positionDrawerNearLauncher();
+                }
+            };
+
+            const endDrag = () => {
+                if (!isDraggingAssistant) return;
+                if (dragTargetEl) {
+                    dragTargetEl.style.transition = '';
+                }
+                isDraggingAssistant = false;
+                dragTargetEl = null;
+            };
+
+            if (launcher) {
+                launcher.addEventListener('pointerdown', (e) => {
+                    if (e.button !== undefined && e.button !== 0 && e.pointerType === 'mouse') return;
+                    startDrag(e.clientX, e.clientY, launcher, false, {
+                        setPointerCapture: (id) => launcher.setPointerCapture(id),
+                        pointerId: e.pointerId
+                    });
+                });
+
+                launcher.addEventListener('pointermove', (e) => {
+                    if (!isDraggingAssistant || dragTargetEl !== launcher) return;
+                    moveDrag(e.clientX, e.clientY);
+                });
+
+                launcher.addEventListener('pointerup', endDrag);
+                launcher.addEventListener('pointercancel', endDrag);
+
+                launcher.addEventListener('click', () => {
+                    if (hasDraggedAssistant) {
+                        hasDraggedAssistant = false;
+                        return;
+                    }
+                    toggleAssistant();
+                });
+            }
+
+            if (header && drawer) {
+                header.addEventListener('pointerdown', (e) => {
+                    if (e.button !== undefined && e.button !== 0 && e.pointerType === 'mouse') return;
+                    const targetNode = e.target instanceof Element ? e.target : null;
+                    if (targetNode && targetNode.closest('button')) return;
+                    startDrag(e.clientX, e.clientY, drawer, true, {
+                        setPointerCapture: (id) => header.setPointerCapture(id),
+                        pointerId: e.pointerId
+                    });
+                });
+
+                header.addEventListener('pointermove', (e) => {
+                    if (!isDraggingAssistant || dragTargetEl !== drawer) return;
+                    moveDrag(e.clientX, e.clientY);
+                });
+
+                header.addEventListener('pointerup', endDrag);
+                header.addEventListener('pointercancel', endDrag);
+            }
+
+            window.addEventListener('resize', () => {
+                if (launcher && launcher.style.left) {
+                    const r = launcher.getBoundingClientRect();
+                    pinElementToViewport(launcher, r.left, r.top);
+                }
+                if (drawer && drawer.style.left) {
+                    const r = drawer.getBoundingClientRect();
+                    pinElementToViewport(drawer, r.left, r.top);
+                }
+            });
+        }
+
+        function toggleAssistant(forceState) {
+            const drawer = document.getElementById('ai-drawer');
+            if (!drawer) return;
+            const shouldOpen = typeof forceState === 'boolean'
+                ? forceState
+                : drawer.classList.contains('hidden');
+            drawer.classList.toggle('hidden', !shouldOpen);
+            if (shouldOpen) {
+                positionDrawerNearLauncher();
+            }
+        }
+
+        // Agrega un mensaje al chat flotante del Agente IA y mantiene el historial
+        function pushChatMessage(sender, text) {
+            const box = document.getElementById('ai-messages');
+            if (!box) return;
+            const bubble = document.createElement('div');
+            bubble.className = sender === 'user'
+                ? 'ml-auto max-w-[85%] rounded-xl bg-cyan-500/20 border border-cyan-400/30 px-3 py-2 text-white'
+                : 'mr-auto max-w-[90%] rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-gray-200 leading-relaxed';
+            bubble.textContent = text;
+            box.appendChild(bubble);
+            box.scrollTop = box.scrollHeight;
+
+            if (text !== 'Pensando...' && text !== 'Analizando tu diagnóstico...' && text !== 'Registrando tu cotización...' && text !== 'Confirmando tu solicitud de cita...') {
+                aiConversationHistory.push({
+                    role: sender === 'user' ? 'user' : 'model',
+                    parts: [{ text }]
+                });
+            }
+        }
+
+        // Respuesta local de respaldo si la petición de red no está disponible
+        function buildAssistantReply(prompt) {
+            const q = String(prompt || '').toLowerCase();
+            if (q.includes('agente') || q.includes('ia') || q.includes('chatbot') || q.includes('responder')) {
+                return 'Un Agente de IA ayuda cuando pierdes oportunidades por tiempos de respuesta o consultas repetitivas. Se configura con las reglas y contexto de tu negocio para orientar y canalizar.';
+            }
+            if (q.includes('app') || q.includes('sistema') || q.includes('admin') || q.includes('inventario')) {
+                return 'Una Aplicación Web es ideal cuando los procesos están dispersos o hay errores operativos manuales y necesitas control centralizado de registros, estados y flujos.';
+            }
+            if (q.includes('cita') || q.includes('zoom') || q.includes('presencial')) {
+                return 'Puedes agendar una sesión por Zoom o presencial en la sección de Citas para revisar tu diagnóstico y definir juntos el mejor enfoque.';
+            }
+            return 'En Dunkora Solutions evaluamos primero qué ocurre en tu empresa antes de elegir tecnología: web para presencia y captación, aplicaciones para operación, o agentes de IA para atención y automatización.';
+        }
+
+        // Consulta a Gemini con respaldo automático local ante cualquier error
+        async function askGeminiAssistant(prompt) {
+            try {
+                const contents = [
+                    ...aiConversationHistory.slice(-6),
+                    {
+                        role: 'user',
+                        parts: [{ text: prompt }]
+                    }
+                ];
+
+                const response = await fetch(
+                    'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            systemInstruction: {
+                                parts: [{
+                                    text: 'Eres el Agente IA de Dunkora Solutions. Ayudas con páginas web ($8,500 MXN base), aplicaciones web ($14,500 MXN base), agentes de IA ($11,000 MXN base), mantenimiento ($800, $1,600 y $3,200 MXN/mes) y citas por Zoom o presencial. Responde siempre en español breve (1 a 3 oraciones), directo al grano, sin markdown con asteriscos y sin repetir confirmaciones o datos ya registrados en turnos anteriores.'
+                                }]
+                            },
+                            contents
+                        })
+                    }
+                );
+
+                if (!response.ok) {
+                    return buildAssistantReply(prompt);
+                }
+
+                const data = await response.json();
+                const candidateText = data &&
+                    data.candidates &&
+                    data.candidates[0] &&
+                    data.candidates[0].content &&
+                    Array.isArray(data.candidates[0].content.parts)
+                    ? data.candidates[0].content.parts.map((p) => p.text || '').join('').trim()
+                    : '';
+
+                return (candidateText || buildAssistantReply(prompt)).replace(/\*\*/g, '');
+            } catch (_err) {
+                return buildAssistantReply(prompt);
+            }
+        }
+
+        // Hace que el Agente IA confirme al cliente una sola vez que ya recibimos su diagnóstico
+        async function notifyAssistantWithDiagnostic({ name, company, email, whatsapp, problem, symptoms }) {
+            toggleAssistant(true);
+            const symptomsLabel = symptoms.length ? ` (${symptoms.join(', ')})` : '';
+            const companyLabel = company ? ` de ${company}` : '';
+            pushChatMessage(
+                'user',
+                `Diagnóstico de ${name}${companyLabel}${symptomsLabel}: ${problem}`
+            );
+            pushChatMessage('assistant', 'Analizando...');
+
+            const box = document.getElementById('ai-messages');
+            const thinkingBubble = box && box.lastElementChild ? box.lastElementChild : null;
+
+            const diagnosticPrompt = `Confirma en máximo 2 oraciones breves que recibimos el diagnóstico de ${name}${companyLabel} y que lo revisaremos por ${email} o WhatsApp ${whatsapp}. No repitas lo que ya escribió el cliente ni uses asteriscos.`;
+
+            const aiReply = await askGeminiAssistant(diagnosticPrompt);
+            const fallbackConfirmation = `Listo, ${name}: ya recibimos tu diagnóstico y te contactaremos por ${email} o WhatsApp (${whatsapp}). ¿Qué duda puntual te gustaría resolver ahora?`;
+
+            const finalText = (aiReply || fallbackConfirmation).replace(/\*\*/g, '');
+            if (thinkingBubble) {
+                thinkingBubble.textContent = finalText;
+            } else {
+                pushChatMessage('assistant', finalText);
+            }
+        }
+
+        // Hace que el Agente IA confirme una sola vez una solicitud de cotización sin repetir el desglose de la hoja
+        async function notifyAssistantWithQuote({ folio, email, whatsapp, items, total }) {
+            toggleAssistant(true);
+            const modulesText = items.map((i) => i.label).join(' + ');
+            pushChatMessage(
+                'user',
+                `Cotización ${folio} registrada (${modulesText} • $${Number(total).toLocaleString('es-MX')} MXN).`
+            );
+            pushChatMessage('assistant', 'Registrando...');
+
+            const box = document.getElementById('ai-messages');
+            const thinkingBubble = box && box.lastElementChild ? box.lastElementChild : null;
+
+            const quotePrompt = `Confirma en 1 o 2 oraciones cortas que el folio ${folio} ya quedó registrado y que el detalle está en su hoja imprimible; seguimiento a ${email} o WhatsApp ${whatsapp}. No repitas montos ni lista de módulos ya visibles en la hoja, ni uses asteriscos.`;
+
+            const aiReply = await askGeminiAssistant(quotePrompt);
+            const fallbackText = `Folio ${folio} registrado; el desglose está en tu hoja de cotización y el seguimiento será por ${email} o WhatsApp (${whatsapp}). ¿En qué te ayudo ahora?`;
+
+            const finalText = (aiReply || fallbackText).replace(/\*\*/g, '');
+            if (thinkingBubble) {
+                thinkingBubble.textContent = finalText;
+            } else {
+                pushChatMessage('assistant', finalText);
+            }
+        }
+
+        // Hace que el Agente IA confirme una sola vez una solicitud de cita
+        async function notifyAssistantWithAppointment({ name, email, modality, date, time, notes }) {
+            toggleAssistant(true);
+            pushChatMessage(
+                'user',
+                `Cita ${modality} para ${date} a las ${time} (${name})${notes ? ` — ${notes}` : ''}.`
+            );
+            pushChatMessage('assistant', 'Confirmando...');
+
+            const box = document.getElementById('ai-messages');
+            const thinkingBubble = box && box.lastElementChild ? box.lastElementChild : null;
+
+            const apptPrompt = `Confirma en 1 o 2 oraciones breves la cita de ${name} (${modality}, ${date} a las ${time}) con seguimiento a ${email}. Sin relleno ni asteriscos.`;
+
+            const aiReply = await askGeminiAssistant(apptPrompt);
+            const fallbackText = `Cita ${modality} registrada para el ${date} a las ${time}; confirmación enviada a ${email}. ¿Algún punto que quieras revisar antes?`;
+
+            const finalText = (aiReply || fallbackText).replace(/\*\*/g, '');
+            if (thinkingBubble) {
+                thinkingBubble.textContent = finalText;
+            } else {
+                pushChatMessage('assistant', finalText);
+            }
+        }
+
+        // Vincula el envío de mensajes en el chat del Agente IA
+        function bindAssistantForm() {
+            const form = document.getElementById('ai-form');
+            const input = document.getElementById('ai-input');
+            if (!form || !input) return;
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!(input instanceof HTMLInputElement)) return;
+                const prompt = input.value.trim();
+                if (!prompt) return;
+
+                pushChatMessage('user', prompt);
+                input.value = '';
+                pushChatMessage('assistant', 'Pensando...');
+
+                const box = document.getElementById('ai-messages');
+                const thinkingBubble = box && box.lastElementChild ? box.lastElementChild : null;
+                const reply = await askGeminiAssistant(prompt);
+
+                if (thinkingBubble) {
+                    thinkingBubble.textContent = reply;
+                } else {
+                    pushChatMessage('assistant', reply);
+                }
+            });
+        }
+
+        // Scroll reveal bidireccional dinámico tipo flip/flop + atenuación sutil de cuadrícula al scrollear
+        function bindScrollReveal() {
+            const elements = document.querySelectorAll('.scroll-reveal');
+            const progressBar = document.getElementById('scroll-progress-bar');
+            let lastScrollY = window.scrollY || window.pageYOffset || 0;
+            let scrollDirection = 'down';
+
+            const updateScrollOnFrame = () => {
+                const currentY = window.scrollY || window.pageYOffset || 0;
+                scrollDirection = currentY >= lastScrollY ? 'down' : 'up';
+                lastScrollY = currentY;
+
+                const fadeProgress = Math.min(currentY / 900, 1);
+                const gridOpacity = (0.52 - fadeProgress * 0.24).toFixed(2);
+                document.body.style.setProperty('--grid-opacity', gridOpacity);
+
+                if (progressBar) {
+                    const docHeight = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+                    const pct = Math.min(100, Math.max(0, (currentY / docHeight) * 100));
+                    progressBar.style.width = `${pct.toFixed(1)}%`;
+                }
+            };
+
+            updateScrollOnFrame();
+            window.addEventListener('scroll', updateScrollOnFrame, { passive: true });
+
+            if (!elements.length) return;
+
+            if (!('IntersectionObserver' in window)) {
+                elements.forEach((el) => el.classList.add('is-visible'));
+                return;
+            }
+
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        const el = entry.target;
+                        if (entry.isIntersecting) {
+                            el.classList.remove('flip-up');
+                            el.classList.add('is-visible');
+                        } else {
+                            const rect = entry.boundingClientRect;
+                            const exitedAbove = rect.top < 0 || scrollDirection === 'up';
+                            el.classList.toggle('flip-up', exitedAbove);
+                            el.classList.remove('is-visible');
+                        }
+                    });
+                },
+                { threshold: 0.1, rootMargin: '0px 0px -24px 0px' }
+            );
+
+            elements.forEach((el) => observer.observe(el));
+        }
+
+        // Arranque seguro de la página
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                const yearEl = document.getElementById('year-label');
+                if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+
+                renderProjects();
+                bindPortfolioFilters();
+                bindDiagnosticForm();
+                updateQuote();
+                bindQuoteForm();
+                bindAppointmentForm();
+                bindDraggableAssistant();
+                bindAssistantForm();
+                bindScrollReveal();
+            } catch (err) {
+                console.error('Error al inicializar Dunkora Solutions:', err);
+            }
+        });
+    </script>
+    <script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+  import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAC0Pb5I6bXhX5t3CL-w7VRStFu8njtIZg",
+    authDomain: "dunkora-solutions.firebaseapp.com",
+    databaseURL: "https://dunkora-solutions-default-rtdb.firebaseio.com",
+    projectId: "dunkora-solutions",
+    storageBucket: "dunkora-solutions.firebasestorage.app",
+    messagingSenderId: "584762226406",
+    appId: "1:584762226406:web:f7f1d7ebf172945a10ed27",
+    measurementId: "G-E9L5EWKMEV"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const colRef = collection(db, 'submissions');
+
+  const originalPublish = window.publishSubmissionToPanel;
+  window.publishSubmissionToPanel = async function (entry) {
+    if (typeof originalPublish === 'function') {
+      originalPublish(entry);
+    }
+    try {
+      await addDoc(colRef, {
+        ...entry,
+        createdAtServer: serverTimestamp()
+      });
+    } catch (err) {
+      console.error('Error enviando a Firestore:', err);
+    }
+  };
+</script>
+</body>
+</html>

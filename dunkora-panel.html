@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dunkora Solutions — Panel Administrativo Operativo</title>
+    <!-- Tipografías Plus Jakarta Sans e IBM Plex Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+                        mono: ['IBM Plex Mono', 'monospace'],
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        /* Estilo simple, limpio y sobrio sin cuadrícula ni efectos futuristas */
+        body {
+            background-color: #0b0f17;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            letter-spacing: -0.01em;
+            overflow-x: hidden;
+        }
+        html:not(.dark) body {
+            background-color: #f8fafc;
+        }
+        header, main, footer {
+            position: relative;
+        }
+        #modal-detalle, #modal-alta {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+        }
+        .panel-card {
+            background: #111827;
+            border: 1px solid #1f2937;
+        }
+        html:not(.dark) .panel-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+        }
+        .field-box {
+            background: #0b0f17;
+            border: 1px solid #1f2937;
+        }
+        html:not(.dark) .field-box {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-gray-900 dark:text-gray-100">
+    <!-- Encabezado del panel de Dunkora Solutions -->
+    <header class="sticky top-0 z-30 border-b border-slate-200 dark:border-gray-800 bg-white dark:bg-[#0e131f]">
+        <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
+            <!-- Identidad Dunkora Solutions -->
+            <div class="flex items-center gap-3">
+                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-gray-800 border border-slate-300 dark:border-gray-700">
+                    <span class="font-mono text-xs font-bold text-slate-800 dark:text-gray-100">DK</span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-bold text-slate-900 dark:text-white">Dunkora Solutions</span>
+                        <span class="rounded bg-slate-100 dark:bg-gray-800 px-2 py-0.5 text-[10px] font-semibold uppercase text-slate-600 dark:text-gray-300">
+                            Administración
+                        </span>
+                    </div>
+                    <p id="sync-status-label" class="text-[11px] text-slate-500 dark:text-gray-400">
+                        Control interno de clientes y proyectos
+                    </p>
+                </div>
+            </div>
+
+            <!-- Navegación por etapas del flujo de trabajo -->
+            <nav aria-label="Secciones del panel" class="flex flex-wrap items-center gap-1.5 text-xs font-medium">
+                <button type="button" data-tab="llegadas"
+                    class="nav-tab rounded-lg bg-cyan-500/20 border border-cyan-500/35 text-cyan-200 px-3 py-1.5 cursor-pointer transition-colors">
+                    1. Llegadas <span id="count-llegadas" class="ml-1 font-mono text-[11px]">0</span>
+                </button>
+                <button type="button" data-tab="proceso"
+                    class="nav-tab rounded-lg border border-transparent px-3 py-1.5 text-gray-300 hover:bg-gray-800 cursor-pointer transition-colors">
+                    2. En proceso <span id="count-proceso" class="ml-1 font-mono text-[11px]">0</span>
+                </button>
+                <button type="button" data-tab="entregados"
+                    class="nav-tab rounded-lg border border-transparent px-3 py-1.5 text-gray-300 hover:bg-gray-800 cursor-pointer transition-colors">
+                    3. Entregados <span id="count-entregados" class="ml-1 font-mono text-[11px]">0</span>
+                </button>
+                <button type="button" data-tab="contactos"
+                    class="nav-tab rounded-lg border border-transparent px-3 py-1.5 text-gray-300 hover:bg-gray-800 cursor-pointer transition-colors">
+                    Contactos <span id="count-contactos" class="ml-1 font-mono text-[11px]">0</span>
+                </button>
+                <button type="button" data-tab="precios"
+                    class="nav-tab rounded-lg border border-transparent px-3 py-1.5 text-gray-300 hover:bg-gray-800 cursor-pointer transition-colors">
+                    Precios &amp; Mant.
+                </button>
+                <button type="button" data-tab="casos"
+                    class="nav-tab rounded-lg border border-transparent px-3 py-1.5 text-gray-300 hover:bg-gray-800 cursor-pointer transition-colors">
+                    Casos de Éxito
+                </button>
+                <button type="button" data-tab="info"
+                    class="nav-tab rounded-lg border border-transparent px-3 py-1.5 text-gray-300 hover:bg-gray-800 cursor-pointer transition-colors">
+                    Información
+                </button>
+            </nav>
+
+            <!-- Acciones rápidas: Simular entrada web, Agregar trabajo aparte y Tema -->
+            <div class="flex flex-wrap items-center gap-2">
+                <button type="button" onclick="simularRecepcionWeb()"
+                    class="rounded-lg border border-gray-700 bg-gray-900 px-3 py-1.5 text-xs font-medium text-gray-200 hover:bg-gray-800 cursor-pointer transition-colors">
+                    Simular envío web
+                </button>
+                <button type="button" onclick="abrirModalAlta()"
+                    class="rounded-lg bg-cyan-500 px-3.5 py-1.5 text-xs font-bold text-gray-950 hover:bg-cyan-400 cursor-pointer transition-colors">
+                    + Trabajo / Registro
+                </button>
+                <button type="button" onclick="toggleTema()"
+                    class="rounded-lg border border-gray-700 bg-gray-900 px-3 py-1.5 text-xs font-medium text-gray-200 hover:bg-gray-800 cursor-pointer transition-colors">
+                    <span id="theme-label">Modo Claro</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="z-10 mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+        <!-- Métricas ejecutivas de operación -->
+        <section aria-label="Indicadores operativos" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="panel-card rounded-2xl p-4 space-y-1">
+                <span class="font-mono text-[11px] uppercase tracking-wider text-slate-500 dark:text-gray-400">Llegadas por atender</span>
+                <p id="kpi-llegadas" class="text-2xl font-extrabold text-cyan-600 dark:text-cyan-400">0</p>
+                <p class="text-xs text-slate-500 dark:text-gray-400">Cotizaciones, diagnósticos y citas</p>
+            </div>
+            <div class="panel-card rounded-2xl p-4 space-y-1">
+                <span class="font-mono text-[11px] uppercase tracking-wider text-slate-500 dark:text-gray-400">En proceso (Acordado)</span>
+                <p id="kpi-proceso" class="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400">$0 MXN</p>
+                <p id="kpi-saldo" class="text-xs text-amber-600 dark:text-amber-300">Por cobrar: $0 MXN</p>
+            </div>
+            <div class="panel-card rounded-2xl p-4 space-y-1">
+                <span class="font-mono text-[11px] uppercase tracking-wider text-slate-500 dark:text-gray-400">Entregados y liquidados</span>
+                <p id="kpi-entregados" class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">$0 MXN</p>
+                <p id="kpi-entregados-count" class="text-xs text-slate-500 dark:text-gray-400">0 proyectos cerrados</p>
+            </div>
+            <div class="panel-card rounded-2xl p-4 space-y-1">
+                <span class="font-mono text-[11px] uppercase tracking-wider text-gray-400">Directorio de contactos</span>
+                <p id="kpi-contactos" class="text-2xl font-extrabold text-white">0</p>
+                <p class="text-xs text-gray-400">Agrupados por teléfono / cliente</p>
+            </div>
+        </section>
+
+        <!-- ETAPA 1: LLEGADAS (Diagnósticos, Cotizaciones y Citas) -->
+        <section id="tab-llegadas" class="tab-panel space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-extrabold text-white">
+                        1. Llegadas — Recepción y Primera Revisión
+                    </h1>
+                    <p class="text-xs sm:text-sm text-gray-300">
+                        Aquí entra todo lo enviado desde la web pública: identifica qué pasa en la empresa, revisa folios de cotización o atiende citas por Zoom / presencial.
+                    </p>
+                </div>
+
+                <!-- Filtros por tipo de envío -->
+                <div class="flex flex-wrap gap-1.5 text-xs font-semibold">
+                    <button type="button" data-filter="all"
+                        class="flt-btn rounded-xl bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 px-3 py-1.5 cursor-pointer">
+                        Todas
+                    </button>
+                    <button type="button" data-filter="diagnostico"
+                        class="flt-btn rounded-xl border border-gray-800 bg-gray-900 px-3 py-1.5 text-gray-300 cursor-pointer">
+                        Diagnósticos
+                    </button>
+                    <button type="button" data-filter="cotizacion"
+                        class="flt-btn rounded-xl border border-gray-800 bg-gray-900 px-3 py-1.5 text-gray-300 cursor-pointer">
+                        Cotizaciones
+                    </button>
+                    <button type="button" data-filter="cita"
+                        class="flt-btn rounded-xl border border-gray-800 bg-gray-900 px-3 py-1.5 text-gray-300 cursor-pointer">
+                        Citas
+                    </button>
+                </div>
+            </div>
+
+            <div id="list-llegadas" class="space-y-3"></div>
+        </section>
+
+        <!-- ETAPA 2: EN PROCESO (Seguimiento tras cita, precio negociado y pagos) -->
+        <section id="tab-proceso" class="tab-panel hidden space-y-4">
+            <div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-white">
+                    2. En Proceso — Acuerdos, Precio del Cliente y Pagos
+                </h2>
+                <p class="text-xs sm:text-sm text-gray-300">
+                    Después de la cita o negociación, registra los acuerdos, define el precio final del cliente (independiente del estimado base) y controla anticipos y saldo pendiente.
+                </p>
+            </div>
+            <div id="list-proceso" class="space-y-3"></div>
+        </section>
+
+        <!-- ETAPA 3: ENTREGADOS Y PAGADOS -->
+        <section id="tab-entregados" class="tab-panel hidden space-y-4">
+            <div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-white">
+                    3. Entregados y Pagados — Cierre de Proyectos
+                </h2>
+                <p class="text-xs sm:text-sm text-gray-300">
+                    Proyectos entregados y liquidados con su monto final acordado, historial de pagos y notas de cierre.
+                </p>
+            </div>
+            <div id="list-entregados" class="space-y-3"></div>
+        </section>
+
+        <!-- DIRECTORIO DE CONTACTOS (Deduplicado y vinculado al historial del cliente) -->
+        <section id="tab-contactos" class="tab-panel hidden space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-extrabold text-white">
+                        Directorio de Contactos
+                    </h2>
+                    <p class="text-xs sm:text-sm text-gray-300">
+                        Cada número recibido se guarda y actualiza automáticamente en una fila compacta; haz clic para ver todo su historial y trámites.
+                    </p>
+                </div>
+                <input id="search-contactos" type="search" placeholder="Buscar por nombre, empresa o teléfono..."
+                    class="w-full sm:w-72 rounded-xl border border-gray-700 bg-gray-950 px-3.5 py-2 text-xs text-white focus:border-cyan-500 focus:outline-none">
+            </div>
+            <div id="list-contactos" class="panel-card rounded-2xl divide-y divide-gray-800 overflow-hidden"></div>
+        </section>
+
+        <!-- EDICIÓN DE PRECIOS BASE Y PLANES DE MANTENIMIENTO -->
+        <section id="tab-precios" class="tab-panel hidden space-y-4">
+            <div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
+                    Precios Base y Planes de Mantenimiento
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-gray-300">
+                    Edita montos, agrega descuentos o ajusta planes mensuales. Esto define el catálogo base de Dunkora Solutions (y cada cliente puede tener su precio acordado aparte en su ficha).
+                </p>
+            </div>
+
+            <div class="grid gap-5 lg:grid-cols-2">
+                <div class="panel-card rounded-2xl p-5 space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-2.5">
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Módulos de Cotización (MXN)</h3>
+                        <button type="button" onclick="agregarConceptoCotizacion()"
+                            class="text-xs font-semibold text-cyan-600 dark:text-cyan-400 hover:underline cursor-pointer">
+                            + Agregar módulo
+                        </button>
+                    </div>
+                    <div id="editor-cotizacion" class="space-y-2.5"></div>
+                </div>
+
+                <div class="panel-card rounded-2xl p-5 space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-2.5">
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Planes de Mantenimiento Mensual (MXN/mes)</h3>
+                        <button type="button" onclick="agregarPlanMantenimiento()"
+                            class="text-xs font-semibold text-cyan-600 dark:text-cyan-400 hover:underline cursor-pointer">
+                            + Agregar plan
+                        </button>
+                    </div>
+                    <div id="editor-mantenimiento" class="space-y-2.5"></div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+                <button type="button" onclick="guardarCatalogoPrecios()"
+                    class="rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-cyan-500/20 hover:opacity-95 cursor-pointer">
+                    Guardar Precios y Mantenimiento
+                </button>
+                <span id="msg-precios" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400"></span>
+            </div>
+        </section>
+
+        <!-- EDICIÓN DE CASOS DE ÉXITO CON ENLACE -->
+        <section id="tab-casos" class="tab-panel hidden space-y-4">
+            <div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
+                    Casos de Éxito y Enlaces
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-gray-300">
+                    Publica o edita casos de éxito con su enlace en vivo para mostrar resultados reales de Dunkora Solutions.
+                </p>
+            </div>
+
+            <form id="form-caso" class="panel-card rounded-2xl p-5 grid gap-3 sm:grid-cols-3">
+                <div>
+                    <label for="caso-titulo" class="block text-xs font-semibold text-gray-300 mb-1">Título del caso *</label>
+                    <input id="caso-titulo" type="text" required placeholder="Ej. Portal Logístico Bajío"
+                        class="w-full rounded-xl border border-gray-700 bg-gray-950 px-3 py-2 text-xs text-white">
+                </div>
+                <div>
+                    <label for="caso-categoria" class="block text-xs font-semibold text-gray-300 mb-1">Categoría</label>
+                    <select id="caso-categoria"
+                        class="w-full rounded-xl border border-gray-700 bg-gray-950 px-3 py-2 text-xs text-white">
+                        <option value="Web / App">Web / App</option>
+                        <option value="Agente de IA">Agente de IA</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="caso-url" class="block text-xs font-semibold text-gray-300 mb-1">Enlace del proyecto *</label>
+                    <input id="caso-url" type="url" required placeholder="https://proyecto.dunkora.mx"
+                        class="w-full rounded-xl border border-gray-700 bg-gray-950 px-3 py-2 text-xs text-white">
+                </div>
+                <div class="sm:col-span-3">
+                    <label for="caso-resumen" class="block text-xs font-semibold text-gray-300 mb-1">Descripción / resultado *</label>
+                    <input id="caso-resumen" type="text" required placeholder="Ej. Automatizó cotizaciones y redujo tiempos de respuesta a menos de 2 minutos."
+                        class="w-full rounded-xl border border-gray-700 bg-gray-950 px-3 py-2 text-xs text-white">
+                </div>
+                <div class="sm:col-span-3 flex items-center gap-3">
+                    <button type="submit"
+                        class="rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 px-5 py-2.5 text-xs font-bold text-white cursor-pointer">
+                        Publicar / Agregar Caso
+                    </button>
+                    <span id="msg-casos" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400"></span>
+                </div>
+            </form>
+
+            <div id="list-casos" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"></div>
+        </section>
+
+        <!-- INFORMACIÓN GENERAL DE DUNKORA SOLUTIONS -->
+        <section id="tab-info" class="tab-panel hidden space-y-4 max-w-3xl">
+            <div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
+                    Información Institucional y Contacto
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-gray-300">
+                    Actualiza los datos operativos, canales de contacto, políticas de anticipo y avisos internos de Dunkora Solutions.
+                </p>
+            </div>
+
+            <form id="form-info" class="panel-card rounded-2xl p-5 space-y-4">
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label for="info-empresa" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">Nombre comercial</label>
+                        <input id="info-empresa" type="text"
+                            class="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-gray-950 px-3 py-2 text-xs text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="info-whatsapp" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">WhatsApp oficial</label>
+                        <input id="info-whatsapp" type="text"
+                            class="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-gray-950 px-3 py-2 text-xs text-slate-900 dark:text-white">
+                    </div>
+                </div>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label for="info-correo" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">Correo de atención</label>
+                        <input id="info-correo" type="email"
+                            class="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-gray-950 px-3 py-2 text-xs text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="info-ubicacion" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">Ciudad / Modalidad</label>
+                        <input id="info-ubicacion" type="text"
+                            class="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-gray-950 px-3 py-2 text-xs text-slate-900 dark:text-white">
+                    </div>
+                </div>
+                <div>
+                    <label for="info-notas" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">Condiciones comerciales / notas operativas</label>
+                    <textarea id="info-notas" rows="3"
+                        class="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-gray-950 px-3 py-2 text-xs text-slate-900 dark:text-white"></textarea>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button type="submit"
+                        class="rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 px-5 py-2.5 text-xs font-bold text-white cursor-pointer">
+                        Guardar Información
+                    </button>
+                    <span id="msg-info" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400"></span>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="z-10 border-t border-slate-200/80 dark:border-white/10 py-5 text-xs text-slate-500 dark:text-gray-400">
+        <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 sm:px-6 lg:px-8">
+            <span>Dunkora Solutions • Panel Operativo Centralizado</span>
+            <span id="footer-updated" class="font-mono text-[11px]">Listo</span>
+        </div>
+    </footer>
+
+    <!-- Modal de detalle, seguimiento tras cita, precio del cliente, pagos y cierre -->
+    <div id="modal-detalle" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm overflow-y-auto">
+        <div class="panel-card w-full max-w-2xl rounded-2xl p-6 space-y-5 shadow-2xl">
+            <div class="flex items-start justify-between gap-3 border-b border-slate-200 dark:border-white/10 pb-3.5">
+                <div>
+                    <span id="det-badge" class="font-mono text-[11px] font-bold uppercase text-cyan-600 dark:text-cyan-400"></span>
+                    <h3 id="det-titulo" class="text-xl font-extrabold text-slate-900 dark:text-white mt-0.5"></h3>
+                    <p id="det-subtitulo" class="text-xs text-slate-500 dark:text-gray-400"></p>
+                </div>
+                <button type="button" onclick="cerrarModalDetalle()"
+                    class="rounded-xl border border-slate-300 dark:border-white/15 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-gray-200 hover:bg-slate-100 dark:hover:bg-white/10 cursor-pointer">
+                    Cerrar ✕
+                </button>
+            </div>
+
+            <!-- Datos capturados en la solicitud -->
+            <div id="det-campos" class="grid gap-2.5 sm:grid-cols-2 text-xs"></div>
+
+            <!-- Control de etapa, precio personalizado del cliente y pagos -->
+            <div class="field-box rounded-xl p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="font-mono text-[11px] font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">
+                        Control Comercial y Avance
+                    </span>
+                    <span id="det-saldo-pill" class="font-mono text-xs font-bold text-amber-600 dark:text-amber-300">
+                        Saldo pendiente: $0 MXN
+                    </span>
+                </div>
+
+                <div class="grid gap-3 sm:grid-cols-3">
+                    <div>
+                        <label for="det-etapa" class="block text-[11px] font-semibold text-slate-600 dark:text-gray-300 mb-1">Etapa</label>
+                        <select id="det-etapa"
+                            class="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-gray-950 px-3 py-2 text-xs text-slate-900 dark:text-white">
+                            <option value="llegadas">1. Llegadas</option>
+                            <option value="proceso">2. En proceso</option>
+                            <option value="entregados">3. Entregados y pagados</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="det-precio-cliente" class="block text-[11px] font-semibold text-slate-600 dark:text-gray-300 mb-1">
+                            Precio acordado cliente (MXN)
+                        </label>
+                        <input id="det-precio-cliente" type="number" min="0" step="100" oninput="actualizarSaldoEnModal()"
+                            class="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-gray-950 px-3 py-2 font-mono text-xs text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="det-pagado" class="block text-[11px] font-semibold text-slate-600 dark:text-gray-300 mb-1">
+                            Monto pagado / anticipo (MXN)
+                        </label>
+                        <input id="det-pagado" type="number" min="0" step="100" oninput="actualizarSaldoEnModal()"
+                            class="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-gray-950 px-3 py-2 font-mono text-xs text-slate-900 dark:text-white">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acuerdos de reunión (Zoom / Presencial) y notas de seguimiento -->
+            <div>
+                <label for="det-acuerdos" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
+                    Acuerdos de cita / seguimiento del proyecto
+                </label>
+                <textarea id="det-acuerdos" rows="3" placeholder="Anota aquí lo acordado en Zoom o presencial, entregables, fechas y ajustes..."
+                    class="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-gray-950 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white"></textarea>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+                <a id="det-wa-link" href="#" target="_blank" rel="noopener noreferrer"
+                    class="rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20">
+                    Abrir WhatsApp ↗
+                </a>
+
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="guardarCambiosDetalle()"
+                        class="rounded-xl border border-slate-300 dark:border-white/15 bg-slate-100 dark:bg-white/10 px-4 py-2 text-xs font-bold text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-white/15 cursor-pointer">
+                        Guardar Seguimiento
+                    </button>
+                    <button type="button" onclick="confirmarEntregadoYPagado()"
+                        class="rounded-xl bg-emerald-500 px-4 py-2 text-xs font-bold text-gray-950 hover:bg-emerald-400 cursor-pointer">
+                        Marcar Entregado y Pagado
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para registrar un trabajo aparte o nuevo envío -->
+    <div id="modal-alta" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm overflow-y-auto">
+        <div class="panel-card w-full max-w-lg rounded-2xl p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-3">
+                <h3 class="text-base font-extrabold text-slate-900 dark:text-white">
+                    Registrar Trabajo Aparte o Nueva Entrada
+                </h3>
+                <button type="button" onclick="cerrarModalAlta()"
+                    class="rounded-xl border border-slate-300 dark:border-white/15 px-2.5 py-1 text-xs text-slate-700 dark:text-gray-200 cursor-pointer">
+                    Cerrar ✕
+                </button>
+            </div>
+
+            <form id="form-alta" class="space-y-3.5">
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <div>
+                        <label for="alta-tipo" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">Tipo</label>
+                        <select id="alta-tipo"
+                            class="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-gray-950 px-3 py-2 text-xs text-slate-900 dark:text-white">
+                            <option value="aparte">Trabajo aparte (fuera de web)</option>
+                            <option value="cotizacion">Cotización</option>
+                            <option value="diagnostico">Diagnóstico</option>
+                            <option value="cita">Cita (Zoom / Presencial)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="alta-etapa" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">Etapa inicial</label>
+                        <select id="alta-etapa"
+                            class="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-gray-950 px-3 py-2 text-xs text-slate-900 dark:text-white">
+                            <option value="proceso">2. En proceso</option>
+                            <option value="llegadas">1. Llegadas</option>
+                            <option value="entregados">3. Entregados y pagados</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <div>
+                        <label for="alta-nombre" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">Nombre del cliente *</label>
+                        <input id="alta-nombre" type="text" required placeholder="Ej. Roberto Silva"
+                            class="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-gray-950 px-3 py-2 text-xs text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="alta-telefono" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">Teléfono / WhatsApp *</label>
+                        <input id="alta-telefono" type="tel" required placeholder="Ej. 477 450 8899"
+                            class="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-gray-950 px-3 py-2 text-xs text-slate-900 dark:text-white">
+                    </div>
+                </div>
+
+                <div class="grid gap-3 sm:grid-cols-3">
+                    <div>
+                        <label for="alta-empresa" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">Empresa</label>
+                        <input id="alta-empresa" type="text" placeholder="Ej. Clínica Norte"
+                            class="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-gray-950 px-3 py-2 text-xs text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="alta-precio" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">Precio acordado</label>
+                        <input id="alta-precio" type="number" min="0" value="12000"
+                            class="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-gray-950 px-3 py-2 font-mono text-xs text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="alta-pagado" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">Anticipo / pagado</label>
+                        <input id="alta-pagado" type="number" min="0" value="0"
+                            class="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-gray-950 px-3 py-2 font-mono text-xs text-slate-900 dark:text-white">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="alta-detalle" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">Alcance / acuerdos</label>
+                    <textarea id="alta-detalle" rows="2" placeholder="Describe lo acordado con el cliente..."
+                        class="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-gray-950 px-3 py-2 text-xs text-slate-900 dark:text-white"></textarea>
+                </div>
+
+                <button type="submit"
+                    class="w-full rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 py-2.5 text-xs font-bold text-white shadow-md shadow-cyan-500/20 cursor-pointer">
+                    Guardar y Sincronizar Contacto
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const STORE_KEY = 'dunkora_solutions_protocolo_v1';
+        const CHANNEL_NAME = 'dunkora_solutions_sync_channel';
+
+        // Inicia submissions vacío para registrar clientes reales desde cero
+        const INITIAL_STATE = {
+            theme: 'dark',
+            activeTab: 'llegadas',
+            filterType: 'all',
+            searchContact: '',
+            submissions: [],
+            catalogo: {
+                cotizacion: [
+                    { id: 'c1', nombre: 'Página Web', monto: 8500 },
+                    { id: 'c2', nombre: 'Aplicación Web', monto: 14500 },
+                    { id: 'c3', nombre: 'Chatbot / Agente de IA', monto: 11000 }
+                ],
+                mantenimiento: [
+                    { id: 'm1', nombre: 'Plan Básico', monto: 800 },
+                    { id: 'm2', nombre: 'Plan Pro + IA', monto: 1600 },
+                    { id: 'm3', nombre: 'Plan Enterprise', monto: 3200 }
+                ]
+            },
+            casos: [],
+            info: {
+                empresa: 'Dunkora Solutions',
+                whatsapp: '524771234567',
+                correo: 'contacto@dunkora.mx',
+                ubicacion: 'León, Guanajuato • Zoom y Presencial',
+                notas: 'Los precios del cotizador son estimados base; tras la cita o negociación se registra el precio acordado final del cliente.'
+            }
+        };
+
+        let state = cargarEstado();
+        let activeSubmissionId = null;
+        let syncChannel = null;
+
+        function normalizarTelefono(tel) {
+            return String(tel || '').replace(/\D/g, '');
+        }
+
+        function esc(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function fmtMoney(num) {
+            return `$${Number(num || 0).toLocaleString('es-MX')} MXN`;
+        }
+
+        function cargarEstado() {
+            try {
+                const raw = localStorage.getItem(STORE_KEY);
+                if (!raw) return structuredClone(INITIAL_STATE);
+                const parsed = JSON.parse(raw);
+                return {
+                    ...structuredClone(INITIAL_STATE),
+                    ...parsed,
+                    submissions: Array.isArray(parsed.submissions) ? parsed.submissions : [],
+                    catalogo: {
+                        cotizacion: Array.isArray(parsed.catalogo?.cotizacion) ? parsed.catalogo.cotizacion : structuredClone(INITIAL_STATE.catalogo.cotizacion),
+                        mantenimiento: Array.isArray(parsed.catalogo?.mantenimiento) ? parsed.catalogo.mantenimiento : structuredClone(INITIAL_STATE.catalogo.mantenimiento)
+                    },
+                    casos: Array.isArray(parsed.casos) ? parsed.casos : [],
+                    info: { ...structuredClone(INITIAL_STATE.info), ...(parsed.info || {}) }
+                };
+            } catch (_err) {
+                return structuredClone(INITIAL_STATE);
+            }
+        }
+
+        function guardarEstado(notifyPeers = true) {
+            try {
+                localStorage.setItem(STORE_KEY, JSON.stringify(state));
+                const footerEl = document.getElementById('footer-updated');
+                const nowTime = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+                if (footerEl) footerEl.textContent = `Actualizado • ${nowTime}`;
+                if (notifyPeers && syncChannel) {
+                    syncChannel.postMessage({ type: 'STATE_UPDATED', at: Date.now() });
+                }
+            } catch (_err) {
+                // Evita romper el flujo si localStorage está restringido
+            }
+        }
+
+        function aplicarTema() {
+            const root = document.documentElement;
+            const isDark = state.theme !== 'light';
+            root.classList.toggle('dark', isDark);
+            const label = document.getElementById('theme-label');
+            if (label) label.textContent = isDark ? 'Modo Claro' : 'Modo Oscuro';
+        }
+
+        function toggleTema() {
+            state.theme = state.theme === 'dark' ? 'light' : 'dark';
+            aplicarTema();
+            guardarEstado(false);
+        }
+
+        function cambiarTab(tabName) {
+            state.activeTab = tabName;
+            guardarEstado(false);
+
+            document.querySelectorAll('.tab-panel').forEach((panel) => {
+                panel.classList.toggle('hidden', panel.id !== `tab-${tabName}`);
+            });
+
+            document.querySelectorAll('.nav-tab').forEach((btn) => {
+                const active = btn.getAttribute('data-tab') === tabName;
+                btn.classList.toggle('bg-cyan-500/20', active);
+                btn.classList.toggle('border-cyan-500/35', active);
+                btn.classList.toggle('text-cyan-200', active);
+                btn.classList.toggle('border-transparent', !active);
+                btn.classList.toggle('text-gray-300', !active);
+            });
+        }
+
+        function construirContactos() {
+            const map = new Map();
+
+            state.submissions.forEach((sub) => {
+                const telDigits = normalizarTelefono(sub.cliente?.telefono);
+                const key = telDigits || (sub.cliente?.correo || '').toLowerCase() || sub.id;
+
+                if (!map.has(key)) {
+                    map.set(key, {
+                        key,
+                        nombre: sub.cliente?.nombre || 'Sin nombre',
+                        empresa: sub.cliente?.empresa || '',
+                        telefono: sub.cliente?.telefono || '',
+                        correo: sub.cliente?.correo || '',
+                        lastSubmissionId: sub.id,
+                        lastEtapa: sub.etapa,
+                        totalAcordado: 0,
+                        totalPagado: 0,
+                        tramites: []
+                    });
+                }
+
+                const contact = map.get(key);
+                if (!contact.telefono && sub.cliente?.telefono) contact.telefono = sub.cliente.telefono;
+                if (!contact.correo && sub.cliente?.correo) contact.correo = sub.cliente.correo;
+                if (!contact.empresa && sub.cliente?.empresa) contact.empresa = sub.cliente.empresa;
+                contact.lastSubmissionId = sub.id;
+                contact.lastEtapa = sub.etapa;
+                contact.totalAcordado += Number(sub.precioCliente ?? sub.montoEstimado ?? 0);
+                contact.totalPagado += Number(sub.pagado || 0);
+                contact.tramites.push(sub);
+            });
+
+            return Array.from(map.values());
+        }
+
+        function renderTodo() {
+            const llegadasAll = state.submissions.filter((s) => s.etapa === 'llegadas');
+            const procesoAll = state.submissions.filter((s) => s.etapa === 'proceso');
+            const entregadosAll = state.submissions.filter((s) => s.etapa === 'entregados');
+            const contactosAll = construirContactos();
+
+            const setText = (id, txt) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = txt;
+            };
+
+            setText('count-llegadas', String(llegadasAll.length));
+            setText('count-proceso', String(procesoAll.length));
+            setText('count-entregados', String(entregadosAll.length));
+            setText('count-contactos', String(contactosAll.length));
+
+            const montoProceso = procesoAll.reduce((acc, s) => acc + Number(s.precioCliente ?? s.montoEstimado ?? 0), 0);
+            const pagadoProceso = procesoAll.reduce((acc, s) => acc + Number(s.pagado || 0), 0);
+            const saldoProceso = Math.max(0, montoProceso - pagadoProceso);
+            const montoEntregado = entregadosAll.reduce((acc, s) => acc + Number(s.pagado || s.precioCliente || s.montoEstimado || 0), 0);
+
+            setText('kpi-llegadas', String(llegadasAll.length));
+            setText('kpi-proceso', fmtMoney(montoProceso));
+            setText('kpi-saldo', `Por cobrar: ${fmtMoney(saldoProceso)}`);
+            setText('kpi-entregados', fmtMoney(montoEntregado));
+            setText('kpi-entregados-count', `${entregadosAll.length} ${entregadosAll.length === 1 ? 'proyecto cerrado' : 'proyectos cerrados'}`);
+            setText('kpi-contactos', String(contactosAll.length));
+
+            const llegadasFiltradas = llegadasAll.filter((s) => state.filterType === 'all' || s.tipo === state.filterType);
+            const listLlegadas = document.getElementById('list-llegadas');
+            if (listLlegadas) {
+                listLlegadas.innerHTML = llegadasFiltradas.length
+                    ? llegadasFiltradas.map((s) => `
+                        <article onclick="abrirDetalle('${esc(s.id)}')"
+                            class="panel-card rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer hover:border-cyan-400/60 transition-colors">
+                            <div class="space-y-1">
+                                <div class="flex flex-wrap items-center gap-2 text-xs">
+                                    <span class="rounded-md bg-cyan-500/15 border border-cyan-500/30 px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-cyan-700 dark:text-cyan-300">
+                                        ${esc(s.tipo)}
+                                    </span>
+                                    <span class="font-mono text-[11px] text-slate-500 dark:text-gray-400">${esc(s.folio)} • ${esc(s.creadoEn)}</span>
+                                    ${s.cliente?.telefono ? `<span class="font-mono text-[11px] text-emerald-600 dark:text-emerald-400">Tel: ${esc(s.cliente.telefono)}</span>` : ''}
+                                </div>
+                                <h3 class="text-base font-bold text-slate-900 dark:text-white">
+                                    ${esc(s.cliente?.nombre || 'Cliente')} ${s.cliente?.empresa ? `<span class="text-cyan-600 dark:text-cyan-400">• ${esc(s.cliente.empresa)}</span>` : ''}
+                                </h3>
+                                <p class="text-xs sm:text-sm text-slate-600 dark:text-gray-300">${esc(s.resumen)}</p>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                ${s.montoEstimado > 0 ? `<span class="font-mono text-xs font-bold text-slate-700 dark:text-gray-200">${fmtMoney(s.montoEstimado)}</span>` : ''}
+                                <span class="text-xs font-bold text-cyan-600 dark:text-cyan-400">Revisar / Pasar →</span>
+                            </div>
+                        </article>
+                    `).join('')
+                    : `<div class="panel-card rounded-2xl p-6 text-xs text-slate-500 dark:text-gray-400">Aún no hay registros en esta sección.</div>`;
+            }
+
+            const listProceso = document.getElementById('list-proceso');
+            if (listProceso) {
+                listProceso.innerHTML = procesoAll.length
+                    ? procesoAll.map((s) => {
+                        const precio = Number(s.precioCliente ?? s.montoEstimado ?? 0);
+                        const pagado = Number(s.pagado || 0);
+                        const saldo = Math.max(0, precio - pagado);
+                        return `
+                            <article onclick="abrirDetalle('${esc(s.id)}')"
+                                class="panel-card rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer hover:border-indigo-400/60 transition-colors">
+                                <div class="space-y-1">
+                                    <div class="flex flex-wrap items-center gap-2 text-xs">
+                                        <span class="rounded-md bg-indigo-500/15 border border-indigo-500/30 px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-indigo-700 dark:text-indigo-300">
+                                            ${esc(s.tipo)} • ${esc(s.folio)}
+                                        </span>
+                                        <span class="font-mono text-[11px] text-amber-600 dark:text-amber-300">
+                                            Acordado: ${fmtMoney(precio)} • Pagado: ${fmtMoney(pagado)} • Saldo: ${fmtMoney(saldo)}
+                                        </span>
+                                    </div>
+                                    <h3 class="text-base font-bold text-slate-900 dark:text-white">
+                                        ${esc(s.cliente?.nombre || 'Cliente')} ${s.cliente?.empresa ? `<span class="text-indigo-600 dark:text-indigo-400">• ${esc(s.cliente.empresa)}</span>` : ''}
+                                    </h3>
+                                    <p class="text-xs sm:text-sm text-slate-600 dark:text-gray-300">${esc(s.acuerdos || s.resumen)}</p>
+                                </div>
+                                <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 shrink-0">Seguimiento / Cobro →</span>
+                            </article>
+                        `;
+                    }).join('')
+                    : `<div class="panel-card rounded-2xl p-6 text-xs text-slate-500 dark:text-gray-400">No hay proyectos en proceso actualmente.</div>`;
+            }
+
+            const listEntregados = document.getElementById('list-entregados');
+            if (listEntregados) {
+                listEntregados.innerHTML = entregadosAll.length
+                    ? entregadosAll.map((s) => {
+                        const finalMonto = Number(s.pagado || s.precioCliente || s.montoEstimado || 0);
+                        return `
+                            <article onclick="abrirDetalle('${esc(s.id)}')"
+                                class="panel-card rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer hover:border-emerald-400/60 transition-colors">
+                                <div class="space-y-1">
+                                    <div class="flex flex-wrap items-center gap-2 text-xs">
+                                        <span class="rounded-md bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-emerald-700 dark:text-emerald-300">
+                                            ENTREGADO Y PAGADO • ${esc(s.folio)}
+                                        </span>
+                                        <span class="font-mono text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                                            Liquidado: ${fmtMoney(finalMonto)}
+                                        </span>
+                                    </div>
+                                    <h3 class="text-base font-bold text-slate-900 dark:text-white">
+                                        ${esc(s.cliente?.nombre || 'Cliente')} ${s.cliente?.empresa ? `• ${esc(s.cliente.empresa)}` : ''}
+                                    </h3>
+                                    <p class="text-xs sm:text-sm text-slate-600 dark:text-gray-300">${esc(s.acuerdos || s.resumen)}</p>
+                                </div>
+                                <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 shrink-0">Ver historial →</span>
+                            </article>
+                        `;
+                    }).join('')
+                    : `<div class="panel-card rounded-2xl p-6 text-xs text-slate-500 dark:text-gray-400">Aún no hay proyectos marcados como entregados y pagados.</div>`;
+            }
+
+            const q = String(state.searchContact || '').trim().toLowerCase();
+            const contactosFiltrados = contactosAll.filter((c) => {
+                if (!q) return true;
+                return (
+                    c.nombre.toLowerCase().includes(q) ||
+                    c.empresa.toLowerCase().includes(q) ||
+                    c.telefono.toLowerCase().includes(q) ||
+                    c.correo.toLowerCase().includes(q)
+                );
+            });
+
+            const listContactos = document.getElementById('list-contactos');
+            if (listContactos) {
+                listContactos.innerHTML = contactosFiltrados.length
+                    ? contactosFiltrados.map((c) => `
+                        <button type="button" onclick="abrirDetalle('${esc(c.lastSubmissionId)}')"
+                            class="w-full px-4 py-3.5 flex flex-wrap items-center justify-between gap-3 text-left hover:bg-slate-100/70 dark:hover:bg-white/5 cursor-pointer transition-colors">
+                            <div class="min-w-0 flex items-center gap-3">
+                                <span class="font-mono text-xs font-bold text-cyan-600 dark:text-cyan-400 shrink-0">
+                                    ${esc(c.telefono || 'Sin tel.')}
+                                </span>
+                                <span class="text-sm font-bold text-slate-900 dark:text-white truncate">
+                                    ${esc(c.nombre)}
+                                </span>
+                                ${c.empresa ? `<span class="hidden sm:inline text-xs text-slate-500 dark:text-gray-400 truncate">• ${esc(c.empresa)}</span>` : ''}
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0 text-xs">
+                                <span class="rounded-md bg-slate-200/80 dark:bg-white/10 px-2 py-0.5 font-mono text-[11px] text-slate-700 dark:text-gray-300">
+                                    ${c.tramites.length} ${c.tramites.length === 1 ? 'registro' : 'registros'}
+                                </span>
+                                <span class="font-semibold text-cyan-600 dark:text-cyan-400">Ver ficha →</span>
+                            </div>
+                        </button>
+                    `).join('')
+                    : `<div class="p-6 text-xs text-slate-500 dark:text-gray-400">Aún no hay contactos registrados.</div>`;
+            }
+
+            const edCot = document.getElementById('editor-cotizacion');
+            if (edCot) {
+                edCot.innerHTML = state.catalogo.cotizacion.map((item, idx) => `
+                    <div class="flex items-center gap-2">
+                        <input type="text" data-cot-name="${idx}" value="${esc(item.nombre)}"
+                            class="flex-1 rounded-xl border border-gray-700 bg-gray-950 px-3 py-2 text-xs text-white">
+                        <input type="number" min="0" step="100" data-cot-price="${idx}" value="${Number(item.monto || 0)}"
+                            class="w-32 rounded-xl border border-gray-700 bg-gray-950 px-3 py-2 font-mono text-xs text-cyan-300">
+                        <button type="button" onclick="quitarConceptoCotizacion(${idx})"
+                            class="rounded-lg px-2 py-1.5 text-xs text-gray-400 hover:text-rose-400 cursor-pointer">✕</button>
+                    </div>
+                `).join('');
+            }
+
+            const edMant = document.getElementById('editor-mantenimiento');
+            if (edMant) {
+                edMant.innerHTML = state.catalogo.mantenimiento.map((item, idx) => `
+                    <div class="flex items-center gap-2">
+                        <input type="text" data-mant-name="${idx}" value="${esc(item.nombre)}"
+                            class="flex-1 rounded-xl border border-gray-700 bg-gray-950 px-3 py-2 text-xs text-white">
+                        <input type="number" min="0" step="50" data-mant-price="${idx}" value="${Number(item.monto || 0)}"
+                            class="w-32 rounded-xl border border-gray-700 bg-gray-950 px-3 py-2 font-mono text-xs text-cyan-300">
+                        <button type="button" onclick="quitarPlanMantenimiento(${idx})"
+                            class="rounded-lg px-2 py-1.5 text-xs text-gray-400 hover:text-rose-400 cursor-pointer">✕</button>
+                    </div>
+                `).join('');
+            }
+
+            const listCasos = document.getElementById('list-casos');
+            if (listCasos) {
+                listCasos.innerHTML = state.casos.length
+                    ? state.casos.map((caso, idx) => `
+                        <article class="panel-card rounded-2xl p-5 flex flex-col justify-between gap-4">
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="rounded-md bg-cyan-500/15 px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase text-cyan-700 dark:text-cyan-300">
+                                        ${esc(caso.categoria || 'Caso')}
+                                    </span>
+                                    <button type="button" onclick="eliminarCaso(${idx})"
+                                        class="text-xs text-slate-400 hover:text-rose-500 cursor-pointer">Eliminar</button>
+                                </div>
+                                <h3 class="text-base font-bold text-slate-900 dark:text-white">${esc(caso.titulo)}</h3>
+                                <p class="text-xs text-slate-600 dark:text-gray-300 leading-relaxed">${esc(caso.resumen)}</p>
+                            </div>
+                            <a href="${esc(caso.url)}" target="_blank" rel="noopener noreferrer"
+                                class="inline-flex items-center gap-1 text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline break-all">
+                                <span>${esc(caso.url)}</span>
+                                <span>↗</span>
+                            </a>
+                        </article>
+                    `).join('')
+                    : `<div class="panel-card rounded-2xl p-6 text-xs text-slate-500 dark:text-gray-400 col-span-full">Aún no hay casos publicados. Agrega uno arriba con su enlace.</div>`;
+            }
+
+            const setVal = (id, v) => {
+                const el = document.getElementById(id);
+                if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+                    el.value = v || '';
+                }
+            };
+            setVal('info-empresa', state.info.empresa);
+            setVal('info-whatsapp', state.info.whatsapp);
+            setVal('info-correo', state.info.correo);
+            setVal('info-ubicacion', state.info.ubicacion);
+            setVal('info-notas', state.info.notas);
+        }
+
+        window.abrirDetalle = function(id) {
+            const sub = state.submissions.find((s) => s.id === id);
+            if (!sub) return;
+            activeSubmissionId = sub.id;
+
+            document.getElementById('det-badge').textContent = `${sub.tipo} • ${sub.folio} • ${sub.origen === 'manual_admin' ? 'Registro interno' : 'Web pública'}`;
+            document.getElementById('det-titulo').textContent = sub.cliente?.nombre || 'Cliente';
+            document.getElementById('det-subtitulo').textContent = `${sub.cliente?.empresa || 'Sin empresa'} • ${sub.creadoEn}`;
+
+            document.getElementById('det-campos').innerHTML = `
+                <div class="field-box rounded-xl p-3">
+                    <span class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-gray-400 block">Teléfono / WhatsApp</span>
+                    <span class="font-mono font-bold text-slate-900 dark:text-white">${esc(sub.cliente?.telefono || 'No proporcionado')}</span>
+                </div>
+                <div class="field-box rounded-xl p-3">
+                    <span class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-gray-400 block">Correo electrónico</span>
+                    <span class="font-semibold text-slate-900 dark:text-white break-all">${esc(sub.cliente?.correo || 'No proporcionado')}</span>
+                </div>
+                <div class="field-box rounded-xl p-3 sm:col-span-2 space-y-1">
+                    <span class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-gray-400 block">Solicitud / Resumen</span>
+                    <p class="font-semibold text-slate-900 dark:text-white">${esc(sub.resumen)}</p>
+                    ${sub.detalleExtra ? `<p class="text-[11px] text-slate-500 dark:text-gray-400">${esc(sub.detalleExtra)}</p>` : ''}
+                </div>
+            `;
+
+            const precioInicial = sub.precioCliente !== undefined && sub.precioCliente !== null
+                ? Number(sub.precioCliente)
+                : Number(sub.montoEstimado || 0);
+
+            document.getElementById('det-etapa').value = sub.etapa || 'llegadas';
+            document.getElementById('det-precio-cliente').value = String(precioInicial);
+            document.getElementById('det-pagado').value = String(Number(sub.pagado || 0));
+            document.getElementById('det-acuerdos').value = sub.acuerdos || '';
+
+            const digits = normalizarTelefono(sub.cliente?.telefono);
+            const waLink = document.getElementById('det-wa-link');
+            if (waLink) {
+                waLink.href = digits ? `https://wa.me/${digits}` : `https://wa.me/${normalizarTelefono(state.info.whatsapp)}`;
+            }
+
+            actualizarSaldoEnModal();
+            document.getElementById('modal-detalle').classList.remove('hidden');
+        };
+
+        window.cerrarModalDetalle = function() {
+            document.getElementById('modal-detalle').classList.add('hidden');
+            activeSubmissionId = null;
+        };
+
+        window.actualizarSaldoEnModal = function() {
+            const precio = Math.max(0, Number(document.getElementById('det-precio-cliente')?.value || 0));
+            const pagado = Math.max(0, Number(document.getElementById('det-pagado')?.value || 0));
+            const saldo = Math.max(0, precio - pagado);
+            const pill = document.getElementById('det-saldo-pill');
+            if (pill) {
+                pill.textContent = saldo > 0 ? `Saldo pendiente: ${fmtMoney(saldo)}` : 'Saldo cubierto';
+                pill.className = saldo > 0
+                    ? 'font-mono text-xs font-bold text-amber-600 dark:text-amber-300'
+                    : 'font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400';
+            }
+        };
+
+        window.guardarCambiosDetalle = function() {
+            const sub = state.submissions.find((s) => s.id === activeSubmissionId);
+            if (!sub) return;
+
+            const etapaElegida = document.getElementById('det-etapa').value;
+            const precioCliente = Math.max(0, Number(document.getElementById('det-precio-cliente').value || 0));
+            const pagado = Math.max(0, Number(document.getElementById('det-pagado').value || 0));
+            const acuerdos = document.getElementById('det-acuerdos').value.trim();
+
+            const tieneSeguimiento = Boolean(acuerdos) || precioCliente > 0 || pagado > 0;
+            sub.etapa = (etapaElegida === 'llegadas' && tieneSeguimiento) ? 'proceso' : etapaElegida;
+            sub.precioCliente = precioCliente;
+            sub.pagado = pagado;
+            sub.acuerdos = acuerdos;
+
+            guardarEstado(true);
+            renderTodo();
+            const targetTab = sub.etapa;
+            window.cerrarModalDetalle();
+            cambiarTab(targetTab);
+        };
+
+        window.confirmarEntregadoYPagado = function() {
+            const sub = state.submissions.find((s) => s.id === activeSubmissionId);
+            if (!sub) return;
+
+            const precio = Math.max(0, Number(document.getElementById('det-precio-cliente').value || sub.precioCliente || sub.montoEstimado || 0));
+            const pagadoInput = Math.max(0, Number(document.getElementById('det-pagado').value || 0));
+
+            sub.etapa = 'entregados';
+            sub.precioCliente = precio;
+            sub.pagado = pagadoInput > 0 ? pagadoInput : precio;
+            sub.acuerdos = document.getElementById('det-acuerdos').value.trim() || 'Proyecto entregado y pago liquidado.';
+
+            guardarEstado(true);
+            renderTodo();
+            window.cerrarModalDetalle();
+            cambiarTab('entregados');
+        };
+
+        window.abrirModalAlta = function() {
+            document.getElementById('modal-alta').classList.remove('hidden');
+        };
+
+        window.cerrarModalAlta = function() {
+            document.getElementById('modal-alta').classList.add('hidden');
+        };
+
+        window.agregarConceptoCotizacion = function() {
+            state.catalogo.cotizacion.push({ id: `c-${Date.now()}`, nombre: 'Nuevo módulo', monto: 5000 });
+            renderTodo();
+        };
+
+        window.quitarConceptoCotizacion = function(idx) {
+            state.catalogo.cotizacion.splice(idx, 1);
+            renderTodo();
+        };
+
+        window.agregarPlanMantenimiento = function() {
+            state.catalogo.mantenimiento.push({ id: `m-${Date.now()}`, nombre: 'Plan personalizado', monto: 1200 });
+            renderTodo();
+        };
+
+        window.quitarPlanMantenimiento = function(idx) {
+            state.catalogo.mantenimiento.splice(idx, 1);
+            renderTodo();
+        };
+
+        window.guardarCatalogoPrecios = function() {
+            state.catalogo.cotizacion = state.catalogo.cotizacion.map((item, idx) => {
+                const nEl = document.querySelector(`[data-cot-name="${idx}"]`);
+                const pEl = document.querySelector(`[data-cot-price="${idx}"]`);
+                return {
+                    ...item,
+                    nombre: nEl instanceof HTMLInputElement ? nEl.value.trim() || item.nombre : item.nombre,
+                    monto: pEl instanceof HTMLInputElement ? Math.max(0, Number(pEl.value || 0)) : item.monto
+                };
+            });
+
+            state.catalogo.mantenimiento = state.catalogo.mantenimiento.map((item, idx) => {
+                const nEl = document.querySelector(`[data-mant-name="${idx}"]`);
+                const pEl = document.querySelector(`[data-mant-price="${idx}"]`);
+                return {
+                    ...item,
+                    nombre: nEl instanceof HTMLInputElement ? nEl.value.trim() || item.nombre : item.nombre,
+                    monto: pEl instanceof HTMLInputElement ? Math.max(0, Number(pEl.value || 0)) : item.monto
+                };
+            });
+
+            guardarEstado(true);
+            renderTodo();
+            const msg = document.getElementById('msg-precios');
+            if (msg) msg.textContent = 'Precios y planes guardados.';
+        };
+
+        window.eliminarCaso = function(idx) {
+            state.casos.splice(idx, 1);
+            guardarEstado(true);
+            renderTodo();
+        };
+
+        window.simularRecepcionWeb = function() {
+            const sampleIndex = state.submissions.length % 3;
+            const samples = [
+                {
+                    folio: `DIAG-${Math.floor(2000 + Math.random() * 7999)}`,
+                    tipo: 'diagnostico',
+                    resumen: 'Necesitan ordenar seguimiento de prospectos y cotizaciones en un solo flujo.',
+                    detalleExtra: 'Síntoma: Problemas administrativos / Procesos manuales',
+                    montoEstimado: 0,
+                    cliente: {
+                        nombre: 'Mariana Ortega',
+                        empresa: 'Distribuidora del Centro',
+                        correo: 'mariana@distcentro.mx',
+                        telefono: '477 902 4418'
+                    }
+                },
+                {
+                    folio: `DNK-${Math.floor(2000 + Math.random() * 7999)}`,
+                    tipo: 'cotizacion',
+                    resumen: 'Aplicación Web ($14,500) + Chatbot / Agente de IA ($11,000)',
+                    detalleExtra: 'Cotización generada desde la web pública',
+                    montoEstimado: 25500,
+                    cliente: {
+                        nombre: 'Jorge Estrada',
+                        empresa: 'Autopartes León',
+                        correo: 'jorge@autopartesleon.mx',
+                        telefono: '477 734 1982'
+                    }
+                },
+                {
+                    folio: `CITA-${Math.floor(200 + Math.random() * 799)}`,
+                    tipo: 'cita',
+                    resumen: 'Cita Presencial (2026-11-25 • 10:30) — Revisar alcance de sistema y costos',
+                    detalleExtra: 'Modalidad: Presencial',
+                    montoEstimado: 0,
+                    cliente: {
+                        nombre: 'Sofía Guzmán',
+                        empresa: 'Clínica Visión Clara',
+                        correo: 's.guzman@visionclara.mx',
+                        telefono: '477 518 6620'
+                    }
+                }
+            ];
+
+            const chosen = samples[sampleIndex];
+            state.submissions.unshift({
+                id: `SUB-${Date.now()}`,
+                folio: chosen.folio,
+                tipo: chosen.tipo,
+                origen: 'web_publica',
+                etapa: 'llegadas',
+                creadoEn: 'Justo ahora',
+                cliente: chosen.cliente,
+                resumen: chosen.resumen,
+                detalleExtra: chosen.detalleExtra,
+                montoEstimado: chosen.montoEstimado,
+                precioCliente: chosen.montoEstimado,
+                pagado: 0,
+                acuerdos: ''
+            });
+
+            guardarEstado(true);
+            renderTodo();
+            cambiarTab('llegadas');
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            aplicarTema();
+            cambiarTab(state.activeTab || 'llegadas');
+            renderTodo();
+
+            if ('BroadcastChannel' in window) {
+                syncChannel = new BroadcastChannel(CHANNEL_NAME);
+                syncChannel.onmessage = (ev) => {
+                    if (ev?.data?.type === 'STATE_UPDATED') {
+                        state = cargarEstado();
+                        renderTodo();
+                    }
+                };
+            }
+
+            window.addEventListener('storage', (ev) => {
+                if (ev.key === STORE_KEY) {
+                    state = cargarEstado();
+                    aplicarTema();
+                    renderTodo();
+                }
+            });
+
+            document.querySelectorAll('.nav-tab').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.getAttribute('data-tab');
+                    if (tab) cambiarTab(tab);
+                });
+            });
+
+            document.querySelectorAll('.flt-btn').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const f = btn.getAttribute('data-filter') || 'all';
+                    state.filterType = f;
+                    guardarEstado(false);
+
+                    document.querySelectorAll('.flt-btn').forEach((b) => {
+                        const active = b === btn;
+                        b.classList.toggle('bg-cyan-500/15', active);
+                        b.classList.toggle('text-cyan-300', active);
+                        b.classList.toggle('border-cyan-500/30', active);
+                        b.classList.toggle('bg-gray-900', !active);
+                        b.classList.toggle('text-gray-300', !active);
+                        b.classList.toggle('border-gray-800', !active);
+                    });
+
+                    renderTodo();
+                });
+            });
+
+            const searchInput = document.getElementById('search-contactos');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    state.searchContact = e.target instanceof HTMLInputElement ? e.target.value : '';
+                    renderTodo();
+                });
+            }
+
+            const formAlta = document.getElementById('form-alta');
+            if (formAlta) {
+                formAlta.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const tipo = document.getElementById('alta-tipo').value;
+                    const etapa = document.getElementById('alta-etapa').value;
+                    const nombre = document.getElementById('alta-nombre').value.trim();
+                    const telefono = document.getElementById('alta-telefono').value.trim();
+                    const empresa = document.getElementById('alta-empresa').value.trim();
+                    const precio = Math.max(0, Number(document.getElementById('alta-precio').value || 0));
+                    const pagado = Math.max(0, Number(document.getElementById('alta-pagado').value || 0));
+                    const detalle = document.getElementById('alta-detalle').value.trim();
+
+                    state.submissions.unshift({
+                        id: `SUB-${Date.now()}`,
+                        folio: `${tipo.slice(0, 3).toUpperCase()}-${Math.floor(100 + Math.random() * 899)}`,
+                        tipo,
+                        origen: 'manual_admin',
+                        etapa,
+                        creadoEn: 'Hoy',
+                        cliente: { nombre, empresa, correo: '', telefono },
+                        resumen: detalle || `Registro ${tipo} — ${nombre}`,
+                        detalleExtra: tipo === 'aparte' ? 'Trabajo contratado aparte' : 'Alta manual en panel',
+                        montoEstimado: precio,
+                        precioCliente: precio,
+                        pagado: etapa === 'entregados' && pagado === 0 ? precio : pagado,
+                        acuerdos: detalle
+                    });
+
+                    guardarEstado(true);
+                    renderTodo();
+                    formAlta.reset();
+                    window.cerrarModalAlta();
+                    cambiarTab(etapa);
+                });
+            }
+
+            const formCaso = document.getElementById('form-caso');
+            if (formCaso) {
+                formCaso.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const titulo = document.getElementById('caso-titulo').value.trim();
+                    const categoria = document.getElementById('caso-categoria').value;
+                    const url = document.getElementById('caso-url').value.trim();
+                    const resumen = document.getElementById('caso-resumen').value.trim();
+
+                    state.casos.unshift({
+                        id: `cs-${Date.now()}`,
+                        titulo,
+                        categoria,
+                        url,
+                        resumen
+                    });
+
+                    guardarEstado(true);
+                    renderTodo();
+                    formCaso.reset();
+                    const msg = document.getElementById('msg-casos');
+                    if (msg) msg.textContent = 'Caso publicado.';
+                });
+            }
+
+            const formInfo = document.getElementById('form-info');
+            if (formInfo) {
+                formInfo.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    state.info = {
+                        empresa: document.getElementById('info-empresa').value.trim(),
+                        whatsapp: document.getElementById('info-whatsapp').value.trim(),
+                        correo: document.getElementById('info-correo').value.trim(),
+                        ubicacion: document.getElementById('info-ubicacion').value.trim(),
+                        notas: document.getElementById('info-notas').value.trim()
+                    };
+                    guardarEstado(true);
+                    const msg = document.getElementById('msg-info');
+                    if (msg) msg.textContent = 'Información guardada.';
+                });
+            }
+        });
+    </script>
+     <script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+  import { getFirestore, collection, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAC0Pb5I6bXhX5t3CL-w7VRStFu8njtIZg",
+    authDomain: "dunkora-solutions.firebaseapp.com",
+    databaseURL: "https://dunkora-solutions-default-rtdb.firebaseio.com",
+    projectId: "dunkora-solutions",
+    storageBucket: "dunkora-solutions.firebasestorage.app",
+    messagingSenderId: "584762226406",
+    appId: "1:584762226406:web:f7f1d7ebf172945a10ed27",
+    measurementId: "G-E9L5EWKMEV"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const q = query(collection(db, 'submissions'), orderBy('createdAtServer', 'desc'));
+
+  onSnapshot(q, (snapshot) => {
+    const cloudItems = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    if (typeof state !== 'undefined' && typeof renderTodo === 'function') {
+      state.submissions = cloudItems;
+      renderTodo();
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /index.html
+Disallow: /dunkora-panel.html
+
+Sitemap: https://dunkora-solutions.vercel.app/sitemap.xml
