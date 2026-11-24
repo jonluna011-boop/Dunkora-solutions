@@ -106,22 +106,34 @@
             z-index: 0;
             pointer-events: none;
             overflow: hidden;
-            opacity: var(--intro-fade, 1);
-            transition: opacity 0.22s ease-out;
+            opacity: var(--intro-fade, 0);
+            transition: opacity 0.28s ease-out;
             will-change: opacity;
         }
 
         #cinema-orbital-img {
             position: absolute;
-            inset: -8%;
-            width: 116%;
-            height: 116%;
+            inset: -6%;
+            width: 112%;
+            height: 112%;
             object-fit: cover;
             object-position: center;
             filter: invert(var(--orbital-invert)) contrast(1.15) brightness(0.72);
             mix-blend-mode: var(--orbital-blend);
             transform-origin: 55% 48%;
             will-change: transform;
+        }
+
+        #filaments-warp-canvas {
+            position: absolute;
+            inset: -6%;
+            width: 112%;
+            height: 112%;
+            filter: invert(var(--orbital-invert)) contrast(1.12) brightness(0.85);
+            mix-blend-mode: var(--orbital-blend);
+            opacity: 0;
+            transition: opacity 1.1s ease-out;
+            will-change: transform, opacity;
         }
 
         .cinema-card {
@@ -188,9 +200,10 @@
     <!-- Movimiento cinematográfico inicial con imagen que se desvanece al hacer scroll -->
     <div id="cinema-intro-stage" aria-hidden="true" class="no-print">
         <img id="cinema-orbital-img"
-            src="./fondo-filamentos.jpg"
+            src=".fondo-filamentos.jpg"
             alt=""
-            onerror="this.style.display='none';">
+            onerror="if (!this.dataset.fb) { this.dataset.fb = '1'; this.src = '.fondo-filamentos.jpg.jpg'; } else { this.style.display = 'none'; }">
+        <canvas id="filaments-warp-canvas"></canvas>
         <div class="cinema-vignette absolute inset-0"></div>
     </div>
 
@@ -845,20 +858,25 @@
 
     <script>
         /* =========================================================================
-           1. MOVIMIENTO INICIAL CINEMATOGRÁFICO CON DESVANECIMIENTO AL HACER SCROLL
+           1. MOVIMIENTO ORGÁNICO DE FILAMENTOS + FADE-IN / FADE-OUT CON SCROLL
         ========================================================================= */
         function initIntroOrbitalMotion() {
             const stage = document.getElementById('cinema-intro-stage');
             const imgEl = document.getElementById('cinema-orbital-img');
+            const warpCanvas = document.getElementById('filaments-warp-canvas');
             const progressBar = document.getElementById('scroll-progress-bar');
+
+            let introFadeInReady = false;
 
             const updateScrollFade = () => {
                 const y = window.scrollY || window.pageYOffset || 0;
-                const fadeDistance = Math.max(260, window.innerHeight * 0.65);
-                const remaining = Math.max(0, 1 - (y / fadeDistance));
+                const fadeDistance = Math.max(280, window.innerHeight * 0.7);
+                const scrollRemaining = Math.max(0, 1 - (y / fadeDistance));
+                const effectiveOpacity = introFadeInReady ? scrollRemaining : 0;
+
                 if (stage) {
-                    stage.style.setProperty('--intro-fade', remaining.toFixed(3));
-                    stage.style.visibility = remaining <= 0.01 ? 'hidden' : 'visible';
+                    stage.style.setProperty('--intro-fade', effectiveOpacity.toFixed(3));
+                    stage.style.visibility = effectiveOpacity <= 0.01 ? 'hidden' : 'visible';
                 }
 
                 if (progressBar) {
@@ -868,26 +886,172 @@
                 }
             };
 
-            updateScrollFade();
+            requestAnimationFrame(() => {
+                introFadeInReady = true;
+                updateScrollFade();
+            });
             window.addEventListener('scroll', updateScrollFade, { passive: true });
 
-            let tick = 0;
+            const ctx = warpCanvas && warpCanvas.getContext ? warpCanvas.getContext('2d') : null;
+            let cw = 0;
+            let ch = 0;
+            let imageLoaded = false;
 
-            const renderFrame = () => {
-                tick += 1;
-
-                if (imgEl) {
-                    const driftX = Math.sin(tick * 0.006) * 14;
-                    const driftY = Math.cos(tick * 0.005) * 10;
-                    const rotDeg = Math.sin(tick * 0.0035) * 2.4;
-                    const scale = 1.04 + Math.cos(tick * 0.0045) * 0.03;
-                    imgEl.style.transform = `translate3d(${driftX.toFixed(1)}px, ${driftY.toFixed(1)}px, 0) rotate(${rotDeg.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
-                }
-
-                requestAnimationFrame(renderFrame);
+            const syncCanvasSize = () => {
+                if (!warpCanvas || !ctx) return;
+                const rect = warpCanvas.getBoundingClientRect();
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                cw = Math.max(1, Math.round(rect.width || window.innerWidth * 1.12));
+                ch = Math.max(1, Math.round(rect.height || window.innerHeight * 1.12));
+                warpCanvas.width = cw * dpr;
+                warpCanvas.height = ch * dpr;
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             };
 
-            requestAnimationFrame(renderFrame);
+            if (imgEl) {
+                if (imgEl.complete && imgEl.naturalWidth > 0) {
+                    imageLoaded = true;
+                    if (warpCanvas) warpCanvas.style.opacity = '0.92';
+                }
+                imgEl.addEventListener('load', () => {
+                    imageLoaded = true;
+                    if (warpCanvas) warpCanvas.style.opacity = '0.92';
+                });
+            }
+
+            syncCanvasSize();
+            window.addEventListener('resize', syncCanvasSize);
+
+            // Malla ligera de filamentos radiales/ondulantes para animar la imagen original sin cortes bruscos
+            const cols = 22;
+            const rows = 22;
+            let tick = 0;
+            let lastFrameTime = 0;
+
+            const drawOrganicFilaments = (now) => {
+                // Limita suavemente a ~36-40 fps para mantener bajo consumo de CPU/GPU
+                if (now - lastFrameTime < 26) {
+                    requestAnimationFrame(drawOrganicFilaments);
+                    return;
+                }
+                lastFrameTime = now;
+                tick += 0.014;
+
+                if (imgEl) {
+                    const breathScale = 1.02 + Math.sin(tick * 0.75) * 0.015;
+                    const gentleRot = Math.cos(tick * 0.45) * 0.85;
+                    const driftX = Math.sin(tick * 0.55) * 6;
+                    const driftY = Math.cos(tick * 0.5) * 5;
+                    imgEl.style.transform = `translate3d(${driftX.toFixed(2)}px, ${driftY.toFixed(2)}px, 0) rotate(${gentleRot.toFixed(2)}deg) scale(${breathScale.toFixed(3)})`;
+                }
+
+                if (ctx && imageLoaded && imgEl && imgEl.naturalWidth > 0 && cw > 0 && ch > 0) {
+                    ctx.clearRect(0, 0, cw, ch);
+
+                    const srcW = imgEl.naturalWidth;
+                    const srcH = imgEl.naturalHeight;
+                    const srcAspect = srcW / srcH;
+                    const dstAspect = cw / ch;
+
+                    // Cover mapping para conservar proporciones de la imagen original
+                    let renderW = cw;
+                    let renderH = ch;
+                    let offsetX = 0;
+                    let offsetY = 0;
+
+                    if (dstAspect > srcAspect) {
+                        renderH = cw / srcAspect;
+                        offsetY = (ch - renderH) * 0.5;
+                    } else {
+                        renderW = ch * srcAspect;
+                        offsetX = (cw - renderW) * 0.5;
+                    }
+
+                    const cellW = renderW / cols;
+                    const cellH = renderH / rows;
+                    const srcCellW = srcW / cols;
+                    const srcCellH = srcH / rows;
+
+                    const centerX = cw * 0.5;
+                    const centerY = ch * 0.5;
+                    const maxDist = Math.hypot(centerX, centerY) || 1;
+
+                    // Calcula puntos desplazados orgánicamente por ondas de filamentos
+                    const pts = [];
+                    for (let r = 0; r <= rows; r++) {
+                        pts[r] = [];
+                        for (let c = 0; c <= cols; c++) {
+                            const baseX = offsetX + c * cellW;
+                            const baseY = offsetY + r * cellH;
+                            const dx = baseX - centerX;
+                            const dy = baseY - centerY;
+                            const dist = Math.hypot(dx, dy);
+                            const angle = Math.atan2(dy, dx);
+                            const radialFactor = Math.min(1, dist / (maxDist * 0.85));
+
+                            // Ondulación orgánica no repetitiva combinando frecuencias armónicas lentas
+                            const waveRadial =
+                                Math.sin(angle * 7 + tick * 1.15) * 5.5 +
+                                Math.cos(angle * 11 - tick * 0.85 + dist * 0.012) * 3.2;
+                            const waveTangential =
+                                Math.sin(dist * 0.018 - tick * 1.05 + angle * 5) * 6.5 +
+                                Math.cos(angle * 8 + tick * 0.7) * 3.0;
+
+                            const ux = dist > 0.001 ? dx / dist : 0;
+                            const uy = dist > 0.001 ? dy / dist : 0;
+                            const tx = -uy;
+                            const ty = ux;
+
+                            const amp = 0.25 + radialFactor * 0.75;
+                            pts[r][c] = {
+                                x: baseX + (ux * waveRadial + tx * waveTangential) * amp,
+                                y: baseY + (uy * waveRadial + ty * waveTangential) * amp
+                            };
+                        }
+                    }
+
+                    // Dibuja cada celda deformada desde la imagen original
+                    for (let r = 0; r < rows; r++) {
+                        for (let c = 0; c < cols; c++) {
+                            const p00 = pts[r][c];
+                            const p10 = pts[r][c + 1];
+                            const p01 = pts[r + 1][c];
+
+                            const sx = c * srcCellW;
+                            const sy = r * srcCellH;
+
+                            const dx1 = p10.x - p00.x;
+                            const dy1 = p10.y - p00.y;
+                            const dx2 = p01.x - p00.x;
+                            const dy2 = p01.y - p00.y;
+
+                            ctx.save();
+                            ctx.beginPath();
+                            ctx.moveTo(p00.x, p00.y);
+                            ctx.lineTo(p10.x, p10.y);
+                            ctx.lineTo(pts[r + 1][c + 1].x, pts[r + 1][c + 1].y);
+                            ctx.lineTo(p01.x, p01.y);
+                            ctx.closePath();
+                            ctx.clip();
+
+                            ctx.transform(
+                                dx1 / srcCellW,
+                                dy1 / srcCellW,
+                                dx2 / srcCellH,
+                                dy2 / srcCellH,
+                                p00.x - (dx1 / srcCellW) * sx - (dx2 / srcCellH) * sy,
+                                p00.y - (dy1 / srcCellW) * sx - (dy2 / srcCellH) * sy
+                            );
+                            ctx.drawImage(imgEl, 0, 0, srcW, srcH);
+                            ctx.restore();
+                        }
+                    }
+                }
+
+                requestAnimationFrame(drawOrganicFilaments);
+            };
+
+            requestAnimationFrame(drawOrganicFilaments);
         }
 
         /* =========================================================================
