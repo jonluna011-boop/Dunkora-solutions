@@ -591,6 +591,8 @@
         let state = cargarEstado();
         let activeSubmissionId = null;
         let syncChannel = null;
+        // Hook opcional para persistir o actualizar documentos en Firestore cuando esté conectado
+        window.cloudSyncHook = null;
 
         function normalizarTelefono(tel) {
             return String(tel || '').replace(/\D/g, '');
@@ -629,7 +631,7 @@
             }
         }
 
-        function guardarEstado(notifyPeers = true) {
+        function guardarEstado(notifyPeers = true, cloudAction = null) {
             try {
                 localStorage.setItem(STORE_KEY, JSON.stringify(state));
                 const footerEl = document.getElementById('footer-updated');
@@ -637,6 +639,9 @@
                 if (footerEl) footerEl.textContent = `Actualizado • ${nowTime}`;
                 if (notifyPeers && syncChannel) {
                     syncChannel.postMessage({ type: 'STATE_UPDATED', at: Date.now() });
+                }
+                if (cloudAction && typeof window.cloudSyncHook === 'function') {
+                    window.cloudSyncHook(cloudAction, state);
                 }
             } catch (_err) {
                 // Evita romper el flujo si localStorage está restringido
@@ -1009,7 +1014,7 @@
             sub.pagado = pagado;
             sub.acuerdos = acuerdos;
 
-            guardarEstado(true);
+            guardarEstado(true, { type: 'UPSERT_SUBMISSION', submission: sub });
             renderTodo();
             const targetTab = sub.etapa;
             window.cerrarModalDetalle();
@@ -1028,7 +1033,7 @@
             sub.pagado = pagadoInput > 0 ? pagadoInput : precio;
             sub.acuerdos = document.getElementById('det-acuerdos').value.trim() || 'Proyecto entregado y pago liquidado.';
 
-            guardarEstado(true);
+            guardarEstado(true, { type: 'UPSERT_SUBMISSION', submission: sub });
             renderTodo();
             window.cerrarModalDetalle();
             cambiarTab('entregados');
@@ -1140,7 +1145,7 @@
             ];
 
             const chosen = samples[sampleIndex];
-            state.submissions.unshift({
+            const nuevoSub = {
                 id: `SUB-${Date.now()}`,
                 folio: chosen.folio,
                 tipo: chosen.tipo,
@@ -1154,9 +1159,10 @@
                 precioCliente: chosen.montoEstimado,
                 pagado: 0,
                 acuerdos: ''
-            });
+            };
+            state.submissions.unshift(nuevoSub);
 
-            guardarEstado(true);
+            guardarEstado(true, { type: 'UPSERT_SUBMISSION', submission: nuevoSub });
             renderTodo();
             cambiarTab('llegadas');
         };
@@ -1232,7 +1238,7 @@
                     const pagado = Math.max(0, Number(document.getElementById('alta-pagado').value || 0));
                     const detalle = document.getElementById('alta-detalle').value.trim();
 
-                    state.submissions.unshift({
+                    const nuevoRegistro = {
                         id: `SUB-${Date.now()}`,
                         folio: `${tipo.slice(0, 3).toUpperCase()}-${Math.floor(100 + Math.random() * 899)}`,
                         tipo,
@@ -1246,9 +1252,10 @@
                         precioCliente: precio,
                         pagado: etapa === 'entregados' && pagado === 0 ? precio : pagado,
                         acuerdos: detalle
-                    });
+                    };
+                    state.submissions.unshift(nuevoRegistro);
 
-                    guardarEstado(true);
+                    guardarEstado(true, { type: 'UPSERT_SUBMISSION', submission: nuevoRegistro });
                     renderTodo();
                     formAlta.reset();
                     window.cerrarModalAlta();
@@ -1299,32 +1306,76 @@
             }
         });
     </script>
-     <script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-  import { getFirestore, collection, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAC0Pb5I6bXhX5t3CL-w7VRStFu8njtIZg",
-    authDomain: "dunkora-solutions.firebaseapp.com",
-    databaseURL: "https://dunkora-solutions-default-rtdb.firebaseio.com",
-    projectId: "dunkora-solutions",
-    storageBucket: "dunkora-solutions.firebasestorage.app",
-    messagingSenderId: "584762226406",
-    appId: "1:584762226406:web:f7f1d7ebf172945a10ed27",
-    measurementId: "G-E9L5EWKMEV"
-  };
+    <!-- Conexión bidireccional con Firestore: escucha cambios y persiste ediciones -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import {
+            getFirestore,
+            collection,
+            doc,
+            setDoc,
+            onSnapshot,
+            query,
+            orderBy,
+            serverTimestamp
+        } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const q = query(collection(db, 'submissions'), orderBy('createdAtServer', 'desc'));
+        const firebaseConfig = {
+            apiKey: "AIzaSyAC0Pb5I6bXhX5t3CL-w7VRStFu8njtIZg",
+            authDomain: "dunkora-solutions.firebaseapp.com",
+            databaseURL: "https://dunkora-solutions-default-rtdb.firebaseio.com",
+            projectId: "dunkora-solutions",
+            storageBucket: "dunkora-solutions.firebasestorage.app",
+            messagingSenderId: "584762226406",
+            appId: "1:584762226406:web:f7f1d7ebf172945a10ed27",
+            measurementId: "G-E9L5EWKMEV"
+        };
 
-  onSnapshot(q, (snapshot) => {
-    const cloudItems = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    if (typeof state !== 'undefined' && typeof renderTodo === 'function') {
-      state.submissions = cloudItems;
-      renderTodo();
-    }
-  });
-</script>
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const colRef = collection(db, 'submissions');
+        const q = query(colRef, orderBy('createdAtServer', 'desc'));
+        const statusEl = document.getElementById('sync-status-label');
+
+        // Guarda o actualiza cada trámite usando su id estable para no duplicar documentos al editar
+        window.cloudSyncHook = async function (action) {
+            if (!action || action.type !== 'UPSERT_SUBMISSION' || !action.submission?.id) return;
+            try {
+                await setDoc(
+                    doc(db, 'submissions', action.submission.id),
+                    {
+                        ...action.submission,
+                        updatedAtServer: serverTimestamp(),
+                        createdAtServer: action.submission.createdAtServer || serverTimestamp()
+                    },
+                    { merge: true }
+                );
+                if (statusEl) statusEl.textContent = 'Sincronizado con Firestore en tiempo real';
+            } catch (err) {
+                console.error('Error sincronizando con Firestore:', err);
+                if (statusEl) statusEl.textContent = 'Modo local activo (revisar conexión Firestore)';
+            }
+        };
+
+        onSnapshot(
+            q,
+            (snapshot) => {
+                const cloudItems = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+                if (typeof state !== 'undefined' && typeof renderTodo === 'function') {
+                    state.submissions = cloudItems;
+                    try {
+                        localStorage.setItem(STORE_KEY, JSON.stringify(state));
+                    } catch (_err) {}
+                    renderTodo();
+                    if (statusEl) statusEl.textContent = 'Conectado a Firestore • Tiempo real';
+                }
+            },
+            (err) => {
+                console.warn('Escucha de Firestore no disponible:', err);
+                if (statusEl) statusEl.textContent = 'Control interno local • Sin conexión en vivo';
+            }
+        );
+    </script>
 </body>
 </html>
