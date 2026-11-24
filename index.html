@@ -6,13 +6,24 @@
     <title>Dunkora Solutions — Desarrollo Web, Aplicaciones y Agentes de IA</title>
     <meta name="description" content="En Dunkora Solutions desarrollamos sitios web, aplicaciones a medida y agentes de IA funcionales para resolver cuellos de botella reales, atender clientes y optimizar operaciones.">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="keywords" content="Dunkora Solutions, desarrollo web, aplicaciones web a medida, agentes de IA, chatbots empresariales, automatización de procesos, cotizador web, mantenimiento web">
+    <meta name="author" content="Dunkora Solutions">
     <link rel="canonical" href="https://dunkora-solutions.vercel.app/">
+
+    <!-- Open Graph / Compartir en redes y previsualizaciones -->
     <meta property="og:type" content="website">
     <meta property="og:locale" content="es_MX">
     <meta property="og:site_name" content="Dunkora Solutions">
     <meta property="og:title" content="Dunkora Solutions — Desarrollo Web, Aplicaciones y Agentes de IA">
-    <meta property="og:description" content="Sitios web, aplicaciones a medida y agentes de IA funcionales para impulsar tu negocio y optimizar operaciones.">
+    <meta property="og:description" content="Sitios web, aplicaciones a medida y agentes de IA funcionales para impulsar tu negocio, resolver cuellos de botella y optimizar operaciones.">
     <meta property="og:url" content="https://dunkora-solutions.vercel.app/">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Dunkora Solutions — Desarrollo Web, Aplicaciones y Agentes de IA">
+    <meta name="twitter:description" content="Ingeniería web, aplicaciones a medida y agentes de IA para empresas que buscan resultados reales.">
+
+    <!-- Datos estructurados JSON-LD para Google, motores de búsqueda y asistentes de IA -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -23,7 +34,17 @@
           "name": "Dunkora Solutions",
           "url": "https://dunkora-solutions.vercel.app/",
           "description": "Estudio de ingeniería web, desarrollo de aplicaciones a medida y agentes de IA enfocados en resolver cuellos de botella operativos y mejorar la atención a clientes.",
-          "areaServed": "México"
+          "areaServed": {
+            "@type": "Country",
+            "name": "México"
+          },
+          "knowsAbout": [
+            "Desarrollo Web",
+            "Aplicaciones Web a Medida",
+            "Agentes de IA",
+            "Chatbots Empresariales",
+            "Automatización de Operaciones"
+          ]
         },
         {
           "@type": "ProfessionalService",
@@ -33,11 +54,48 @@
             "@id": "https://dunkora-solutions.vercel.app/#organization"
           },
           "serviceType": "Desarrollo Web, Aplicaciones a Medida y Agentes de IA",
-          "areaServed": "México"
+          "areaServed": {
+            "@type": "Country",
+            "name": "México"
+          },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Servicios y Módulos Base Dunkora Solutions",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Página Web"
+                },
+                "price": "8500",
+                "priceCurrency": "MXN"
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Aplicación Web"
+                },
+                "price": "14500",
+                "priceCurrency": "MXN"
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Chatbot / Agente de IA"
+                },
+                "price": "11000",
+                "priceCurrency": "MXN"
+              }
+            ]
+          }
         }
       ]
     }
     </script>
+
     <!-- Tipografía Inter y JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -977,7 +1035,6 @@
     <!-- Modal de comprobante PDF de cotización tipo hoja blanca impresa -->
     <div id="pdf-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-3 sm:p-6 backdrop-blur-sm overflow-y-auto">
         <div id="pdf-modal-card" style="font-family: Arial, Helvetica, sans-serif;" class="w-full max-w-2xl rounded-xl border border-slate-300 bg-white text-slate-900 p-6 sm:p-8 space-y-5 shadow-[0_24px_65px_rgba(0,0,0,0.65)]">
-            <!-- Encabezado tipo hoja formal en blanco -->
             <div class="flex flex-wrap items-start justify-between gap-4 border-b-2 border-slate-900 pb-4">
                 <div>
                     <div class="flex items-center gap-2.5">
@@ -1002,7 +1059,6 @@
                 </button>
             </div>
 
-            <!-- Datos del cliente y vigencia en hoja blanca -->
             <div style="font-family: Arial, Helvetica, sans-serif;" class="grid gap-3 sm:grid-cols-3 text-xs bg-slate-50 rounded-lg p-3.5 border border-slate-200">
                 <div>
                     <span class="text-[10px] uppercase tracking-wider text-slate-500 block">Correo del cliente</span>
@@ -1018,7 +1074,6 @@
                 </div>
             </div>
 
-            <!-- Tabla de conceptos tipo documento impreso -->
             <div style="font-family: Arial, Helvetica, sans-serif;" class="space-y-1.5">
                 <div class="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-600 border-b border-slate-300 pb-1.5 px-1">
                     <span>Concepto / Alcance</span>
@@ -1027,7 +1082,6 @@
                 <div id="pdf-modules" class="divide-y divide-slate-200 border-b border-slate-300 text-xs text-slate-800"></div>
             </div>
 
-            <!-- Observaciones y total -->
             <div style="font-family: Arial, Helvetica, sans-serif;" class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pt-1">
                 <p class="max-w-md text-[11px] text-slate-600 leading-relaxed">
                     Documento de estimación emitido por Dunkora Solutions. Alcance final sujeto a revisión de diagnóstico o sesión por Zoom / presencial.
@@ -1040,7 +1094,6 @@
                 </div>
             </div>
 
-            <!-- Botón de impresión -->
             <div style="font-family: Arial, Helvetica, sans-serif;" class="no-print flex items-center justify-between border-t border-slate-200 pt-4">
                 <span class="text-[11px] text-slate-500">Listo para imprimir o guardar en PDF</span>
                 <button type="button" onclick="window.print()"
@@ -1151,8 +1204,8 @@
             }
         ];
 
-        let currentPortfolioView = 'featured'; // 'featured' | 'all'
-        let currentPortfolioCategory = 'all'; // 'all' | 'web' | 'ia'
+        let currentPortfolioView = 'featured';
+        let currentPortfolioCategory = 'all';
         let selectedSymptoms = [];
         let lastQuoteRecord = {
             folio: 'DNK-1042',
@@ -1163,7 +1216,41 @@
         };
         const aiConversationHistory = [];
 
-        // Escapa caracteres especiales para evitar inyección HTML
+        const SHARED_PANEL_KEY = 'dunkora_solutions_protocolo_v1';
+        const SHARED_PANEL_CHANNEL = 'dunkora_solutions_sync_channel';
+        let panelSyncChannel = null;
+
+        if ('BroadcastChannel' in window) {
+            try {
+                panelSyncChannel = new BroadcastChannel(SHARED_PANEL_CHANNEL);
+            } catch (_err) {
+                panelSyncChannel = null;
+            }
+        }
+
+        function publishSubmissionToPanel(entry) {
+            try {
+                const raw = localStorage.getItem(SHARED_PANEL_KEY);
+                const parsed = raw ? JSON.parse(raw) : {};
+                const currentSubmissions = Array.isArray(parsed.submissions) ? parsed.submissions : [];
+                currentSubmissions.unshift(entry);
+
+                const updated = {
+                    ...parsed,
+                    submissions: currentSubmissions
+                };
+
+                localStorage.setItem(SHARED_PANEL_KEY, JSON.stringify(updated));
+                if (panelSyncChannel) {
+                    panelSyncChannel.postMessage({ type: 'STATE_UPDATED', at: Date.now() });
+                }
+            } catch (_err) {}
+        }
+
+        function formatNowLabel() {
+            return `Hoy • ${new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}`;
+        }
+
         function escapeText(value) {
             return String(value || '')
                 .replace(/&/g, '&amp;')
@@ -1173,7 +1260,6 @@
                 .replace(/'/g, '&#39;');
         }
 
-        // Renderiza las tarjetas de proyectos según vista ("featured" o "all") y categoría
         function renderProjects() {
             const grid = document.getElementById('projects-grid');
             const heading = document.getElementById('portfolio-heading');
@@ -1234,7 +1320,6 @@
             `).join('');
         }
 
-        // Vincula botones de pestañas (Destacados / Ver todos los casos) y filtros de categoría
         function bindPortfolioFilters() {
             document.querySelectorAll('.portfolio-tab').forEach((btn) => {
                 btn.addEventListener('click', () => {
@@ -1274,7 +1359,6 @@
             });
         }
 
-        // Vincula síntomas rápidos y validación amigable del diagnóstico sin mostrar "obligatorio"
         function bindDiagnosticForm() {
             document.querySelectorAll('.symptom-chip').forEach((chip) => {
                 chip.addEventListener('click', () => {
@@ -1389,10 +1473,30 @@
                     problem: problemText,
                     symptoms: [...selectedSymptoms]
                 });
+
+                publishSubmissionToPanel({
+                    id: `SUB-${Date.now()}`,
+                    folio: `DIAG-${Math.floor(1000 + Math.random() * 9000)}`,
+                    tipo: 'diagnostico',
+                    origen: 'web_publica',
+                    etapa: 'llegadas',
+                    creadoEn: formatNowLabel(),
+                    cliente: {
+                        nombre: nameText,
+                        empresa: companyText,
+                        correo: emailText,
+                        telefono: whatsappText
+                    },
+                    resumen: problemText,
+                    detalleExtra: selectedSymptoms.length ? `Síntomas: ${selectedSymptoms.join(', ')}` : 'Enviado desde Diagnóstico web',
+                    montoEstimado: 0,
+                    precioCliente: 0,
+                    pagado: 0,
+                    acuerdos: ''
+                });
             });
         }
 
-        // Recalcula el cotizador, desglose y tiempo estimado
         function updateQuote() {
             let total = 0;
             const selectedItems = [];
@@ -1443,7 +1547,6 @@
             return { total, selectedItems };
         }
 
-        // Vincula cambios en checkboxes y envío de cotización para generar comprobante PDF
         function bindQuoteForm() {
             document.querySelectorAll('.quote-option').forEach((cb) => {
                 cb.addEventListener('change', updateQuote);
@@ -1481,10 +1584,31 @@
                 }
 
                 notifyAssistantWithQuote({ folio, email, whatsapp, items: selectedItems, total });
+
+                const empresaDesdeCorreo = email.includes('@') ? email.split('@')[1].split('.')[0] : '';
+                publishSubmissionToPanel({
+                    id: `SUB-${Date.now()}`,
+                    folio,
+                    tipo: 'cotizacion',
+                    origen: 'web_publica',
+                    etapa: 'llegadas',
+                    creadoEn: formatNowLabel(),
+                    cliente: {
+                        nombre: email.split('@')[0] || 'Prospecto Cotización',
+                        empresa: empresaDesdeCorreo ? empresaDesdeCorreo.charAt(0).toUpperCase() + empresaDesdeCorreo.slice(1) : '',
+                        correo: email,
+                        telefono: whatsapp
+                    },
+                    resumen: selectedItems.map((i) => `${i.label} ($${Number(i.price).toLocaleString('es-MX')})`).join(' + '),
+                    detalleExtra: `Estimado base generador PDF • Folio ${folio}`,
+                    montoEstimado: total,
+                    precioCliente: total,
+                    pagado: 0,
+                    acuerdos: ''
+                });
             });
         }
 
-        // Abre el modal de hoja blanca imprimible con los datos de la cotización actual
         function openPdfPreviewModal() {
             const { total, selectedItems } = updateQuote();
             const record = lastQuoteRecord.email ? lastQuoteRecord : {
@@ -1543,13 +1667,11 @@
             if (modal) modal.classList.remove('hidden');
         }
 
-        // Cierra el modal de cotización
         function closePdfPreviewModal() {
             const modal = document.getElementById('pdf-modal');
             if (modal) modal.classList.add('hidden');
         }
 
-        // Envía el resumen actual del cotizador al Agente IA
         function sendQuoteToAssistant() {
             const { total, selectedItems } = updateQuote();
             const summary = selectedItems.length
@@ -1563,7 +1685,6 @@
             );
         }
 
-        // Prellena el tema de la cita cuando el usuario elige un plan de mantenimiento
         function selectMaintenancePlan(planLabel) {
             const notesInput = document.getElementById('appt-notes');
             if (notesInput instanceof HTMLInputElement) {
@@ -1571,7 +1692,6 @@
             }
         }
 
-        // Vincula el formulario de citas (Zoom o Presencial)
         function bindAppointmentForm() {
             const form = document.getElementById('appointment-form');
             if (!form) return;
@@ -1598,10 +1718,30 @@
                 }
 
                 notifyAssistantWithAppointment({ name, email, modality, date, time, notes });
+
+                publishSubmissionToPanel({
+                    id: `SUB-${Date.now()}`,
+                    folio: `CITA-${Math.floor(100 + Math.random() * 900)}`,
+                    tipo: 'cita',
+                    origen: 'web_publica',
+                    etapa: 'llegadas',
+                    creadoEn: formatNowLabel(),
+                    cliente: {
+                        nombre: name,
+                        empresa: '',
+                        correo: email,
+                        telefono: ''
+                    },
+                    resumen: `Cita ${modality} (${date} • ${time})${notes ? ` — ${notes}` : ''}`,
+                    detalleExtra: `Modalidad: ${modality} • Fecha: ${date} • Hora: ${time}`,
+                    montoEstimado: 0,
+                    precioCliente: 0,
+                    pagado: 0,
+                    acuerdos: ''
+                });
             });
         }
 
-        // Menú móvil
         function toggleMobileMenu(forceState) {
             const menu = document.getElementById('mobile-menu');
             if (!menu) return;
@@ -1612,7 +1752,6 @@
             }
         }
 
-        // Panel del Agente IA
         let isDraggingAssistant = false;
         let hasDraggedAssistant = false;
         let dragTargetEl = null;
@@ -1621,7 +1760,6 @@
         let dragOffsetX = 0;
         let dragOffsetY = 0;
 
-        // Convierte un elemento fixed a coordenadas explícitas top/left dentro del viewport
         function pinElementToViewport(el, left, top) {
             if (!el) return;
             const rect = el.getBoundingClientRect();
@@ -1639,7 +1777,6 @@
             el.style.bottom = 'auto';
         }
 
-        // Acomoda el drawer cerca del botón si aún no ha sido movido manualmente
         function positionDrawerNearLauncher() {
             const launcher = document.getElementById('ai-launcher-btn');
             const drawer = document.getElementById('ai-drawer');
@@ -1657,7 +1794,6 @@
             pinElementToViewport(drawer, left, top);
         }
 
-        // Habilita arrastre libre por pointer/mouse/touch en el botón y en la cabecera del chat
         function bindDraggableAssistant() {
             const launcher = document.getElementById('ai-launcher-btn');
             const drawer = document.getElementById('ai-drawer');
@@ -1681,9 +1817,7 @@
                 if (pointerSource && typeof pointerSource.setPointerCapture === 'function' && typeof pointerSource.pointerId === 'number') {
                     try {
                         pointerSource.setPointerCapture(pointerSource.pointerId);
-                    } catch (_err) {
-                        // Ignora si el navegador no permite captura en este origen
-                    }
+                    } catch (_err) {}
                 }
 
                 if (markDrawerMoved && drawer) {
@@ -1786,7 +1920,6 @@
             }
         }
 
-        // Agrega un mensaje al chat flotante del Agente IA y mantiene el historial
         function pushChatMessage(sender, text) {
             const box = document.getElementById('ai-messages');
             if (!box) return;
@@ -1798,7 +1931,7 @@
             box.appendChild(bubble);
             box.scrollTop = box.scrollHeight;
 
-            if (text !== 'Pensando...' && text !== 'Analizando tu diagnóstico...' && text !== 'Registrando tu cotización...' && text !== 'Confirmando tu solicitud de cita...') {
+            if (text !== 'Pensando...' && text !== 'Analizando...' && text !== 'Registrando...' && text !== 'Confirmando...') {
                 aiConversationHistory.push({
                     role: sender === 'user' ? 'user' : 'model',
                     parts: [{ text }]
@@ -1806,7 +1939,6 @@
             }
         }
 
-        // Respuesta local de respaldo si la petición de red no está disponible
         function buildAssistantReply(prompt) {
             const q = String(prompt || '').toLowerCase();
             if (q.includes('agente') || q.includes('ia') || q.includes('chatbot') || q.includes('responder')) {
@@ -1821,7 +1953,6 @@
             return 'En Dunkora Solutions evaluamos primero qué ocurre en tu empresa antes de elegir tecnología: web para presencia y captación, aplicaciones para operación, o agentes de IA para atención y automatización.';
         }
 
-        // Consulta a Gemini con respaldo automático local ante cualquier error
         async function askGeminiAssistant(prompt) {
             try {
                 const contents = [
@@ -1869,7 +2000,6 @@
             }
         }
 
-        // Hace que el Agente IA confirme al cliente una sola vez que ya recibimos su diagnóstico
         async function notifyAssistantWithDiagnostic({ name, company, email, whatsapp, problem, symptoms }) {
             toggleAssistant(true);
             const symptomsLabel = symptoms.length ? ` (${symptoms.join(', ')})` : '';
@@ -1896,7 +2026,6 @@
             }
         }
 
-        // Hace que el Agente IA confirme una sola vez una solicitud de cotización sin repetir el desglose de la hoja
         async function notifyAssistantWithQuote({ folio, email, whatsapp, items, total }) {
             toggleAssistant(true);
             const modulesText = items.map((i) => i.label).join(' + ');
@@ -1922,7 +2051,6 @@
             }
         }
 
-        // Hace que el Agente IA confirme una sola vez una solicitud de cita
         async function notifyAssistantWithAppointment({ name, email, modality, date, time, notes }) {
             toggleAssistant(true);
             pushChatMessage(
@@ -1947,7 +2075,6 @@
             }
         }
 
-        // Vincula el envío de mensajes en el chat del Agente IA
         function bindAssistantForm() {
             const form = document.getElementById('ai-form');
             const input = document.getElementById('ai-input');
@@ -1975,7 +2102,6 @@
             });
         }
 
-        // Scroll reveal bidireccional dinámico tipo flip/flop + atenuación sutil de cuadrícula al scrollear
         function bindScrollReveal() {
             const elements = document.querySelectorAll('.scroll-reveal');
             const progressBar = document.getElementById('scroll-progress-bar');
@@ -2029,7 +2155,6 @@
             elements.forEach((el) => observer.observe(el));
         }
 
-        // Arranque seguro de la página
         window.addEventListener('DOMContentLoaded', () => {
             try {
                 const yearEl = document.getElementById('year-label');
@@ -2049,39 +2174,43 @@
             }
         });
     </script>
+
+    <!-- Conexión Firestore para envío desde index.html usando el mismo id de trámite -->
     <script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-  import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { getFirestore, collection, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAC0Pb5I6bXhX5t3CL-w7VRStFu8njtIZg",
-    authDomain: "dunkora-solutions.firebaseapp.com",
-    databaseURL: "https://dunkora-solutions-default-rtdb.firebaseio.com",
-    projectId: "dunkora-solutions",
-    storageBucket: "dunkora-solutions.firebasestorage.app",
-    messagingSenderId: "584762226406",
-    appId: "1:584762226406:web:f7f1d7ebf172945a10ed27",
-    measurementId: "G-E9L5EWKMEV"
-  };
+        const firebaseConfig = {
+            apiKey: "AIzaSyAC0Pb5I6bXhX5t3CL-w7VRStFu8njtIZg",
+            authDomain: "dunkora-solutions.firebaseapp.com",
+            databaseURL: "https://dunkora-solutions-default-rtdb.firebaseio.com",
+            projectId: "dunkora-solutions",
+            storageBucket: "dunkora-solutions.firebasestorage.app",
+            messagingSenderId: "584762226406",
+            appId: "1:584762226406:web:f7f1d7ebf172945a10ed27",
+            measurementId: "G-E9L5EWKMEV"
+        };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const colRef = collection(db, 'submissions');
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const colRef = collection(db, 'submissions');
 
-  const originalPublish = window.publishSubmissionToPanel;
-  window.publishSubmissionToPanel = async function (entry) {
-    if (typeof originalPublish === 'function') {
-      originalPublish(entry);
-    }
-    try {
-      await addDoc(colRef, {
-        ...entry,
-        createdAtServer: serverTimestamp()
-      });
-    } catch (err) {
-      console.error('Error enviando a Firestore:', err);
-    }
-  };
-</script>
+        const originalPublish = window.publishSubmissionToPanel;
+        window.publishSubmissionToPanel = async function (entry) {
+            if (typeof originalPublish === 'function') {
+                originalPublish(entry);
+            }
+            try {
+                const docId = entry.id || `SUB-${Date.now()}`;
+                await setDoc(doc(colRef, docId), {
+                    ...entry,
+                    id: docId,
+                    createdAtServer: serverTimestamp()
+                });
+            } catch (err) {
+                console.error('Error enviando a Firestore:', err);
+            }
+        };
+    </script>
 </body>
 </html>
