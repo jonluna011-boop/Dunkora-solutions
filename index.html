@@ -60,7 +60,26 @@
             :root {
   color-scheme: dark;
 }
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+input:autofill,
+input:autofill:hover,
+input:autofill:focus {
+  -webkit-text-fill-color: #f3f4f6 !important;
+  caret-color: #f3f4f6;
+  -webkit-box-shadow: 0 0 0 1000px #141619 inset !important;
+  box-shadow: 0 0 0 1000px #141619 inset !important;
+  transition: background-color 999999s ease-in-out 0s;
+}
 
+input:focus,
+textarea:focus,
+select:focus {
+  background-color: #141619;
+  color: #f3f4f6;
+}
 select,
 input[type="date"],
 input[type="time"] {
