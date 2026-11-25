@@ -89,6 +89,13 @@
         .bg-surface { background-color: var(--bg-surface); }
         .bg-field { background-color: var(--bg-field); }
         .bg-header { background-color: var(--bg-header); }
+        .site-header {
+            transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.35s ease, border-color 0.35s ease;
+            will-change: transform;
+        }
+        .site-header.is-hidden {
+            transform: translateY(-100%);
+        }
         .t-primary { color: var(--text-primary); }
         .t-secondary { color: var(--text-secondary); }
         .t-muted { color: var(--text-muted); }
@@ -217,7 +224,7 @@
     </div>
 
     <!-- Barra de navegación superior minimalista -->
-    <header class="no-print sticky top-0 z-40 border-b b-subtle bg-header backdrop-blur-md">
+    <header id="site-header" class="site-header no-print sticky top-0 z-40 border-b b-subtle bg-header backdrop-blur-md">
         <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-10">
             <a href="#top" class="flex items-center gap-3 group">
                 <div class="flex h-9 w-9 items-center justify-center rounded-lg border b-strong bg-field transition-colors">
@@ -1585,6 +1592,40 @@
             elements.forEach((el) => observer.observe(el));
         }
 
+        function bindSmartHeaderScroll() {
+            const header = document.getElementById('site-header');
+            if (!header) return;
+
+            let lastY = Math.max(0, window.scrollY || window.pageYOffset || 0);
+            let ticking = false;
+            const deltaThreshold = 6;
+
+            const updateHeaderVisibility = () => {
+                const currentY = Math.max(0, window.scrollY || window.pageYOffset || 0);
+                const diff = currentY - lastY;
+                const mobileMenuOpen = !document.getElementById('mobile-menu')?.classList.contains('hidden');
+
+                if (currentY <= 24 || mobileMenuOpen) {
+                    header.classList.remove('is-hidden');
+                } else if (diff > deltaThreshold && currentY > 72) {
+                    header.classList.add('is-hidden');
+                    toggleMobileMenu(false);
+                } else if (diff < -deltaThreshold) {
+                    header.classList.remove('is-hidden');
+                }
+
+                lastY = currentY;
+                ticking = false;
+            };
+
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    window.requestAnimationFrame(updateHeaderVisibility);
+                    ticking = true;
+                }
+            }, { passive: true });
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             let savedLight = false;
             try {
@@ -1604,6 +1645,7 @@
             bindQuoteForm();
             bindAppointmentForm();
             bindScrollReveal();
+            bindSmartHeaderScroll();
         });
     </script>
 
