@@ -161,41 +161,6 @@
             transition: border-color 0.3s ease, background-color 0.3s ease;
         }
         html.light-theme .cinema-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            box-shadow: none;
-        }
-        .cinema-card:hover {
-            border-color: var(--border-strong);
-            background: var(--bg-surface-hover);
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
-            box-shadow: none;
-        }
-        html.light-theme .cinema-card:hover {
-            border-color: var(--border-strong);
-            background: var(--bg-surface-hover);
-            box-shadow: none;
-        }
-        .cinema-card .bg-field {
-            background: var(--bg-field);
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
-            border-color: var(--border-subtle);
-            box-shadow: none;
-        }
-        html.light-theme .cinema-card .bg-field {
-            background: var(--bg-field);
-            border-color: var(--border-subtle);
-            box-shadow: none;
-        }
-        .scroll-reveal {
-            opacity: 0;
-            transform: translateY(28px);
-            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: opacity, transform;
-        }
-        html.light-theme .cinema-card {
             background:
                 radial-gradient(140% 95% at 20% 0%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.42) 48%, transparent 76%),
                 linear-gradient(160deg, rgba(255, 255, 255, 0.72) 0%, rgba(245, 246, 250, 0.56) 55%, rgba(255, 255, 255, 0.66) 100%);
@@ -241,6 +206,12 @@
             box-shadow:
                 inset 0 1px 0 0 rgba(255, 255, 255, 0.92),
                 inset 0 -1px 0 0 rgba(255, 255, 255, 0.4);
+        }
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
         }
         .scroll-reveal.is-visible {
             opacity: 1;
@@ -372,16 +343,17 @@
                         </p>
 
                         <div class="flex flex-wrap items-center gap-4 pt-2">
-                        <a href="#diagnostico"
-                            class="inline-flex items-center justify-center rounded-full btn-contrast px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.16em] hover:opacity-90 transition-opacity">
-                            Diagnosticar Mi Empresa
-                        </a>
-                        <a href="#cotizador"
-                            class="inline-flex items-center justify-center rounded-full border b-strong bg-field px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.16em] t-primary hover:opacity-85 transition-opacity">
-                            Cotizar a Medida
-                        </a>
+                            <a href="#diagnostico"
+                                class="inline-flex items-center justify-center rounded-full btn-contrast px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.16em] hover:opacity-90 transition-opacity">
+                                Diagnosticar Mi Empresa
+                            </a>
+                            <a href="#cotizador"
+                                class="inline-flex items-center justify-center rounded-full border b-strong bg-field px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.16em] t-primary hover:opacity-85 transition-opacity">
+                                Cotizar a Medida
+                            </a>
+                        </div>
                     </div>
-                    </div>
+                </div>
             </div>
         </section>
 
@@ -400,7 +372,7 @@
                         Muchos negocios creen que necesitan una página web cuando en realidad
                         <strong class="t-primary">pierden clientes porque nadie les contesta rápido</strong>
                         o tienen <strong class="t-primary">caos administrativo y rotación de personal.</strong>
-                        
+
                         No inviertas en lo equivocado. Averigüemos cuál es el cuello de botella que está frenando tu empresa.
                     </p>
                 </div>
@@ -959,7 +931,6 @@
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas, { passive: true });
 
-            // Campo de partículas luminosas que arrastran un hilo/rastro continuo en su trayectoria
             const particleCount = 68;
             const particles = Array.from({ length: particleCount }, (_, idx) => {
                 const depth = 0.45 + ((idx * 37) % 100) / 140;
@@ -1018,7 +989,6 @@
                         const pulse = 0.78 + Math.sin(tick * p.twinkleSpeed + p.twinklePhase) * 0.22;
                         const finalAlpha = Math.min(0.95, Math.max(0.16, p.alpha * pulse));
 
-                        // Hilo / rastro continuo conectado detrás de cada punto
                         if (p.trail.length > 1) {
                             for (let t = 1; t < p.trail.length; t++) {
                                 const prev = p.trail[t - 1];
@@ -1075,12 +1045,11 @@
         }
 
         function toggleColorTheme() {
-            const isCurrentlyLight = document.documentElement.classList.contains('light-theme');
-            applyThemeState(!isCurrentlyLight);
+            applyThemeState(!document.documentElement.classList.contains('light-theme'));
         }
 
         /* =========================================================================
-           3. DATOS, CASOS DE ÉXITO, FORMULARIOS, PDF Y PANEL ADMINISTRATIVO
+           3. DATOS, CASOS DE ÉXITO, FORMULARIOS, PDF Y SINCRONIZACIÓN
         ========================================================================= */
         const PROJECTS = [
             {
@@ -1167,8 +1136,11 @@
             if (!entry) return;
             const record = {
                 ...entry,
-                id: entry.id || `SUB-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+                id: entry.id || `SUB-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                createdAtIso: new Date().toISOString(),
+                updatedAtIso: new Date().toISOString()
             };
+
             try {
                 const raw = localStorage.getItem(SHARED_PANEL_KEY);
                 const parsed = raw ? JSON.parse(raw) : {};
@@ -1179,6 +1151,10 @@
                     panelSyncChannel.postMessage({ type: 'STATE_UPDATED', at: Date.now() });
                 }
             } catch (_err) {}
+
+            if (typeof window.__dunkoraPushToCloud === 'function') {
+                window.__dunkoraPushToCloud(record);
+            }
         }
 
         function formatNowLabel() {
@@ -1553,8 +1529,7 @@
         }
 
         function dismissQuoteFeedback() {
-            const fb = document.getElementById('quote-feedback');
-            if (fb) fb.classList.add('hidden');
+            document.getElementById('quote-feedback')?.classList.add('hidden');
         }
 
         function openPdfPreviewModal() {
@@ -1571,8 +1546,7 @@
                 scope: 'Completa y envía el formulario de cotización a medida para generar tu comprobante con tus datos y funciones.'
             };
 
-            const now = new Date();
-            const formattedDate = now.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+            const formattedDate = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
 
             const setText = (id, val) => {
                 const el = document.getElementById(id);
@@ -1588,12 +1562,11 @@
             setText('pdf-solutions', rec.solutions.join(' + '));
             setText('pdf-scope', rec.scope);
 
-            if (modal) modal.classList.remove('hidden');
+            modal?.classList.remove('hidden');
         }
 
         function closePdfPreviewModal() {
-            const modal = document.getElementById('pdf-modal');
-            if (modal) modal.classList.add('hidden');
+            document.getElementById('pdf-modal')?.classList.add('hidden');
         }
 
         function bindAppointmentForm() {
@@ -1722,30 +1695,60 @@
             bindScrollReveal();
             bindSmartHeaderScroll();
         });
+    </script>
 
-        // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+    <!-- Sincronización en tiempo real de envíos hacia Firestore y Realtime Database -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { getAnalytics } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js';
+        import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js';
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAC0Pb5I6bXhX5t3CL-w7VRsTFu8njtIZg",
-  authDomain: "dunkora-solutions.firebaseapp.com",
-  databaseURL: "https://dunkora-solutions-default-rtdb.firebaseio.com",
-  projectId: "dunkora-solutions",
-  storageBucket: "dunkora-solutions.firebasestorage.app",
-  messagingSenderId: "584762226406",
-  appId: "1:584762226406:web:f7f1d7ebf172945a10ed27",
-  measurementId: "G-E9L5EWKMEV"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyAC0Pb5I6bXhX5t3CL-w7VRsTFu8njtIZg",
+            authDomain: "dunkora-solutions.firebaseapp.com",
+            databaseURL: "https://dunkora-solutions-default-rtdb.firebaseio.com",
+            projectId: "dunkora-solutions",
+            storageBucket: "dunkora-solutions.firebasestorage.app",
+            messagingSenderId: "584762226406",
+            appId: "1:584762226406:web:f7f1d7ebf172945a10ed27",
+            measurementId: "G-E9L5EWKMEV"
+        };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-        
+        const app = initializeApp(firebaseConfig);
+        try {
+            getAnalytics(app);
+        } catch (_analyticsErr) {}
+
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const rtdb = getDatabase(app);
+
+        signInAnonymously(auth).catch(() => {});
+
+        window.__dunkoraPushToCloud = async function(record) {
+            if (!record || !record.id) return;
+            try {
+                await signInAnonymously(auth);
+            } catch (_authErr) {}
+
+            const idStr = String(record.id);
+            setDoc(doc(db, 'submissions', idStr), {
+                ...record,
+                updatedAtIso: new Date().toISOString(),
+                createdAtServer: serverTimestamp()
+            }, { merge: true }).catch((err) => {
+                console.error('Error enviando a Firestore:', err);
+            });
+
+            set(ref(rtdb, `submissions/${idStr}`), {
+                ...record,
+                updatedAtIso: new Date().toISOString()
+            }).catch((err) => {
+                console.error('Error enviando a Realtime DB:', err);
+            });
+        };
     </script>
 </body>
 </html>
