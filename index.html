@@ -217,7 +217,6 @@ input:-webkit-autofill:focus {
         .cinema-card:hover {
             border-color: rgba(255, 255, 255, 0.42);
             background:
-                radial-gradient(145% 100% at 22% 0%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.08) 50%, transparent 76%),
                 linear-gradient(160deg, rgba(28, 31, 44, 0.64) 0%, rgba(12, 14, 20, 0.48) 55%, rgba(22, 25, 35, 0.58) 100%);
             backdrop-filter: blur(32px) saturate(165%) contrast(108%);
             -webkit-backdrop-filter: blur(32px) saturate(165%) contrast(108%);
@@ -289,21 +288,6 @@ input:-webkit-autofill:focus {
                 max-width: 100% !important;
             }
         }
-            html:not(.light-theme) #diagnostico [class*="blur"],
-html:not(.light-theme) #diagnostico [class*="glow"],
-html:not(.light-theme) .glass-card,
-html:not(.light-theme) .situation-btn,
-html:not(.light-theme) [class*="card"] {
-  box-shadow: none !important;
-}
-
-html:not(.light-theme) #diagnostico::before,
-html:not(.light-theme) #diagnostico::after,
-html:not(.light-theme) #diagnostico *::before,
-html:not(.light-theme) #diagnostico *::after {
-  background-image: none !important;
-  box-shadow: none !important;
-}
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
