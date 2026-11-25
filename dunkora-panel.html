@@ -148,7 +148,7 @@
                             stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M18.2 18L21.9 21L18.2 24"
                             stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
-                        <!-- Letra K con trazo superior curvo hacia el centro y pata inferior curva -->
+                        <!-- Letra K estilizada -->
                         <path d="M40.5 6H47.5V36H40.5V6Z" fill="currentColor"/>
                         <path d="M47.5 19.2L55.2 9.4C56.8 7.3 58.6 6.2 60.4 6C61.3 5.9 61.8 6.8 61.1 7.8L51.6 20.6L47.5 22.8V19.2Z"
                             fill="currentColor"/>
@@ -156,52 +156,45 @@
                             fill="currentColor"/>
                     </svg>
                 </div>
-                <div class="leading-none">
+                <div>
                     <div class="flex items-center gap-2">
-                        <span class="font-editorial text-lg font-bold tracking-[0.14em] t-primary">DUNKORA</span>
-                        <span class="rounded-full border b-subtle bg-field px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest t-secondary">
-                            ADMIN
-                        </span>
+                        <span class="font-editorial text-lg font-bold tracking-[0.12em] t-primary">DUNKORA SOLUTIONS</span>
                     </div>
-                    <p id="sync-status-label" class="font-mono text-[10px] tracking-wider t-muted mt-1">
-                        Sincronizando flujo operativo...
+                    <p id="sync-status-label" class="font-mono text-[10px] t-muted">
+                        Conectando con Firestore...
                     </p>
                 </div>
             </div>
 
-            <!-- Navegación por etapas del flujo operativo -->
-            <nav aria-label="Secciones del panel" class="flex flex-wrap items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.12em]">
+            <!-- Navegación por etapas y módulos operativos -->
+            <nav aria-label="Secciones del panel" class="flex flex-wrap items-center gap-1.5 text-xs font-medium">
                 <button type="button" data-tab="llegadas"
                     class="nav-tab rounded-full border b-strong btn-contrast px-3.5 py-1.5 cursor-pointer transition-colors">
-                    01. Llegadas <span id="count-llegadas" class="ml-1 font-mono text-[10px]">0</span>
+                    1. Llegadas <span id="count-llegadas" class="ml-1 font-mono text-[11px]">0</span>
                 </button>
                 <button type="button" data-tab="proceso"
-                    class="nav-tab rounded-full border b-subtle bg-field px-3.5 py-1.5 t-secondary hover:opacity-90 cursor-pointer transition-colors">
-                    02. En Proceso <span id="count-proceso" class="ml-1 font-mono text-[10px]">0</span>
+                    class="nav-tab rounded-full border b-subtle bg-field px-3.5 py-1.5 t-secondary hover:opacity-85 cursor-pointer transition-colors">
+                    2. En proceso <span id="count-proceso" class="ml-1 font-mono text-[11px]">0</span>
                 </button>
                 <button type="button" data-tab="entregados"
-                    class="nav-tab rounded-full border b-subtle bg-field px-3.5 py-1.5 t-secondary hover:opacity-90 cursor-pointer transition-colors">
-                    03. Entregados <span id="count-entregados" class="ml-1 font-mono text-[10px]">0</span>
+                    class="nav-tab rounded-full border b-subtle bg-field px-3.5 py-1.5 t-secondary hover:opacity-85 cursor-pointer transition-colors">
+                    3. Entregados <span id="count-entregados" class="ml-1 font-mono text-[11px]">0</span>
                 </button>
                 <button type="button" data-tab="contactos"
-                    class="nav-tab rounded-full border b-subtle bg-field px-3.5 py-1.5 t-secondary hover:opacity-90 cursor-pointer transition-colors">
-                    Directorio <span id="count-contactos" class="ml-1 font-mono text-[10px]">0</span>
+                    class="nav-tab rounded-full border b-subtle bg-field px-3.5 py-1.5 t-secondary hover:opacity-85 cursor-pointer transition-colors">
+                    Contactos <span id="count-contactos" class="ml-1 font-mono text-[11px]">0</span>
                 </button>
                 <button type="button" data-tab="casos"
-                    class="nav-tab rounded-full border b-subtle bg-field px-3.5 py-1.5 t-secondary hover:opacity-90 cursor-pointer transition-colors">
+                    class="nav-tab rounded-full border b-subtle bg-field px-3.5 py-1.5 t-secondary hover:opacity-85 cursor-pointer transition-colors">
                     Casos Web
                 </button>
                 <button type="button" data-tab="info"
-                    class="nav-tab rounded-full border b-subtle bg-field px-3.5 py-1.5 t-secondary hover:opacity-90 cursor-pointer transition-colors">
+                    class="nav-tab rounded-full border b-subtle bg-field px-3.5 py-1.5 t-secondary hover:opacity-85 cursor-pointer transition-colors">
                     Operación
                 </button>
             </nav>
 
-            <!-- Acciones rápidas: Simular entrada, Nuevo registro y Alternador Tema Blanco / Negro -->
-            <div class="flex flex-wrap items-center gap-2">
-                <button type="button" onclick="simularRecepcionWeb()"
-                    class="rounded-full border b-subtle bg-field px-3.5 py-1.5 text-xs font-medium t-secondary hover:opacity-90 cursor-pointer transition-opacity">
-            <!-- Acciones rápidas: Nuevo registro y Alternador Tema Blanco / Negro -->
+            <!-- Acciones rápidas: Nuevo registro, Alternador Tema Blanco / Negro y Bloquear sesión -->
             <div class="flex flex-wrap items-center gap-2">
                 <button type="button" onclick="abrirModalAlta()"
                     class="rounded-full btn-contrast px-4 py-1.5 text-xs font-semibold uppercase tracking-wider hover:opacity-90 cursor-pointer transition-opacity">
@@ -212,9 +205,65 @@
                     <span id="theme-toggle-icon">☀</span>
                     <span id="theme-toggle-label">Tema Blanco</span>
                 </button>
+                <button type="button" onclick="cerrarSesionAdmin()" title="Bloquear panel"
+                    class="rounded-full border b-subtle bg-field px-3.5 py-1.5 font-mono text-xs t-secondary hover:opacity-85 cursor-pointer transition-opacity">
+                    Salir
+                </button>
             </div>
         </div>
     </header>
+
+    <!-- Pantalla de acceso por usuario y contraseña -->
+    <div id="auth-gate" class="fixed inset-0 z-50 flex items-center justify-center bg-cinema/95 p-4 backdrop-blur-md">
+        <div class="cinema-card w-full max-w-md rounded-2xl p-6 sm:p-8 space-y-5">
+            <div class="flex items-center gap-3 border-b b-subtle pb-4">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg border b-strong bg-field">
+                    <svg class="h-5 w-5" viewBox="0 0 64 42" fill="none" aria-label="DK">
+                        <path d="M10 6.5H19.5C28.8 6.5 34.4 12.4 34.4 21C34.4 29.6 28.8 35.5 19.5 35.5H10V31.3H19.4C26.2 31.3 30.1 27.1 30.1 21C30.1 14.9 26.2 10.7 19.4 10.7H10V6.5Z"
+                            fill="currentColor"/>
+                        <path d="M13.5 18L9.8 21L13.5 24"
+                            stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M18.2 18L21.9 21L18.2 24"
+                            stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M40.5 6H47.5V36H40.5V6Z" fill="currentColor"/>
+                        <path d="M47.5 19.2L55.2 9.4C56.8 7.3 58.6 6.2 60.4 6C61.3 5.9 61.8 6.8 61.1 7.8L51.6 20.6L47.5 22.8V19.2Z"
+                            fill="currentColor"/>
+                        <path d="M49.6 19.6C51.6 20.8 53.5 22.8 55.3 25.6C57.6 29.2 59.8 31.4 61.9 32.4C62.7 32.8 62.5 34.1 61.5 34.7C58.8 36.4 55.6 35.8 53.2 32.4C51.2 29.5 49.4 26.4 47.5 23.8L49.6 19.6Z"
+                            fill="currentColor"/>
+                    </svg>
+                </div>
+                <div>
+                    <span class="font-mono text-[10px] uppercase tracking-[0.22em] t-muted block">DUNKORA SOLUTIONS</span>
+                    <h1 class="font-editorial text-2xl sm:text-3xl font-semibold t-primary leading-tight">
+                        Acceso Administrativo
+                    </h1>
+                </div>
+            </div>
+
+            <form id="form-login" class="space-y-4">
+                <div>
+                    <label for="login-user" class="block text-xs font-medium t-secondary mb-1.5">Usuario</label>
+                    <input id="login-user" type="text" required autocomplete="username" placeholder="Ingresa tu usuario"
+                        class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-sm t-primary focus:outline-none">
+                </div>
+
+                <div>
+                    <label for="login-pass" class="block text-xs font-medium t-secondary mb-1.5">Contraseña</label>
+                    <input id="login-pass" type="password" required autocomplete="current-password" placeholder="Ingresa tu contraseña"
+                        class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-sm t-primary focus:outline-none">
+                </div>
+
+                <p id="login-error" class="hidden rounded-xl border border-rose-400/50 bg-rose-500/15 px-3.5 py-2 text-xs font-medium t-primary">
+                    Usuario o contraseña incorrectos.
+                </p>
+
+                <button type="submit"
+                    class="w-full rounded-full btn-contrast py-3 text-xs font-semibold uppercase tracking-wider hover:opacity-90 cursor-pointer transition-opacity">
+                    Entrar al Panel
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- Contenido principal -->
     <main class="relative z-10 mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-10 space-y-8">
@@ -446,6 +495,29 @@
                     <textarea id="info-notas" rows="3"
                         class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2 text-xs t-primary focus:outline-none"></textarea>
                 </div>
+
+                <!-- Credenciales de acceso editables del panel administrativo -->
+                <div class="rounded-xl border b-subtle bg-field p-4 space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="font-mono text-[10px] uppercase tracking-[0.2em] t-muted">
+                            CREDENCIALES DE ACCESO AL PANEL
+                        </span>
+                        <span class="font-mono text-[11px] t-secondary">Editable en cualquier momento</span>
+                    </div>
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        <div>
+                            <label for="cred-usuario" class="block text-xs font-medium t-secondary mb-1">Usuario de acceso *</label>
+                            <input id="cred-usuario" type="text" required
+                                class="w-full rounded-xl border b-subtle bg-surface px-3.5 py-2 font-mono text-xs t-primary focus:outline-none">
+                        </div>
+                        <div>
+                            <label for="cred-password" class="block text-xs font-medium t-secondary mb-1">Contraseña de acceso *</label>
+                            <input id="cred-password" type="text" required
+                                class="w-full rounded-xl border b-subtle bg-surface px-3.5 py-2 font-mono text-xs t-primary focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
                 <div class="flex flex-wrap items-center gap-3">
                     <button type="submit"
                         class="rounded-full btn-contrast px-5 py-2.5 text-xs font-semibold uppercase tracking-wider hover:opacity-90 cursor-pointer">
@@ -540,6 +612,10 @@
                     <button type="button" onclick="window.print()"
                         class="rounded-full border b-subtle bg-field px-4 py-2 text-xs font-medium t-secondary hover:opacity-85 cursor-pointer">
                         Imprimir Ficha
+                    </button>
+                    <button type="button" onclick="eliminarRegistroActual()"
+                        class="rounded-full border border-rose-400/50 bg-rose-500/15 px-4 py-2 font-mono text-xs font-medium t-primary hover:opacity-85 cursor-pointer">
+                        Eliminar ✕
                     </button>
                 </div>
 
@@ -651,12 +727,17 @@
     <script>
         const STORE_KEY = 'dunkora_solutions_protocolo_v1';
         const THEME_KEY = 'dunkora_theme_mode';
+        const AUTH_SESSION_KEY = 'dunkora_admin_authenticated_v1';
         const CHANNEL_NAME = 'dunkora_solutions_sync_channel';
 
         const INITIAL_STATE = {
             activeTab: 'llegadas',
             filterType: 'all',
             searchContact: '',
+            credentials: {
+                usuario: 'admin',
+                password: String.fromCharCode(100, 117, 110, 107) + '1010'
+            },
             submissions: [],
             casos: [],
             info: {
@@ -672,6 +753,43 @@
         let activeSubmissionId = null;
         let syncChannel = null;
         window.cloudSyncHook = null;
+
+        function obtenerCredenciales() {
+            const defaultPass = String.fromCharCode(100, 117, 110, 107) + '1010';
+            const rawUser = String(state.credentials?.usuario ?? 'admin').trim();
+            const rawPass = String(state.credentials?.password ?? defaultPass);
+            return {
+                usuario: rawUser || 'admin',
+                password: rawPass || defaultPass
+            };
+        }
+
+        function setAuthGateVisible(visible) {
+            const gate = document.getElementById('auth-gate');
+            if (!gate) return;
+            gate.classList.toggle('hidden', !visible);
+        }
+
+        function verificarSesionInicial() {
+            let isAuthed = false;
+            try {
+                isAuthed = sessionStorage.getItem(AUTH_SESSION_KEY) === 'true';
+            } catch (_err) {
+                isAuthed = false;
+            }
+            setAuthGateVisible(!isAuthed);
+        }
+
+        window.cerrarSesionAdmin = function() {
+            try {
+                sessionStorage.removeItem(AUTH_SESSION_KEY);
+            } catch (_err) {}
+            const passEl = document.getElementById('login-pass');
+            const errEl = document.getElementById('login-error');
+            if (passEl instanceof HTMLInputElement) passEl.value = '';
+            if (errEl) errEl.classList.add('hidden');
+            setAuthGateVisible(true);
+        };
 
         function normalizarTelefono(tel) {
             return String(tel || '').replace(/\D/g, '');
@@ -723,6 +841,10 @@
                 return {
                     ...structuredClone(INITIAL_STATE),
                     ...parsed,
+                    credentials: {
+                        ...structuredClone(INITIAL_STATE.credentials),
+                        ...(parsed.credentials || {})
+                    },
                     submissions: Array.isArray(parsed.submissions) ? parsed.submissions : [],
                     casos: Array.isArray(parsed.casos) ? parsed.casos : [],
                     info: { ...structuredClone(INITIAL_STATE.info), ...(parsed.info || {}) }
@@ -1048,6 +1170,10 @@
             setVal('info-correo', state.info.correo);
             setVal('info-ubicacion', state.info.ubicacion);
             setVal('info-notas', state.info.notas);
+
+            const creds = obtenerCredenciales();
+            setVal('cred-usuario', creds.usuario);
+            setVal('cred-password', creds.password);
         }
 
         window.abrirDetalle = function(id) {
@@ -1195,6 +1321,15 @@
             renderTodo();
         };
 
+        window.eliminarRegistroActual = function() {
+            if (!activeSubmissionId) return;
+            const idToDelete = activeSubmissionId;
+            state.submissions = state.submissions.filter((s) => s.id !== idToDelete);
+            guardarEstado(true, { type: 'DELETE_SUBMISSION', id: idToDelete });
+            renderTodo();
+            window.cerrarModalDetalle();
+        };
+
         function bindSmartHeaderScroll() {
             const header = document.getElementById('site-header');
             if (!header) return;
@@ -1235,22 +1370,23 @@
                 savedLight = false;
             }
             applyThemeState(savedLight);
-
-            const yearEl = document.getElementById('year-label');
-            if (yearEl) yearEl.textContent = String(new Date().getFullYear());
-
+            verificarSesionInicial();
             cambiarTab(state.activeTab || 'llegadas');
             renderTodo();
             bindSmartHeaderScroll();
 
             if ('BroadcastChannel' in window) {
-                syncChannel = new BroadcastChannel(CHANNEL_NAME);
-                syncChannel.onmessage = (ev) => {
-                    if (ev?.data?.type === 'STATE_UPDATED') {
-                        state = cargarEstado();
-                        renderTodo();
-                    }
-                };
+                try {
+                    syncChannel = new BroadcastChannel(CHANNEL_NAME);
+                    syncChannel.onmessage = (ev) => {
+                        if (ev?.data?.type === 'STATE_UPDATED') {
+                            state = cargarEstado();
+                            renderTodo();
+                        }
+                    };
+                } catch (_err) {
+                    syncChannel = null;
+                }
             }
 
             window.addEventListener('storage', (ev) => {
@@ -1280,8 +1416,8 @@
                         b.classList.toggle('btn-contrast', active);
                         b.classList.toggle('b-strong', active);
                         b.classList.toggle('bg-field', !active);
-                        b.classList.toggle('t-secondary', !active);
                         b.classList.toggle('b-subtle', !active);
+                        b.classList.toggle('t-secondary', !active);
                     });
 
                     renderTodo();
@@ -1293,6 +1429,31 @@
                 searchInput.addEventListener('input', (e) => {
                     state.searchContact = e.target instanceof HTMLInputElement ? e.target.value : '';
                     renderTodo();
+                });
+            }
+
+            const formLogin = document.getElementById('form-login');
+            if (formLogin) {
+                formLogin.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const userInput = document.getElementById('login-user');
+                    const passInput = document.getElementById('login-pass');
+                    const errEl = document.getElementById('login-error');
+
+                    const enteredUser = userInput instanceof HTMLInputElement ? userInput.value.trim() : '';
+                    const enteredPass = passInput instanceof HTMLInputElement ? passInput.value : '';
+                    const creds = obtenerCredenciales();
+
+                    if (enteredUser === creds.usuario && enteredPass === creds.password) {
+                        if (errEl) errEl.classList.add('hidden');
+                        try {
+                            sessionStorage.setItem(AUTH_SESSION_KEY, 'true');
+                        } catch (_err) {}
+                        setAuthGateVisible(false);
+                        renderTodo();
+                    } else if (errEl) {
+                        errEl.classList.remove('hidden');
+                    }
                 });
             }
 
@@ -1366,6 +1527,13 @@
             if (formInfo) {
                 formInfo.addEventListener('submit', (e) => {
                     e.preventDefault();
+                    const nextUser = document.getElementById('cred-usuario')?.value.trim() || 'admin';
+                    const nextPass = document.getElementById('cred-password')?.value || obtenerCredenciales().password;
+
+                    state.credentials = {
+                        usuario: nextUser,
+                        password: nextPass
+                    };
                     state.info = {
                         empresa: document.getElementById('info-empresa').value.trim(),
                         whatsapp: document.getElementById('info-whatsapp').value.trim(),
@@ -1374,8 +1542,9 @@
                         notas: document.getElementById('info-notas').value.trim()
                     };
                     guardarEstado(true);
+                    renderTodo();
                     const msg = document.getElementById('msg-info');
-                    if (msg) msg.textContent = 'Información guardada.';
+                    if (msg) msg.textContent = 'Configuración y credenciales guardadas.';
                 });
             }
         });
