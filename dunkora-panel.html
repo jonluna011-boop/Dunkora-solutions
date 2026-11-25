@@ -1571,14 +1571,16 @@
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
         import {
+            getAuth,
+            signInAnonymously
+        } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import {
             getFirestore,
             collection,
             doc,
             setDoc,
             deleteDoc,
             onSnapshot,
-            query,
-            orderBy,
             serverTimestamp
         } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
@@ -1594,13 +1596,32 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
         const colRef = collection(db, 'submissions');
-        const q = query(colRef, orderBy('createdAtServer', 'desc'));
         const statusEl = document.getElementById('sync-status-label');
+
+        function ordenarPorFechaDesc(items) {
+            return [...items].sort((a, b) => {
+                const ta = a?.createdAtServer?.seconds
+                    ? a.createdAtServer.seconds * 1000
+                    : Date.parse(a?.updatedAtIso || a?.createdAtIso || '') || 0;
+                const tb = b?.createdAtServer?.seconds
+                    ? b.createdAtServer.seconds * 1000
+                    : Date.parse(b?.updatedAtIso || b?.createdAtIso || '') || 0;
+                if (tb !== ta) return tb - ta;
+                return String(b?.id || '').localeCompare(String(a?.id || ''));
+            });
+        }
 
         window.cloudSyncHook = async function (action) {
             if (!action) return;
+            if (!auth.currentUser) {
+                try {
+                    await signInAnonymously(auth);
+                } catch (_authErr) {}
+            }
+
             if (action.type === 'DELETE_SUBMISSION' && action.id) {
                 try {
                     await deleteDoc(doc(db, 'submissions', action.id));
@@ -1613,10 +1634,13 @@
             }
             if (action.type !== 'UPSERT_SUBMISSION' || !action.submission?.id) return;
             try {
+                const nowIso = new Date().toISOString();
                 await setDoc(
                     doc(db, 'submissions', action.submission.id),
                     {
                         ...action.submission,
+                        updatedAtIso: nowIso,
+                        createdAtIso: action.submission.createdAtIso || nowIso,
                         updatedAtServer: serverTimestamp(),
                         createdAtServer: action.submission.createdAtServer || serverTimestamp()
                     },
@@ -1625,29 +1649,41 @@
                 if (statusEl) statusEl.textContent = 'Sincronizado con Firestore en tiempo real';
             } catch (err) {
                 console.error('Error sincronizando con Firestore:', err);
-                if (statusEl) statusEl.textContent = 'Modo local activo';
+                if (statusEl) statusEl.textContent = 'Modo local activo (revisa reglas de Firestore)';
             }
         };
 
-        onSnapshot(
-            q,
-            (snapshot) => {
-                const cloudItems = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
-                if (typeof state !== 'undefined' && typeof renderTodo === 'function') {
-                    state.submissions = combinarSubmissionsConLocal(cloudItems);
-                    try {
-                        localStorage.setItem(STORE_KEY, JSON.stringify(state));
-                    } catch (_err) {}
-                    renderTodo();
-                    if (statusEl) statusEl.textContent = 'Conectado a Firestore • Tiempo real';
-                }
-            },
-            (err) => {
-                console.warn('Escucha de Firestore no disponible:', err);
-                if (statusEl) statusEl.textContent = 'Modo local activo (revisa reglas de Firestore)';
-                if (typeof renderTodo === 'function') renderTodo();
+        async function iniciarEscuchaNube() {
+            try {
+                await signInAnonymously(auth);
+            } catch (_authErr) {
+                // Continúa si el proyecto tiene autenticación anónima deshabilitada
             }
-        );
+
+            onSnapshot(
+                colRef,
+                (snapshot) => {
+                    const cloudItems = ordenarPorFechaDesc(
+                        snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
+                    );
+                    if (typeof state !== 'undefined' && typeof renderTodo === 'function') {
+                        state.submissions = combinarSubmissionsConLocal(cloudItems);
+                        try {
+                            localStorage.setItem(STORE_KEY, JSON.stringify(state));
+                        } catch (_err) {}
+                        renderTodo();
+                        if (statusEl) statusEl.textContent = 'Conectado a Firestore • Tiempo real';
+                    }
+                },
+                (err) => {
+                    console.warn('Escucha de Firestore no disponible:', err);
+                    if (statusEl) statusEl.textContent = 'Sin conexión entre dispositivos (revisa reglas Firestore)';
+                    if (typeof renderTodo === 'function') renderTodo();
+                }
+            );
+        }
+
+        iniciarEscuchaNube();
     </script>
 </body>
 </html>
