@@ -289,6 +289,21 @@ input:-webkit-autofill:focus {
                 max-width: 100% !important;
             }
         }
+            html:not(.light-theme) #diagnostico [class*="blur"],
+html:not(.light-theme) #diagnostico [class*="glow"],
+html:not(.light-theme) .glass-card,
+html:not(.light-theme) .situation-btn,
+html:not(.light-theme) [class*="card"] {
+  box-shadow: none !important;
+}
+
+html:not(.light-theme) #diagnostico::before,
+html:not(.light-theme) #diagnostico::after,
+html:not(.light-theme) #diagnostico *::before,
+html:not(.light-theme) #diagnostico *::after {
+  background-image: none !important;
+  box-shadow: none !important;
+}
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
