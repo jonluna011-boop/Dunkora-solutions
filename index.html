@@ -372,15 +372,15 @@
                         </p>
 
                         <div class="flex flex-wrap items-center gap-4 pt-2">
-                            <a href="#diagnostico"
-                                class="inline-flex items-center justify-center rounded-full btn-contrast px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.16em] hover:opacity-90 transition-opacity">
-                                Diagnosticar Mi Empresa
-                            </a>
-                            <a href="#cotizador"
-                                class="inline-flex items-center justify-center rounded-full border b-strong bg-field px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.16em] t-primary hover:opacity-85 transition-opacity">
-                                Cotizar a Medida
-                            </a>
-                        </div>
+                        <a href="#diagnostico"
+                            class="inline-flex items-center justify-center rounded-full btn-contrast px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.16em] hover:opacity-90 transition-opacity">
+                            Diagnosticar Mi Empresa
+                        </a>
+                        <a href="#cotizador"
+                            class="inline-flex items-center justify-center rounded-full border b-strong bg-field px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.16em] t-primary hover:opacity-85 transition-opacity">
+                            Cotizar a Medida
+                        </a>
+                    </div>
                     </div>
             </div>
         </section>
@@ -1173,9 +1173,8 @@
                 const raw = localStorage.getItem(SHARED_PANEL_KEY);
                 const parsed = raw ? JSON.parse(raw) : {};
                 const currentSubmissions = Array.isArray(parsed.submissions) ? parsed.submissions : [];
-                const withoutDup = currentSubmissions.filter((item) => item && item.id !== record.id);
-                withoutDup.unshift(record);
-                localStorage.setItem(SHARED_PANEL_KEY, JSON.stringify({ ...parsed, submissions: withoutDup }));
+                currentSubmissions.unshift(record);
+                localStorage.setItem(SHARED_PANEL_KEY, JSON.stringify({ ...parsed, submissions: currentSubmissions }));
                 if (panelSyncChannel) {
                     panelSyncChannel.postMessage({ type: 'STATE_UPDATED', at: Date.now() });
                 }
@@ -1725,26 +1724,10 @@
         });
     </script>
 
-    <!-- Conexión Firestore -->
+    <!-- Inicialización Firebase -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
         import { getAnalytics } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js';
-        import {
-            getAuth,
-            signInAnonymously
-        } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-        import {
-            getFirestore,
-            collection,
-            doc,
-            setDoc,
-            serverTimestamp
-        } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
-        import {
-            getDatabase,
-            ref,
-            set
-        } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyAC0Pb5I6bXhX5t3CL-w7VRsTFu8njtIZg",
@@ -1761,45 +1744,6 @@
         try {
             getAnalytics(app);
         } catch (_analyticsErr) {}
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const rtdb = getDatabase(app);
-        const colRef = collection(db, 'submissions');
-
-        const originalPublish = window.publishSubmissionToPanel;
-        window.publishSubmissionToPanel = async function (entry) {
-            if (!entry) return;
-            const docId = entry.id || `SUB-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-            const nowIso = new Date().toISOString();
-            const payload = {
-                ...entry,
-                id: docId,
-                createdAtIso: entry.createdAtIso || nowIso,
-                updatedAtIso: nowIso
-            };
-
-            if (typeof originalPublish === 'function') {
-                originalPublish(payload);
-            }
-
-            try {
-                if (!auth.currentUser) {
-                    try {
-                        await signInAnonymously(auth);
-                    } catch (_authErr) {}
-                }
-                await Promise.allSettled([
-                    set(ref(rtdb, `submissions/${docId}`), payload),
-                    setDoc(doc(colRef, docId), {
-                        ...payload,
-                        createdAtServer: serverTimestamp(),
-                        updatedAtServer: serverTimestamp()
-                    }, { merge: true })
-                ]);
-            } catch (err) {
-                console.error('Error enviando a Firebase:', err);
-            }
-        };
     </script>
 </body>
 </html>
