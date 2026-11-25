@@ -1722,28 +1722,30 @@
             bindScrollReveal();
             bindSmartHeaderScroll();
         });
-    </script>
 
-    <!-- Inicialización Firebase -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-        import { getAnalytics } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js';
+        // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAC0Pb5I6bXhX5t3CL-w7VRsTFu8njtIZg",
-            authDomain: "dunkora-solutions.firebaseapp.com",
-            databaseURL: "https://dunkora-solutions-default-rtdb.firebaseio.com",
-            projectId: "dunkora-solutions",
-            storageBucket: "dunkora-solutions.firebasestorage.app",
-            messagingSenderId: "584762226406",
-            appId: "1:584762226406:web:f7f1d7ebf172945a10ed27",
-            measurementId: "G-E9L5EWKMEV"
-        };
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAC0Pb5I6bXhX5t3CL-w7VRsTFu8njtIZg",
+  authDomain: "dunkora-solutions.firebaseapp.com",
+  databaseURL: "https://dunkora-solutions-default-rtdb.firebaseio.com",
+  projectId: "dunkora-solutions",
+  storageBucket: "dunkora-solutions.firebasestorage.app",
+  messagingSenderId: "584762226406",
+  appId: "1:584762226406:web:f7f1d7ebf172945a10ed27",
+  measurementId: "G-E9L5EWKMEV"
+};
 
-        const app = initializeApp(firebaseConfig);
-        try {
-            getAnalytics(app);
-        } catch (_analyticsErr) {}
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+        
     </script>
 </body>
 </html>
