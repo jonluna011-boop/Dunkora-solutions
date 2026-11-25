@@ -1579,12 +1579,19 @@
             isApplyingRemoteSnapshot = true;
             try {
                 const combinedMap = new Map();
-                latestFirestoreItems.forEach((item) => {
-                    if (item && item.id) combinedMap.set(item.id, item);
-                });
-                latestRtdbItems.forEach((item) => {
-                    if (item && item.id) combinedMap.set(item.id, item);
-                });
+const localItems = Array.isArray(state?.submissions) ? state.submissions : [];
+
+localItems.forEach((item) => {
+    if (item && item.id) combinedMap.set(item.id, item);
+});
+
+latestFirestoreItems.forEach((item) => {
+    if (item && item.id) combinedMap.set(item.id, item);
+});
+
+latestRtdbItems.forEach((item) => {
+    if (item && item.id) combinedMap.set(item.id, item);
+});
 
                 const ordenados = ordenarPorFechaDesc(Array.from(combinedMap.values()));
                 if (typeof state === 'object' && state) {
