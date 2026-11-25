@@ -57,7 +57,30 @@
             --accent-solid-text: #050507;
             --orbital-invert: 0;
             --orbital-blend: screen;
-        }
+            :root {
+  color-scheme: dark;
+}
+
+select,
+input[type="date"],
+input[type="time"] {
+  background-color: #141619;
+  color: #f3f4f6;
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+select option {
+  background-color: #141619;
+  color: #f3f4f6;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f3f4f6;
+  -webkit-box-shadow: 0 0 0px 1000px #141619 inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
 
         html.light-theme {
             --bg-cinema: #f8f8fa;
