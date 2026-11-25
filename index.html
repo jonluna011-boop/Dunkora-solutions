@@ -1164,12 +1164,18 @@
         }
 
         function publishSubmissionToPanel(entry) {
+            if (!entry) return;
+            const record = {
+                ...entry,
+                id: entry.id || `SUB-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+            };
             try {
                 const raw = localStorage.getItem(SHARED_PANEL_KEY);
                 const parsed = raw ? JSON.parse(raw) : {};
                 const currentSubmissions = Array.isArray(parsed.submissions) ? parsed.submissions : [];
-                currentSubmissions.unshift(entry);
-                localStorage.setItem(SHARED_PANEL_KEY, JSON.stringify({ ...parsed, submissions: currentSubmissions }));
+                const withoutDup = currentSubmissions.filter((item) => item && item.id !== record.id);
+                withoutDup.unshift(record);
+                localStorage.setItem(SHARED_PANEL_KEY, JSON.stringify({ ...parsed, submissions: withoutDup }));
                 if (panelSyncChannel) {
                     panelSyncChannel.postMessage({ type: 'STATE_UPDATED', at: Date.now() });
                 }
@@ -1722,7 +1728,17 @@
     <!-- Conexión Firestore -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-        import { getFirestore, collection, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        import {
+            getAuth,
+            signInAnonymously
+        } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import {
+            getFirestore,
+            collection,
+            doc,
+            setDoc,
+            serverTimestamp
+        } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyAC0Pb5I6bXhX5t3CL-w7VRStFu8njtIZg",
@@ -1736,21 +1752,37 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
         const colRef = collection(db, 'submissions');
 
         const originalPublish = window.publishSubmissionToPanel;
         window.publishSubmissionToPanel = async function (entry) {
+            if (!entry) return;
+            const docId = entry.id || `SUB-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+            const nowIso = new Date().toISOString();
+            const payload = {
+                ...entry,
+                id: docId,
+                createdAtIso: entry.createdAtIso || nowIso,
+                updatedAtIso: nowIso
+            };
+
             if (typeof originalPublish === 'function') {
-                originalPublish(entry);
+                originalPublish(payload);
             }
+
             try {
-                const docId = entry.id || `SUB-${Date.now()}`;
+                if (!auth.currentUser) {
+                    try {
+                        await signInAnonymously(auth);
+                    } catch (_authErr) {}
+                }
                 await setDoc(doc(colRef, docId), {
-                    ...entry,
-                    id: docId,
-                    createdAtServer: serverTimestamp()
-                });
+                    ...payload,
+                    createdAtServer: serverTimestamp(),
+                    updatedAtServer: serverTimestamp()
+                }, { merge: true });
             } catch (err) {
                 console.error('Error enviando a Firestore:', err);
             }
