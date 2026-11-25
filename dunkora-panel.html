@@ -1600,6 +1600,7 @@
         const db = getFirestore(app);
         const colRef = collection(db, 'submissions');
         const statusEl = document.getElementById('sync-status-label');
+        let isApplyingRemoteSnapshot = false;
 
         function ordenarPorFechaDesc(items) {
             return [...items].sort((a, b) => {
@@ -1615,7 +1616,7 @@
         }
 
         window.cloudSyncHook = async function (action) {
-            if (!action) return;
+            if (!action || isApplyingRemoteSnapshot) return;
             if (!auth.currentUser) {
                 try {
                     await signInAnonymously(auth);
@@ -1662,17 +1663,27 @@
 
             onSnapshot(
                 colRef,
+                { includeMetadataChanges: true },
                 (snapshot) => {
-                    const cloudItems = ordenarPorFechaDesc(
-                        snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
-                    );
-                    if (typeof state !== 'undefined' && typeof renderTodo === 'function') {
-                        state.submissions = combinarSubmissionsConLocal(cloudItems);
-                        try {
-                            localStorage.setItem(STORE_KEY, JSON.stringify(state));
-                        } catch (_err) {}
-                        renderTodo();
-                        if (statusEl) statusEl.textContent = 'Conectado a Firestore • Tiempo real';
+                    isApplyingRemoteSnapshot = true;
+                    try {
+                        const cloudItems = ordenarPorFechaDesc(
+                            snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
+                        );
+                        if (typeof state !== 'undefined' && typeof renderTodo === 'function') {
+                            state.submissions = combinarSubmissionsConLocal(cloudItems);
+                            try {
+                                localStorage.setItem(STORE_KEY, JSON.stringify(state));
+                            } catch (_err) {}
+                            renderTodo();
+                            if (statusEl) {
+                                statusEl.textContent = snapshot.metadata.fromCache
+                                    ? 'Conectado a Firestore • Caché local sincronizada'
+                                    : 'Conectado a Firestore • Tiempo real';
+                            }
+                        }
+                    } finally {
+                        isApplyingRemoteSnapshot = false;
                     }
                 },
                 (err) => {
