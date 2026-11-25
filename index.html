@@ -1740,6 +1740,11 @@
             setDoc,
             serverTimestamp
         } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        import {
+            getDatabase,
+            ref,
+            set
+        } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyAC0Pb5I6bXhX5t3CL-w7VRsTFu8njtIZg",
@@ -1758,6 +1763,7 @@
         } catch (_analyticsErr) {}
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const rtdb = getDatabase(app);
         const colRef = collection(db, 'submissions');
 
         const originalPublish = window.publishSubmissionToPanel;
@@ -1782,13 +1788,16 @@
                         await signInAnonymously(auth);
                     } catch (_authErr) {}
                 }
-                await setDoc(doc(colRef, docId), {
-                    ...payload,
-                    createdAtServer: serverTimestamp(),
-                    updatedAtServer: serverTimestamp()
-                }, { merge: true });
+                await Promise.allSettled([
+                    set(ref(rtdb, `submissions/${docId}`), payload),
+                    setDoc(doc(colRef, docId), {
+                        ...payload,
+                        createdAtServer: serverTimestamp(),
+                        updatedAtServer: serverTimestamp()
+                    }, { merge: true })
+                ]);
             } catch (err) {
-                console.error('Error enviando a Firestore:', err);
+                console.error('Error enviando a Firebase:', err);
             }
         };
     </script>
