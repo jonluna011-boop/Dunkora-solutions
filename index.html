@@ -1116,68 +1116,7 @@ input:-webkit-autofill:focus {
         /* =========================================================================
            3. DATOS, CASOS DE ÉXITO, FORMULARIOS, PDF Y SINCRONIZACIÓN
         ========================================================================= */
-        const PROJECTS = [
-            {
-                id: 'darkor-store',
-                code: 'DARKOR STORE',
-                badge: 'Producción',
-                stack: 'v2.4 Live',
-                subtitle: 'E-Commerce & Panel Operativo',
-                title: 'Tienda Online y Control de Inventario',
-                description: 'Plataforma de venta en línea con catálogo dinámico, control de existencias y flujo ágil de pedidos para operación diaria.',
-                category: 'web',
-                featured: true,
-                clientUrl: 'https://ejemplo-darkor-store.dunkora.mx'
-            },
-            {
-                id: 'agente-ventas-247',
-                code: 'AGENTE VENTAS 24/7',
-                badge: 'IA Activa',
-                stack: 'LLM + Flujos',
-                subtitle: 'Asistente Conversacional Funcional',
-                title: 'Agente de Atención y Calificación',
-                description: 'Asistente inteligente configurado para responder dudas frecuentes, orientar prospectos y canalizar oportunidades sin demoras.',
-                category: 'ia',
-                featured: true,
-                clientUrl: 'https://ejemplo-agente-ia.dunkora.mx'
-            },
-            {
-                id: 'gestion-tecnica-pro',
-                code: 'GESTIÓN TÉCNICA PRO',
-                badge: 'Sistema Web',
-                stack: 'Real-Time Sync',
-                subtitle: 'Control de Órdenes y Seguimiento',
-                title: 'Sistema de Gestión Operativa',
-                description: 'Aplicación web para administrar órdenes de servicio, estados en tiempo real y reportes claros para dirección y equipo.',
-                category: 'web',
-                featured: true,
-                clientUrl: 'https://ejemplo-gestion-pro.dunkora.mx'
-            },
-            {
-                id: 'soporte-operativo-ia',
-                code: 'COPILOTO INTERNO IA',
-                badge: 'Automatización',
-                stack: 'Base de Conocimiento',
-                subtitle: 'Consulta Rápida de Procesos',
-                title: 'Asistente de Procesos y Soporte',
-                description: 'Apoyo conversacional para consultar políticas, pasos operativos y respuestas estándar, reduciendo fricción en equipos en crecimiento.',
-                category: 'ia',
-                featured: false,
-                clientUrl: 'https://ejemplo-copiloto-ia.dunkora.mx'
-            },
-            {
-                id: 'portal-citas-clinica',
-                code: 'AGENDA & PORTAL WEB',
-                badge: 'Web App',
-                stack: 'Booking Flow',
-                subtitle: 'Sitio Corporativo y Reservas',
-                title: 'Portal de Servicios y Agenda',
-                description: 'Sitio web con información clara por especialidad y flujo organizado para solicitar citas sin saturar la línea telefónica.',
-                category: 'web',
-                featured: false,
-                clientUrl: 'https://ejemplo-portal-citas.dunkora.mx'
-            }
-        ];
+        let PROJECTS = [];
 
         let currentPortfolioView = 'featured';
         let currentPortfolioCategory = 'all';
@@ -1251,7 +1190,15 @@ input:-webkit-autofill:focus {
                 const categoryMatch = currentPortfolioCategory === 'all' || project.category === currentPortfolioCategory;
                 return viewMatch && categoryMatch;
             });
-
+if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="cinema-card rounded-2xl p-8 text-center md:col-span-2 lg:col-span-3 space-y-2">
+                        <p class="font-mono text-xs uppercase tracking-widest t-muted">Catálogo en preparación</p>
+                        <p class="text-sm t-secondary">Aún no hay casos de éxito publicados en esta categoría.</p>
+                    </div>
+                `;
+                return;
+            }
             grid.innerHTML = filtered.map((project) => `
                 <article class="cinema-card rounded-2xl overflow-hidden flex flex-col justify-between">
                     <div>
@@ -1768,7 +1715,7 @@ input:-webkit-autofill:focus {
         import { getAnalytics } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js';
         import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
         import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
-        import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js';
+        import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyAC0Pb5I6bXhX5t3CL-w7VRsTFu8njtIZg",
@@ -1789,6 +1736,13 @@ input:-webkit-autofill:focus {
         const auth = getAuth(app);
         const db = getFirestore(app);
         const rtdb = getDatabase(app);
+
+onValue(ref(rtdb, 'projects'), (snapshot) => {
+    const val = snapshot.val();
+    const list = val ? (Array.isArray(val) ? val : Object.values(val)) : [];
+    PROJECTS = list.filter((item) => item && item.published !== false);
+    renderProjects();
+});
 
         signInAnonymously(auth).catch(() => {});
 
