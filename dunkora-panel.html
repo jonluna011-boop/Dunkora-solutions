@@ -854,6 +854,23 @@
             }
         }
 
+        function combinarSubmissionsConLocal(cloudItems) {
+            const localItems = Array.isArray(state?.submissions) ? state.submissions : [];
+            const mergedMap = new Map();
+
+            (Array.isArray(cloudItems) ? cloudItems : []).forEach((item) => {
+                if (item && item.id) mergedMap.set(item.id, item);
+            });
+
+            localItems.forEach((item) => {
+                if (item && item.id && !mergedMap.has(item.id)) {
+                    mergedMap.set(item.id, item);
+                }
+            });
+
+            return Array.from(mergedMap.values());
+        }
+
         function guardarEstado(notifyPeers = true, cloudAction = null) {
             try {
                 localStorage.setItem(STORE_KEY, JSON.stringify(state));
@@ -1617,7 +1634,7 @@
             (snapshot) => {
                 const cloudItems = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
                 if (typeof state !== 'undefined' && typeof renderTodo === 'function') {
-                    state.submissions = cloudItems;
+                    state.submissions = combinarSubmissionsConLocal(cloudItems);
                     try {
                         localStorage.setItem(STORE_KEY, JSON.stringify(state));
                     } catch (_err) {}
@@ -1627,7 +1644,8 @@
             },
             (err) => {
                 console.warn('Escucha de Firestore no disponible:', err);
-                if (statusEl) statusEl.textContent = 'Control interno local';
+                if (statusEl) statusEl.textContent = 'Modo local activo (revisa reglas de Firestore)';
+                if (typeof renderTodo === 'function') renderTodo();
             }
         );
     </script>
