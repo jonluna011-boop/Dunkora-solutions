@@ -1636,6 +1636,105 @@
                 latestRtdbItems.forEach((item) => {
                     if (item && item.id) combinedMap.set(item.id, item);
                 });
+
+                const ordenados = ordenarPorFechaDesc(Array.from(combinedMap.values()));
+                if (typeof state === 'object' && state) {
+                    state.submissions = ordenados;
+                    if (typeof guardarEstado === 'function') guardarEstado(false);
+                    if (typeof renderTodo === 'function') renderTodo();
+                }
+                if (statusEl) {
+                    const hora = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+                    statusEl.textContent = `Sincronizado (${sourceLabel}) • ${hora}`;
+                }
+            } catch (syncErr) {
+                console.error('Error aplicando datos remotos:', syncErr);
+                if (statusEl) statusEl.textContent = 'Error al sincronizar datos remotos';
+            } finally {
+                isApplyingRemoteSnapshot = false;
+            }
+        }
+
+        function sincronizarRegistroEnNube(item) {
+            if (!item || !item.id || isApplyingRemoteSnapshot) return;
+            const payload = {
+                ...item,
+                updatedAtIso: new Date().toISOString(),
+                createdAtServer: serverTimestamp()
+            };
+            setDoc(doc(db, 'submissions', String(item.id)), payload, { merge: true }).catch((err) => {
+                console.error('Error guardando en Firestore:', err);
+            });
+            set(ref(rtdb, `submissions/${String(item.id)}`), {
+                ...item,
+                updatedAtIso: new Date().toISOString()
+            }).catch((err) => {
+                console.error('Error guardando en Realtime DB:', err);
+            });
+        }
+
+        function eliminarRegistroEnNube(id) {
+            if (!id) return;
+            deleteDoc(doc(db, 'submissions', String(id))).catch((err) => {
+                console.error('Error eliminando en Firestore:', err);
+            });
+            remove(ref(rtdb, `submissions/${String(id)}`)).catch((err) => {
+                console.error('Error eliminando en Realtime DB:', err);
+            });
+        }
+
+        function engancharEventosLocalesANube() {
+            const origGuardarEstado = window.guardarEstado;
+            if (typeof guardarEstado === 'function') {
+                const baseGuardar = guardarEstado;
+                window.guardarEstado = function(notifyPeers = true) {
+                    baseGuardar(notifyPeers);
+                    if (!isApplyingRemoteSnapshot && notifyPeers && Array.isArray(state?.submissions)) {
+                        state.submissions.slice(0, 15).forEach((sub) => sincronizarRegistroEnNube(sub));
+                    }
+                };
+            }
+
+            const origEliminarRegistro = window.eliminarRegistroActual;
+            window.eliminarRegistroActual = function() {
+                const targetId = typeof activeSubmissionId !== 'undefined' ? activeSubmissionId : null;
+                if (typeof origEliminarRegistro === 'function') origEliminarRegistro();
+                if (targetId) eliminarRegistroEnNube(targetId);
+            };
+        }
+
+        async function iniciarEscuchasNube() {
+            try {
+                await signInAnonymously(auth);
+            } catch (_authErr) {}
+
+            onSnapshot(colRef, (snapshot) => {
+                const items = [];
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    if (data) items.push({ ...data, id: data.id || docSnap.id });
+                });
+                latestFirestoreItems = items;
+                aplicarItemsCombinados('Firestore');
+            }, (err) => {
+                console.error('Error en listener Firestore:', err);
+            });
+
+            onValue(rtdbRef, (snapshot) => {
+                const val = snapshot.val();
+                const items = val && typeof val === 'object'
+                    ? Object.entries(val).map(([key, item]) => ({ ...(item || {}), id: item?.id || key }))
+                    : [];
+                latestRtdbItems = items;
+                aplicarItemsCombinados('RTDB');
+            }, (err) => {
+                console.error('Error en listener Realtime DB:', err);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            engancharEventosLocalesANube();
+            iniciarEscuchasNube();
         });
     </script>
 
