@@ -141,14 +141,12 @@
             <div class="flex items-center gap-3">
                 <div class="flex h-9 w-9 items-center justify-center rounded-lg border b-strong bg-field">
                     <svg class="h-5 w-5" viewBox="0 0 64 42" fill="none" aria-label="DK">
-                        <!-- Letra D delgada con abertura hacia </> al centro -->
                         <path d="M10 6.5H19.5C28.8 6.5 34.4 12.4 34.4 21C34.4 29.6 28.8 35.5 19.5 35.5H10V31.3H19.4C26.2 31.3 30.1 27.1 30.1 21C30.1 14.9 26.2 10.7 19.4 10.7H10V6.5Z"
                             fill="currentColor"/>
                         <path d="M13.5 18L9.8 21L13.5 24"
                             stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M18.2 18L21.9 21L18.2 24"
                             stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
-                        <!-- Letra K estilizada -->
                         <path d="M40.5 6H47.5V36H40.5V6Z" fill="currentColor"/>
                         <path d="M47.5 19.2L55.2 9.4C56.8 7.3 58.6 6.2 60.4 6C61.3 5.9 61.8 6.8 61.1 7.8L51.6 20.6L47.5 22.8V19.2Z"
                             fill="currentColor"/>
@@ -291,7 +289,7 @@
             </div>
         </section>
 
-        <!-- ETAPA 1: LLEGADAS (Diagnósticos, Cotizaciones a Medida sin tarifa fija y Citas) -->
+        <!-- ETAPA 1: LLEGADAS -->
         <section id="tab-llegadas" class="tab-panel space-y-5">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b b-subtle pb-5">
                 <div class="space-y-1.5">
@@ -304,7 +302,6 @@
                     </p>
                 </div>
 
-                <!-- Filtros alineados a los tipos del sitio web -->
                 <div class="flex flex-wrap gap-1.5 text-xs font-medium self-start sm:self-auto">
                     <button type="button" data-filter="all"
                         class="flt-btn rounded-full border b-strong btn-contrast px-3.5 py-1.5 cursor-pointer transition-colors">
@@ -328,7 +325,7 @@
             <div id="list-llegadas" class="space-y-3"></div>
         </section>
 
-        <!-- ETAPA 2: EN PROCESO (Cotización enviada, acuerdos tras cita y pagos) -->
+        <!-- ETAPA 2: EN PROCESO -->
         <section id="tab-proceso" class="tab-panel hidden space-y-5">
             <div class="flex items-start justify-between gap-4 border-b b-subtle pb-5">
                 <div class="space-y-1.5">
@@ -552,10 +549,8 @@
                 </button>
             </div>
 
-            <!-- Datos capturados desde la web pública (incluyendo redes sociales, web actual y funciones) -->
             <div id="det-campos" class="grid gap-3 sm:grid-cols-2 text-xs"></div>
 
-            <!-- Control de etapa, cotización personalizada acordada y pagos -->
             <div class="rounded-xl border b-subtle bg-field p-4 space-y-3.5">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <span class="font-mono text-[10px] uppercase tracking-[0.2em] t-muted">
@@ -593,7 +588,6 @@
                 </div>
             </div>
 
-            <!-- Acuerdos de cita, desglose de funciones cotizadas y seguimiento -->
             <div>
                 <label for="det-acuerdos" class="block text-xs font-medium t-secondary mb-1.5">
                     Desglose de cotización a medida / Acuerdos de cita y entregables
@@ -602,7 +596,6 @@
                     class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-xs t-primary focus:outline-none"></textarea>
             </div>
 
-            <!-- Botones de acción -->
             <div class="no-print flex flex-wrap items-center justify-between gap-3 pt-1">
                 <div class="flex flex-wrap items-center gap-2">
                     <a id="det-wa-link" href="#" target="_blank" rel="noopener noreferrer"
@@ -853,23 +846,6 @@
             }
         }
 
-        function combinarSubmissionsConLocal(cloudItems) {
-            const localItems = Array.isArray(state?.submissions) ? state.submissions : [];
-            const mergedMap = new Map();
-
-            (Array.isArray(cloudItems) ? cloudItems : []).forEach((item) => {
-                if (item && item.id) mergedMap.set(item.id, item);
-            });
-
-            localItems.forEach((item) => {
-                if (item && item.id && !mergedMap.has(item.id)) {
-                    mergedMap.set(item.id, item);
-                }
-            });
-
-            return Array.from(mergedMap.values());
-        }
-
         function guardarEstado(notifyPeers = true) {
             try {
                 localStorage.setItem(STORE_KEY, JSON.stringify(state));
@@ -882,7 +858,6 @@
             } catch (_err) {}
         }
 
-        /* Sincronización de tema idéntica al index (Tema Negro por defecto / Tema Blanco) */
         function applyThemeState(isLight) {
             const htmlEl = document.documentElement;
             const iconEl = document.getElementById('theme-toggle-icon');
@@ -1284,7 +1259,6 @@
             const tieneSeguimiento = Boolean(acuerdos) || precioCliente > 0 || pagado > 0;
             sub.etapa = (etapaElegida === 'llegadas' && tieneSeguimiento) ? 'proceso' : etapaElegida;
 
-            // Si pasa a Entregados y pagados (Paso 3), suma automáticamente el anticipo + lo faltante
             if (sub.etapa === 'entregados' && precioCliente > 0) {
                 const faltante = Math.max(0, precioCliente - pagado);
                 pagado = pagado + faltante;
@@ -1376,6 +1350,9 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            const yearEl = document.getElementById('year-label');
+            if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+
             let savedLight = false;
             try {
                 savedLight = localStorage.getItem(THEME_KEY) === 'light';
@@ -1563,7 +1540,7 @@
         });
     </script>
 
-    <!-- Conexión bidireccional con Firestore -->
+    <!-- Conexión bidireccional con Firestore y Realtime Database -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
         import { getAnalytics } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js';
@@ -1603,6 +1580,7 @@
         try {
             getAnalytics(app);
         } catch (_analyticsErr) {}
+
         const auth = getAuth(app);
         const db = getFirestore(app);
         const rtdb = getDatabase(app);
@@ -1684,7 +1662,6 @@
         }
 
         function engancharEventosLocalesANube() {
-            const origGuardarEstado = window.guardarEstado;
             if (typeof guardarEstado === 'function') {
                 const baseGuardar = guardarEstado;
                 window.guardarEstado = function(notifyPeers = true) {
@@ -1736,30 +1713,6 @@
             engancharEventosLocalesANube();
             iniciarEscuchasNube();
         });
-        
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAC0Pb5I6bXhX5t3CL-w7VRsTFu8njtIZg",
-  authDomain: "dunkora-solutions.firebaseapp.com",
-  databaseURL: "https://dunkora-solutions-default-rtdb.firebaseio.com",
-  projectId: "dunkora-solutions",
-  storageBucket: "dunkora-solutions.firebasestorage.app",
-  messagingSenderId: "584762226406",
-  appId: "1:584762226406:web:f7f1d7ebf172945a10ed27",
-  measurementId: "G-E9L5EWKMEV"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-        
     </script>
 </body>
 </html>
