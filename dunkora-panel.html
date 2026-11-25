@@ -1584,6 +1584,13 @@
             onSnapshot,
             serverTimestamp
         } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        import {
+            getDatabase,
+            ref,
+            set,
+            remove,
+            onValue
+        } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyAC0Pb5I6bXhX5t3CL-w7VRsTFu8njtIZg",
@@ -1602,9 +1609,13 @@
         } catch (_analyticsErr) {}
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const rtdb = getDatabase(app);
         const colRef = collection(db, 'submissions');
+        const rtdbRef = ref(rtdb, 'submissions');
         const statusEl = document.getElementById('sync-status-label');
         let isApplyingRemoteSnapshot = false;
+        let latestRtdbItems = [];
+        let latestFirestoreItems = [];
 
         function ordenarPorFechaDesc(items) {
             return [...items].sort((a, b) => {
@@ -1619,6 +1630,33 @@
             });
         }
 
+        function aplicarItemsCombinados(sourceLabel) {
+            isApplyingRemoteSnapshot = true;
+            try {
+                const combinedMap = new Map();
+                latestFirestoreItems.forEach((item) => {
+                    if (item && item.id) combinedMap.set(item.id, item);
+                });
+                latestRtdbItems.forEach((item) => {
+                    if (item && item.id) combinedMap.set(item.id, item);
+                });
+
+                const mergedSorted = ordenarPorFechaDesc(Array.from(combinedMap.values()));
+                if (typeof state !== 'undefined' && typeof renderTodo === 'function') {
+                    state.submissions = combinarSubmissionsConLocal(mergedSorted);
+                    try {
+                        localStorage.setItem(STORE_KEY, JSON.stringify(state));
+                    } catch (_err) {}
+                    renderTodo();
+                    if (statusEl && sourceLabel) {
+                        statusEl.textContent = sourceLabel;
+                    }
+                }
+            } finally {
+                isApplyingRemoteSnapshot = false;
+            }
+        }
+
         window.cloudSyncHook = async function (action) {
             if (!action || isApplyingRemoteSnapshot) return;
             if (!auth.currentUser) {
@@ -1628,11 +1666,16 @@
             }
 
             if (action.type === 'DELETE_SUBMISSION' && action.id) {
+                latestRtdbItems = latestRtdbItems.filter((item) => item?.id !== action.id);
+                latestFirestoreItems = latestFirestoreItems.filter((item) => item?.id !== action.id);
                 try {
-                    await deleteDoc(doc(db, 'submissions', action.id));
-                    if (statusEl) statusEl.textContent = 'Registro eliminado en Firestore';
+                    await Promise.allSettled([
+                        remove(ref(rtdb, `submissions/${action.id}`)),
+                        deleteDoc(doc(db, 'submissions', action.id))
+                    ]);
+                    if (statusEl) statusEl.textContent = 'Registro eliminado en Firebase';
                 } catch (err) {
-                    console.error('Error eliminando en Firestore:', err);
+                    console.error('Error eliminando en Firebase:', err);
                     if (statusEl) statusEl.textContent = 'Eliminado en modo local';
                 }
                 return;
@@ -1640,21 +1683,27 @@
             if (action.type !== 'UPSERT_SUBMISSION' || !action.submission?.id) return;
             try {
                 const nowIso = new Date().toISOString();
-                await setDoc(
-                    doc(db, 'submissions', action.submission.id),
-                    {
-                        ...action.submission,
-                        updatedAtIso: nowIso,
-                        createdAtIso: action.submission.createdAtIso || nowIso,
-                        updatedAtServer: serverTimestamp(),
-                        createdAtServer: action.submission.createdAtServer || serverTimestamp()
-                    },
-                    { merge: true }
-                );
-                if (statusEl) statusEl.textContent = 'Sincronizado con Firestore en tiempo real';
+                const cleanPayload = {
+                    ...action.submission,
+                    updatedAtIso: nowIso,
+                    createdAtIso: action.submission.createdAtIso || nowIso
+                };
+                await Promise.allSettled([
+                    set(ref(rtdb, `submissions/${action.submission.id}`), cleanPayload),
+                    setDoc(
+                        doc(db, 'submissions', action.submission.id),
+                        {
+                            ...cleanPayload,
+                            updatedAtServer: serverTimestamp(),
+                            createdAtServer: action.submission.createdAtServer || serverTimestamp()
+                        },
+                        { merge: true }
+                    )
+                ]);
+                if (statusEl) statusEl.textContent = 'Sincronizado con Firebase en tiempo real';
             } catch (err) {
-                console.error('Error sincronizando con Firestore:', err);
-                if (statusEl) statusEl.textContent = 'Modo local activo (revisa reglas de Firestore)';
+                console.error('Error sincronizando con Firebase:', err);
+                if (statusEl) statusEl.textContent = 'Modo local activo (revisa reglas de Firebase)';
             }
         };
 
@@ -1665,34 +1714,39 @@
                 // Continúa si el proyecto tiene autenticación anónima deshabilitada
             }
 
+            onValue(
+                rtdbRef,
+                (snap) => {
+                    const val = snap.val();
+                    latestRtdbItems = val && typeof val === 'object'
+                        ? Object.entries(val).map(([key, item]) => ({
+                            ...(item && typeof item === 'object' ? item : {}),
+                            id: (item && item.id) || key
+                        }))
+                        : [];
+                    aplicarItemsCombinados('Conectado a Realtime Database • Tiempo real');
+                },
+                (err) => {
+                    console.warn('Escucha de Realtime Database no disponible:', err);
+                }
+            );
+
             onSnapshot(
                 colRef,
                 { includeMetadataChanges: true },
                 (snapshot) => {
-                    isApplyingRemoteSnapshot = true;
-                    try {
-                        const cloudItems = ordenarPorFechaDesc(
-                            snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
-                        );
-                        if (typeof state !== 'undefined' && typeof renderTodo === 'function') {
-                            state.submissions = combinarSubmissionsConLocal(cloudItems);
-                            try {
-                                localStorage.setItem(STORE_KEY, JSON.stringify(state));
-                            } catch (_err) {}
-                            renderTodo();
-                            if (statusEl) {
-                                statusEl.textContent = snapshot.metadata.fromCache
-                                    ? 'Conectado a Firestore • Caché local sincronizada'
-                                    : 'Conectado a Firestore • Tiempo real';
-                            }
-                        }
-                    } finally {
-                        isApplyingRemoteSnapshot = false;
-                    }
+                    latestFirestoreItems = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+                    aplicarItemsCombinados(
+                        snapshot.metadata.fromCache
+                            ? 'Conectado a Firebase • Caché sincronizada'
+                            : 'Conectado a Firebase • Tiempo real'
+                    );
                 },
                 (err) => {
                     console.warn('Escucha de Firestore no disponible:', err);
-                    if (statusEl) statusEl.textContent = 'Sin conexión entre dispositivos (revisa reglas Firestore)';
+                    if (statusEl && latestRtdbItems.length === 0) {
+                        statusEl.textContent = 'Revisa reglas de Firebase (Realtime Database / Firestore)';
+                    }
                     if (typeof renderTodo === 'function') renderTodo();
                 }
             );
