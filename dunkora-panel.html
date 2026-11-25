@@ -161,7 +161,7 @@
                         <span class="font-editorial text-lg font-bold tracking-[0.12em] t-primary">DUNKORA SOLUTIONS</span>
                     </div>
                     <p id="sync-status-label" class="font-mono text-[10px] t-muted">
-                        Conectando con Firestore...
+                        Panel operativo listo
                     </p>
                 </div>
             </div>
@@ -752,7 +752,6 @@
         let state = cargarEstado();
         let activeSubmissionId = null;
         let syncChannel = null;
-        window.cloudSyncHook = null;
 
         function obtenerCredenciales() {
             const defaultPass = String.fromCharCode(100, 117, 110, 107) + '1010';
@@ -871,7 +870,7 @@
             return Array.from(mergedMap.values());
         }
 
-        function guardarEstado(notifyPeers = true, cloudAction = null) {
+        function guardarEstado(notifyPeers = true) {
             try {
                 localStorage.setItem(STORE_KEY, JSON.stringify(state));
                 const footerEl = document.getElementById('footer-updated');
@@ -879,9 +878,6 @@
                 if (footerEl) footerEl.textContent = `Actualizado • ${nowTime}`;
                 if (notifyPeers && syncChannel) {
                     syncChannel.postMessage({ type: 'STATE_UPDATED', at: Date.now() });
-                }
-                if (cloudAction && typeof window.cloudSyncHook === 'function') {
-                    window.cloudSyncHook(cloudAction, state);
                 }
             } catch (_err) {}
         }
@@ -1298,7 +1294,7 @@
             sub.pagado = pagado;
             sub.acuerdos = acuerdos;
 
-            guardarEstado(true, { type: 'UPSERT_SUBMISSION', submission: sub });
+            guardarEstado(true);
             renderTodo();
             const targetTab = sub.etapa;
             window.cerrarModalDetalle();
@@ -1318,7 +1314,7 @@
             sub.pagado = precio > 0 ? (anticipoActual + faltante) : anticipoActual;
             sub.acuerdos = document.getElementById('det-acuerdos').value.trim() || 'Proyecto entregado y liquidado.';
 
-            guardarEstado(true, { type: 'UPSERT_SUBMISSION', submission: sub });
+            guardarEstado(true);
             renderTodo();
             window.cerrarModalDetalle();
             cambiarTab('entregados');
@@ -1342,7 +1338,7 @@
             if (!activeSubmissionId) return;
             const idToDelete = activeSubmissionId;
             state.submissions = state.submissions.filter((s) => s.id !== idToDelete);
-            guardarEstado(true, { type: 'DELETE_SUBMISSION', id: idToDelete });
+            guardarEstado(true);
             renderTodo();
             window.cerrarModalDetalle();
         };
@@ -1505,7 +1501,7 @@
                     };
                     state.submissions.unshift(nuevoRegistro);
 
-                    guardarEstado(true, { type: 'UPSERT_SUBMISSION', submission: nuevoRegistro });
+                    guardarEstado(true);
                     renderTodo();
                     formAlta.reset();
                     window.cerrarModalAlta();
@@ -1640,119 +1636,29 @@
                 latestRtdbItems.forEach((item) => {
                     if (item && item.id) combinedMap.set(item.id, item);
                 });
+        });
+    </script>
 
-                const mergedSorted = ordenarPorFechaDesc(Array.from(combinedMap.values()));
-                if (typeof state !== 'undefined' && typeof renderTodo === 'function') {
-                    state.submissions = combinarSubmissionsConLocal(mergedSorted);
-                    try {
-                        localStorage.setItem(STORE_KEY, JSON.stringify(state));
-                    } catch (_err) {}
-                    renderTodo();
-                    if (statusEl && sourceLabel) {
-                        statusEl.textContent = sourceLabel;
-                    }
-                }
-            } finally {
-                isApplyingRemoteSnapshot = false;
-            }
-        }
+    <!-- Inicialización Firebase -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { getAnalytics } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js';
 
-        window.cloudSyncHook = async function (action) {
-            if (!action || isApplyingRemoteSnapshot) return;
-            if (!auth.currentUser) {
-                try {
-                    await signInAnonymously(auth);
-                } catch (_authErr) {}
-            }
-
-            if (action.type === 'DELETE_SUBMISSION' && action.id) {
-                latestRtdbItems = latestRtdbItems.filter((item) => item?.id !== action.id);
-                latestFirestoreItems = latestFirestoreItems.filter((item) => item?.id !== action.id);
-                try {
-                    await Promise.allSettled([
-                        remove(ref(rtdb, `submissions/${action.id}`)),
-                        deleteDoc(doc(db, 'submissions', action.id))
-                    ]);
-                    if (statusEl) statusEl.textContent = 'Registro eliminado en Firebase';
-                } catch (err) {
-                    console.error('Error eliminando en Firebase:', err);
-                    if (statusEl) statusEl.textContent = 'Eliminado en modo local';
-                }
-                return;
-            }
-            if (action.type !== 'UPSERT_SUBMISSION' || !action.submission?.id) return;
-            try {
-                const nowIso = new Date().toISOString();
-                const cleanPayload = {
-                    ...action.submission,
-                    updatedAtIso: nowIso,
-                    createdAtIso: action.submission.createdAtIso || nowIso
-                };
-                await Promise.allSettled([
-                    set(ref(rtdb, `submissions/${action.submission.id}`), cleanPayload),
-                    setDoc(
-                        doc(db, 'submissions', action.submission.id),
-                        {
-                            ...cleanPayload,
-                            updatedAtServer: serverTimestamp(),
-                            createdAtServer: action.submission.createdAtServer || serverTimestamp()
-                        },
-                        { merge: true }
-                    )
-                ]);
-                if (statusEl) statusEl.textContent = 'Sincronizado con Firebase en tiempo real';
-            } catch (err) {
-                console.error('Error sincronizando con Firebase:', err);
-                if (statusEl) statusEl.textContent = 'Modo local activo (revisa reglas de Firebase)';
-            }
+        const firebaseConfig = {
+            apiKey: "AIzaSyAC0Pb5I6bXhX5t3CL-w7VRsTFu8njtIZg",
+            authDomain: "dunkora-solutions.firebaseapp.com",
+            databaseURL: "https://dunkora-solutions-default-rtdb.firebaseio.com",
+            projectId: "dunkora-solutions",
+            storageBucket: "dunkora-solutions.firebasestorage.app",
+            messagingSenderId: "584762226406",
+            appId: "1:584762226406:web:f7f1d7ebf172945a10ed27",
+            measurementId: "G-E9L5EWKMEV"
         };
 
-        async function iniciarEscuchaNube() {
-            try {
-                await signInAnonymously(auth);
-            } catch (_authErr) {
-                // Continúa si el proyecto tiene autenticación anónima deshabilitada
-            }
-
-            onValue(
-                rtdbRef,
-                (snap) => {
-                    const val = snap.val();
-                    latestRtdbItems = val && typeof val === 'object'
-                        ? Object.entries(val).map(([key, item]) => ({
-                            ...(item && typeof item === 'object' ? item : {}),
-                            id: (item && item.id) || key
-                        }))
-                        : [];
-                    aplicarItemsCombinados('Conectado a Realtime Database • Tiempo real');
-                },
-                (err) => {
-                    console.warn('Escucha de Realtime Database no disponible:', err);
-                }
-            );
-
-            onSnapshot(
-                colRef,
-                { includeMetadataChanges: true },
-                (snapshot) => {
-                    latestFirestoreItems = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
-                    aplicarItemsCombinados(
-                        snapshot.metadata.fromCache
-                            ? 'Conectado a Firebase • Caché sincronizada'
-                            : 'Conectado a Firebase • Tiempo real'
-                    );
-                },
-                (err) => {
-                    console.warn('Escucha de Firestore no disponible:', err);
-                    if (statusEl && latestRtdbItems.length === 0) {
-                        statusEl.textContent = 'Revisa reglas de Firebase (Realtime Database / Firestore)';
-                    }
-                    if (typeof renderTodo === 'function') renderTodo();
-                }
-            );
-        }
-
-        iniciarEscuchaNube();
+        const app = initializeApp(firebaseConfig);
+        try {
+            getAnalytics(app);
+        } catch (_analyticsErr) {}
     </script>
 </body>
 </html>
