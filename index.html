@@ -43,11 +43,11 @@
     <style>
         /* Variables de tema cinematográfico oscuro (por defecto) y tema claro minimalista */
         :root {
-  --bg-cinema: #010918;
-  --bg-surface: rgba(3, 40, 102, 0.28);
-  --bg-surface-hover: rgba(4, 56, 140, 0.42);
-  --bg-field: rgba(2, 24, 64, 0.45);
-  --bg-header: rgba(1, 9, 24, 0.88);
+            --bg-cinema: #010918;
+            --bg-surface: rgba(3, 40, 102, 0.28);
+            --bg-surface-hover: rgba(4, 56, 140, 0.42);
+            --bg-field: rgba(2, 24, 64, 0.45);
+            --bg-header: rgba(1, 9, 24, 0.88);
             --text-primary: #f5f5f7;
             --text-secondary: #d4d4d8;
             --text-muted: #9ca3af;
@@ -57,48 +57,41 @@
             --accent-solid-text: #050507;
             --orbital-invert: 0;
             --orbital-blend: screen;
-}
-        
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-input:-webkit-autofill:active,
-input:autofill,
-input:autofill:hover,
-input:autofill:focus {
-  -webkit-text-fill-color: #f3f4f6 !important;
-  caret-color: #f3f4f6;
-  -webkit-box-shadow: 0 0 0 1000px #141619 inset !important;
-  box-shadow: 0 0 0 1000px #141619 inset !important;
-  transition: background-color 999999s ease-in-out 0s;
-}
+        }
 
-input:focus,
-textarea:focus,
-select:focus {
-  background-color: #141619;
-  color: #f3f4f6;
-}
-select,
-input[type="date"],
-input[type="time"] {
-  background-color: #141619;
-  color: #f3f4f6;
-  border-color: rgba(255, 255, 255, 0.14);
-}
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active,
+        input:autofill,
+        input:autofill:hover,
+        input:autofill:focus {
+            -webkit-text-fill-color: #f3f4f6 !important;
+            caret-color: #f3f4f6;
+            -webkit-box-shadow: 0 0 0 1000px #141619 inset !important;
+            box-shadow: 0 0 0 1000px #141619 inset !important;
+            transition: background-color 999999s ease-in-out 0s;
+        }
 
-select option {
-  background-color: #141619;
-  color: #f3f4f6;
-}
+        input:focus,
+        textarea:focus,
+        select:focus {
+            background-color: #141619;
+            color: #f3f4f6;
+        }
 
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #f3f4f6;
-  -webkit-box-shadow: 0 0 0px 1000px #141619 inset;
-  transition: background-color 5000s ease-in-out 0s;
-}
+        select,
+        input[type="date"],
+        input[type="time"] {
+            background-color: #141619;
+            color: #f3f4f6;
+            border-color: rgba(255, 255, 255, 0.14);
+        }
+
+        select option {
+            background-color: #141619;
+            color: #f3f4f6;
+        }
 
         html.light-theme {
             --bg-cinema: #f8f8fa;
@@ -118,12 +111,19 @@ input:-webkit-autofill:focus {
         }
 
         body {
-            background-color: var(--bg-cinema);
+            background-color: #010918;
+            background-image: radial-gradient(ellipse at 62% 45%, rgba(4, 58, 145, 0.55) 0%, rgba(2, 24, 64, 0.35) 45%, rgba(1, 9, 24, 0.95) 85%);
+            background-attachment: fixed;
             color: var(--text-primary);
             font-family: 'Inter', system-ui, sans-serif;
             overflow-x: hidden;
             position: relative;
             transition: background-color 0.35s ease, color 0.35s ease;
+        }
+
+        html.light-theme body {
+            background-color: var(--bg-cinema);
+            background-image: none;
         }
 
         .bg-cinema { background-color: var(--bg-cinema); }
@@ -393,9 +393,10 @@ input:-webkit-autofill:focus {
                             </a>
                         </div>
                     </div>
-                   <div class="lg:col-span-5 w-full h-[320px] sm:h-[380px] lg:h-[440px] rounded-2xl overflow-hidden">
-      <spline-viewer url="https://my.spline.design/claritystream-TgaI7yxSiOXvN2WRaeXA8ht2/" style="width: 100%; height: 100%;"></spline-viewer>
-    </div>
+
+                    <div class="lg:col-span-5 w-full h-[320px] sm:h-[380px] lg:h-[440px] rounded-2xl overflow-hidden">
+                        <spline-viewer url="https://my.spline.design/claritystream-TgaI7yxSiOXvN2WRaeXA8ht2/" style="width: 100%; height: 100%;"></spline-viewer>
+                    </div>
                 </div>
             </div>
         </section>
@@ -877,7 +878,6 @@ input:-webkit-autofill:focus {
             <p class="font-mono text-[11px] tracking-widest t-secondary">DUNKORA SOLUTIONS • ARQUITECTURA FUNCIONAL</p>
         </div>
     </footer>
-    </footer>
 
     <!-- Modal de comprobante PDF de cotización personalizada -->
     <div id="pdf-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-6 backdrop-blur-sm overflow-y-auto">
@@ -1193,7 +1193,8 @@ input:-webkit-autofill:focus {
                 const categoryMatch = currentPortfolioCategory === 'all' || project.category === currentPortfolioCategory;
                 return viewMatch && categoryMatch;
             });
-if (filtered.length === 0) {
+
+            if (filtered.length === 0) {
                 grid.innerHTML = `
                     <div class="cinema-card rounded-2xl p-8 text-center md:col-span-2 lg:col-span-3 space-y-2">
                         <p class="font-mono text-xs uppercase tracking-widest t-muted">Catálogo en preparación</p>
@@ -1202,6 +1203,7 @@ if (filtered.length === 0) {
                 `;
                 return;
             }
+
             grid.innerHTML = filtered.map((project) => `
                 <article class="cinema-card rounded-2xl overflow-hidden flex flex-col justify-between">
                     <div>
@@ -1730,7 +1732,7 @@ if (filtered.length === 0) {
             appId: "1:584762226406:web:f7f1d7ebf172945a10ed27",
             measurementId: "G-E9L5EWKMEV"
         };
-       
+
         const app = initializeApp(firebaseConfig);
         try {
             getAnalytics(app);
@@ -1740,12 +1742,12 @@ if (filtered.length === 0) {
         const db = getFirestore(app);
         const rtdb = getDatabase(app);
 
-onValue(ref(rtdb, 'projects'), (snapshot) => {
-    const val = snapshot.val();
-    const list = val ? (Array.isArray(val) ? val : Object.values(val)) : [];
-    PROJECTS = list.filter((item) => item && item.published !== false);
-    renderProjects();
-});
+        onValue(ref(rtdb, 'projects'), (snapshot) => {
+            const val = snapshot.val();
+            const list = val ? (Array.isArray(val) ? val : Object.values(val)) : [];
+            PROJECTS = list.filter((item) => item && item.published !== false);
+            renderProjects();
+        });
 
         signInAnonymously(auth).catch(() => {});
 
@@ -1772,214 +1774,211 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
             });
         };
     </script>
-    <script type="module" src="https://cdn.spline.design/@splinetool/viewer@2.0.222/build/spline-viewer.js">
+
+    <!-- Visor 3D de Spline -->
+    <script type="module" src="https://cdn.spline.design/@splinetool/viewer@2.0.222/build/spline-viewer.js"></script>
+
+    <!-- Audio ambiental cinematográfico generado en tiempo real con Web Audio API -->
+    <button id="inmexpara-audio-btn" type="button" aria-label="Activar o silenciar música de fondo" style="position:fixed;bottom:20px;right:20px;z-index:9999;padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.2);background:rgba(15,23,42,0.85);color:#fff;font-size:13px;cursor:pointer;backdrop-filter:blur(6px);">
+        Música: Off
+    </button>
+
+    <script>
+    (function () {
+        const btn = document.getElementById('inmexpara-audio-btn');
+        if (!btn) return;
+
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+
+        let ctx = null;
+        let masterGain = null;
+        let filterNode = null;
+        let progressionTimer = null;
+        let stepIndex = 0;
+        let activeVoices = [];
+        let isPlaying = false;
+
+        const acordes = [
+            [174.61, 220.00, 261.63, 329.63, 440.00], // Fmaj9 con presencia en medios/agudos
+            [146.83, 220.00, 261.63, 329.63, 440.00], // Dm9 con presencia en medios/agudos
+            [116.54, 174.61, 220.00, 293.66, 392.00], // Bbmaj7/9 abierto
+            [130.81, 196.00, 246.94, 293.66, 392.00]  // C6/9 abierto
+        ];
+
+        function actualizarBoton() {
+            btn.textContent = isPlaying ? 'Música: On' : 'Música: Off';
+        }
+
+        function crearReverbImpulse(context, duracion = 3.8, decaimiento = 2.2) {
+            const length = Math.floor(context.sampleRate * duracion);
+            const impulse = context.createBuffer(2, length, context.sampleRate);
+            for (let ch = 0; ch < 2; ch++) {
+                const data = impulse.getChannelData(ch);
+                for (let i = 0; i < length; i++) {
+                    const env = Math.pow(1 - i / length, decaimiento);
+                    data[i] = (Math.random() * 2 - 1) * env;
+                }
+            }
+            return impulse;
+        }
+
+        function limpiarVocesAnteriores(context, fadeOutSec = 2.0) {
+            const now = context.currentTime;
+            activeVoices.forEach(({ oscA, oscB, gain }) => {
+                try {
+                    gain.gain.cancelScheduledValues(now);
+                    gain.gain.setValueAtTime(Math.max(gain.gain.value, 0.0001), now);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + fadeOutSec);
+                    oscA.stop(now + fadeOutSec + 0.1);
+                    oscB.stop(now + fadeOutSec + 0.1);
+                } catch (_) {}
+            });
+            activeVoices = [];
+        }
+
+        function dispararAcordeArmonico(context, destino, notas, esInicio = false) {
+            const now = context.currentTime;
+            const ataque = esInicio ? 1.8 : 1.4;
+
+            limpiarVocesAnteriores(context, esInicio ? 0.4 : 2.0);
+
+            notas.forEach((freq, idx) => {
+                const oscA = context.createOscillator();
+                const oscB = context.createOscillator();
+                const voiceGain = context.createGain();
+
+                oscA.type = idx === 0 ? 'triangle' : 'sawtooth';
+                oscB.type = 'sine';
+
+                oscA.frequency.setValueAtTime(freq, now);
+                oscB.frequency.setValueAtTime(freq * 1.004, now);
+
+                const entradaNota = now + idx * (esInicio ? 0.35 : 0.2);
+                const picoNota = idx === 0 ? 0.16 : 0.095 / (idx * 0.25 + 1);
+
+                voiceGain.gain.setValueAtTime(0.0001, now);
+                if (entradaNota > now) {
+                    voiceGain.gain.setValueAtTime(0.0001, entradaNota);
+                }
+                voiceGain.gain.exponentialRampToValueAtTime(picoNota, entradaNota + ataque);
+
+                oscA.connect(voiceGain);
+                oscB.connect(voiceGain);
+                voiceGain.connect(destino);
+
+                oscA.start(now);
+                oscB.start(now);
+
+                activeVoices.push({ oscA, oscB, gain: voiceGain });
+            });
+
+            if (filterNode) {
+                filterNode.frequency.cancelScheduledValues(now);
+                filterNode.frequency.setValueAtTime(Math.max(filterNode.frequency.value, 450), now);
+                const destinoFiltro = stepIndex % 2 === 0 ? 2500 : 1850;
+                filterNode.frequency.exponentialRampToValueAtTime(destinoFiltro, now + 4.0);
+            }
+        }
+
+        function iniciarArmoniaDunkora() {
+            if (!ctx) {
+                ctx = new AudioCtx();
+                masterGain = ctx.createGain();
+                masterGain.gain.setValueAtTime(0.0001, ctx.currentTime);
+
+                const compressor = ctx.createDynamicsCompressor();
+                compressor.threshold.setValueAtTime(-18, ctx.currentTime);
+                compressor.knee.setValueAtTime(12, ctx.currentTime);
+                compressor.ratio.setValueAtTime(4, ctx.currentTime);
+                compressor.attack.setValueAtTime(0.02, ctx.currentTime);
+                compressor.release.setValueAtTime(0.25, ctx.currentTime);
+
+                const wetGain = ctx.createGain();
+                wetGain.gain.setValueAtTime(0.45, ctx.currentTime);
+
+                const dryGain = ctx.createGain();
+                dryGain.gain.setValueAtTime(0.9, ctx.currentTime);
+
+                const convolver = ctx.createConvolver();
+                convolver.buffer = crearReverbImpulse(ctx, 3.8, 2.2);
+
+                filterNode = ctx.createBiquadFilter();
+                filterNode.type = 'lowpass';
+                filterNode.frequency.setValueAtTime(1300, ctx.currentTime);
+                filterNode.Q.setValueAtTime(1.0, ctx.currentTime);
+
+                filterNode.connect(dryGain);
+                filterNode.connect(convolver);
+                convolver.connect(wetGain);
+
+                dryGain.connect(masterGain);
+                wetGain.connect(masterGain);
+
+                masterGain.connect(compressor);
+                compressor.connect(ctx.destination);
+
+                dispararAcordeArmonico(ctx, filterNode, acordes[stepIndex], true);
+
+                progressionTimer = setInterval(() => {
+                    if (!isPlaying || !ctx || ctx.state !== 'running') return;
+                    stepIndex = (stepIndex + 1) % acordes.length;
+                    dispararAcordeArmonico(ctx, filterNode, acordes[stepIndex], false);
+                }, 6500);
+            }
+
+            if (ctx.state === 'suspended') {
+                ctx.resume();
+            }
+
+            const now = ctx.currentTime;
+            masterGain.gain.cancelScheduledValues(now);
+            masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value, 0.0001), now);
+            masterGain.gain.exponentialRampToValueAtTime(0.75, now + 1.0);
+
+            isPlaying = true;
+            actualizarBoton();
+        }
+
+        function detenerArmoniaDunkora() {
+            if (!ctx || !masterGain) {
+                isPlaying = false;
+                actualizarBoton();
+                return;
+            }
+
+            const now = ctx.currentTime;
+            masterGain.gain.cancelScheduledValues(now);
+            masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value, 0.0001), now);
+            masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+
+            setTimeout(() => {
+                if (!isPlaying && ctx && ctx.state === 'running') {
+                    ctx.suspend();
+                }
+            }, 550);
+
+            isPlaying = false;
+            actualizarBoton();
+        }
+
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isPlaying) {
+                detenerArmoniaDunkora();
+            } else {
+                iniciarArmoniaDunkora();
+            }
+        });
+
+        document.addEventListener('click', () => {
+            if (!isPlaying) {
+                iniciarArmoniaDunkora();
+            }
+        }, { once: true });
+
+        actualizarBoton();
+    })();
     </script>
-    <audio id="inmexpara-bg-music" loop preload="metadata">
-  <!-- Sustituye la URL por tu archivo MP3 o audio local/alojado -->
-  <source src="TU_URL_DE_AUDIO.mp3" type="audio/mpeg">
-</audio>
-
-<button id="inmexpara-audio-btn" type="button" aria-label="Activar o silenciar música de fondo" style="position:fixed;bottom:20px;right:20px;z-index:9999;padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.2);background:rgba(15,23,42,0.85);color:#fff;font-size:13px;cursor:pointer;backdrop-filter:blur(6px);">
-   Música: Off
-</button>
-  <script>
-(function () {
-  const btn = document.getElementById('inmexpara-audio-btn');
-  if (!btn) return;
-
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  if (!AudioCtx) return;
-
-  let ctx = null;
-  let masterGain = null;
-  let filterNode = null;
-  let progressionTimer = null;
-  let stepIndex = 0;
-  let activeVoices = [];
-  let isPlaying = false;
-
-  const acordes = [
-    [174.61, 220.00, 261.63, 329.63, 440.00], // Fmaj9 con presencia en medios/agudos
-    [146.83, 220.00, 261.63, 329.63, 440.00], // Dm9 con presencia en medios/agudos
-    [116.54, 174.61, 220.00, 293.66, 392.00], // Bbmaj7/9 abierto
-    [130.81, 196.00, 246.94, 293.66, 392.00]  // C6/9 abierto
-  ];
-
-  function actualizarBoton() {
-    btn.textContent = isPlaying ? ' Música: On' : ' Música: Off';
-  }
-
-  function crearReverbImpulse(context, duracion = 3.8, decaimiento = 2.2) {
-    const length = Math.floor(context.sampleRate * duracion);
-    const impulse = context.createBuffer(2, length, context.sampleRate);
-    for (let ch = 0; ch < 2; ch++) {
-      const data = impulse.getChannelData(ch);
-      for (let i = 0; i < length; i++) {
-        const env = Math.pow(1 - i / length, decaimiento);
-        data[i] = (Math.random() * 2 - 1) * env;
-      }
-    }
-    return impulse;
-  }
-
-  function limpiarVocesAnteriores(context, fadeOutSec = 2.0) {
-    const now = context.currentTime;
-    activeVoices.forEach(({ oscA, oscB, gain }) => {
-      try {
-        gain.gain.cancelScheduledValues(now);
-        gain.gain.setValueAtTime(Math.max(gain.gain.value, 0.0001), now);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + fadeOutSec);
-        oscA.stop(now + fadeOutSec + 0.1);
-        oscB.stop(now + fadeOutSec + 0.1);
-      } catch (_) {}
-    });
-    activeVoices = [];
-  }
-
-  function dispararAcordeArmonico(context, destino, notas, esInicio = false) {
-    const now = context.currentTime;
-    const ataque = esInicio ? 1.8 : 1.4;
-
-    limpiarVocesAnteriores(context, esInicio ? 0.4 : 2.0);
-
-    notas.forEach((freq, idx) => {
-      const oscA = context.createOscillator();
-      const oscB = context.createOscillator();
-      const voiceGain = context.createGain();
-
-      oscA.type = idx === 0 ? 'triangle' : 'sawtooth';
-      oscB.type = 'sine';
-
-      oscA.frequency.setValueAtTime(freq, now);
-      oscB.frequency.setValueAtTime(freq * 1.004, now);
-
-      const entradaNota = now + idx * (esInicio ? 0.35 : 0.2);
-      const picoNota = idx === 0 ? 0.16 : 0.095 / (idx * 0.25 + 1);
-
-      voiceGain.gain.setValueAtTime(0.0001, now);
-      if (entradaNota > now) {
-        voiceGain.gain.setValueAtTime(0.0001, entradaNota);
-      }
-      voiceGain.gain.exponentialRampToValueAtTime(picoNota, entradaNota + ataque);
-
-      oscA.connect(voiceGain);
-      oscB.connect(voiceGain);
-      voiceGain.connect(destino);
-
-      oscA.start(now);
-      oscB.start(now);
-
-      activeVoices.push({ oscA, oscB, gain: voiceGain });
-    });
-
-    if (filterNode) {
-      filterNode.frequency.cancelScheduledValues(now);
-      filterNode.frequency.setValueAtTime(Math.max(filterNode.frequency.value, 450), now);
-      const destinoFiltro = stepIndex % 2 === 0 ? 2500 : 1850;
-      filterNode.frequency.exponentialRampToValueAtTime(destinoFiltro, now + 4.0);
-    }
-  }
-
-  function iniciarArmoniaDunkora() {
-    if (!ctx) {
-      ctx = new AudioCtx();
-      masterGain = ctx.createGain();
-      masterGain.gain.setValueAtTime(0.0001, ctx.currentTime);
-
-      // Compresor para subir la presencia en teléfono sin saturar ni distorsionar
-      const compressor = ctx.createDynamicsCompressor();
-      compressor.threshold.setValueAtTime(-18, ctx.currentTime);
-      compressor.knee.setValueAtTime(12, ctx.currentTime);
-      compressor.ratio.setValueAtTime(4, ctx.currentTime);
-      compressor.attack.setValueAtTime(0.02, ctx.currentTime);
-      compressor.release.setValueAtTime(0.25, ctx.currentTime);
-
-      const wetGain = ctx.createGain();
-      wetGain.gain.setValueAtTime(0.45, ctx.currentTime);
-
-      const dryGain = ctx.createGain();
-      dryGain.gain.setValueAtTime(0.9, ctx.currentTime);
-
-      const convolver = ctx.createConvolver();
-      convolver.buffer = crearReverbImpulse(ctx, 3.8, 2.2);
-
-      filterNode = ctx.createBiquadFilter();
-      filterNode.type = 'lowpass';
-      filterNode.frequency.setValueAtTime(1300, ctx.currentTime);
-      filterNode.Q.setValueAtTime(1.0, ctx.currentTime);
-
-      filterNode.connect(dryGain);
-      filterNode.connect(convolver);
-      convolver.connect(wetGain);
-
-      dryGain.connect(masterGain);
-      wetGain.connect(masterGain);
-
-      // Ruta final: masterGain -> compressor -> salida
-      masterGain.connect(compressor);
-      compressor.connect(ctx.destination);
-
-      dispararAcordeArmonico(ctx, filterNode, acordes[stepIndex], true);
-
-      progressionTimer = setInterval(() => {
-        if (!isPlaying || !ctx || ctx.state !== 'running') return;
-        stepIndex = (stepIndex + 1) % acordes.length;
-        dispararAcordeArmonico(ctx, filterNode, acordes[stepIndex], false);
-      }, 6500);
-    }
-
-    if (ctx.state === 'suspended') {
-      ctx.resume();
-    }
-
-    const now = ctx.currentTime;
-    masterGain.gain.cancelScheduledValues(now);
-    masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value, 0.0001), now);
-    masterGain.gain.exponentialRampToValueAtTime(0.75, now + 1.0);
-
-    isPlaying = true;
-    actualizarBoton();
-  }
-
-  function detenerArmoniaDunkora() {
-    if (!ctx || !masterGain) {
-      isPlaying = false;
-      actualizarBoton();
-      return;
-    }
-
-    const now = ctx.currentTime;
-    masterGain.gain.cancelScheduledValues(now);
-    masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value, 0.0001), now);
-    masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
-
-    setTimeout(() => {
-      if (!isPlaying && ctx && ctx.state === 'running') {
-        ctx.suspend();
-      }
-    }, 550);
-
-    isPlaying = false;
-    actualizarBoton();
-  }
-
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (isPlaying) {
-      detenerArmoniaDunkora();
-    } else {
-      iniciarArmoniaDunkora();
-    }
-  });
-
-  document.addEventListener('click', () => {
-    if (!isPlaying) {
-      iniciarArmoniaDunkora();
-    }
-  }, { once: true });
-
-  actualizarBoton();
-})();
-</script>
 </body>
 </html>
