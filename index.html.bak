@@ -1,0 +1,2045 @@
+<!DOCTYPE html>
+<html lang="es" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dunkora Solutions — Desarrollo Web, Aplicaciones y Agentes de IA</title>
+    <meta name="description" content="Desarrollamos sitios web, aplicaciones a medida y agentes de IA en Dunkora Solutions para resolver cuellos de botella y optimizar operaciones.">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="keywords" content="Dunkora Solutions, desarrollo web, aplicaciones web a medida, agentes de IA, chatbots empresariales, automatización de procesos, cotizador web">
+    <meta name="author" content="Dunkora Solutions">
+    <link rel="canonical" href="https://dunkora-solutions.vercel.app/">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_MX">
+    <meta property="og:site_name" content="Dunkora Solutions">
+    <meta property="og:title" content="Dunkora Solutions — Desarrollo Web, Aplicaciones y Agentes de IA">
+    <meta property="og:description" content="Sitios web, aplicaciones a medida y agentes de IA para impulsar tu negocio y optimizar operaciones.">
+    <meta property="og:url" content="https://dunkora-solutions.vercel.app/">
+
+    <!-- Tipografías editoriales y técnicas -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        editorial: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        /* Variables de tema cinematográfico oscuro (por defecto) y tema claro minimalista */
+        :root {
+            --bg-cinema: #010918;
+            --bg-surface: rgba(3, 40, 102, 0.28);
+            --bg-surface-hover: rgba(4, 56, 140, 0.42);
+            --bg-field: rgba(2, 24, 64, 0.45);
+            --bg-header: rgba(1, 9, 24, 0.88);
+            --text-primary: #f5f5f7;
+            --text-secondary: #d4d4d8;
+            --text-muted: #9ca3af;
+            --border-subtle: rgba(255, 255, 255, 0.14);
+            --border-strong: rgba(255, 255, 255, 0.36);
+            --accent-solid: #ffffff;
+            --accent-solid-text: #050507;
+            --orbital-invert: 0;
+            --orbital-blend: screen;
+        }
+
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active,
+        input:autofill,
+        input:autofill:hover,
+        input:autofill:focus {
+            -webkit-text-fill-color: #f3f4f6 !important;
+            caret-color: #f3f4f6;
+            -webkit-box-shadow: 0 0 0 1000px #141619 inset !important;
+            box-shadow: 0 0 0 1000px #141619 inset !important;
+            transition: background-color 999999s ease-in-out 0s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            background-color: #141619;
+            color: #f3f4f6;
+        }
+
+        select,
+        input[type="date"],
+        input[type="time"] {
+            background-color: #141619;
+            color: #f3f4f6;
+            border-color: rgba(255, 255, 255, 0.14);
+        }
+
+        select option {
+            background-color: #141619;
+            color: #f3f4f6;
+        }
+
+        html.light-theme {
+            --bg-cinema: #f8f8fa;
+            --bg-surface: rgba(255, 255, 255, 0.22);
+            --bg-surface-hover: rgba(255, 255, 255, 0.34);
+            --bg-field: rgba(244, 244, 247, 0.26);
+            --bg-header: rgba(248, 248, 250, 0.86);
+            --text-primary: #09090b;
+            --text-secondary: #27272a;
+            --text-muted: #52525b;
+            --border-subtle: rgba(9, 9, 11, 0.14);
+            --border-strong: rgba(9, 9, 11, 0.34);
+            --accent-solid: #09090b;
+            --accent-solid-text: #ffffff;
+            --orbital-invert: 1;
+            --orbital-blend: multiply;
+        }
+
+        body {
+            background-color: #010918;
+            background-image: radial-gradient(ellipse at 62% 45%, rgba(4, 58, 145, 0.55) 0%, rgba(2, 24, 64, 0.35) 45%, rgba(1, 9, 24, 0.95) 85%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            font-family: 'Inter', system-ui, sans-serif;
+            overflow-x: hidden;
+            position: relative;
+            transition: background-color 0.35s ease, color 0.35s ease;
+        }
+
+        html.light-theme body {
+            background-color: var(--bg-cinema);
+            background-image: none;
+        }
+
+        .bg-cinema { background-color: var(--bg-cinema); }
+        .bg-surface { background-color: var(--bg-surface); }
+        .bg-field { background-color: var(--bg-field); }
+        .bg-header { background-color: var(--bg-header); }
+        .site-header {
+            transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.35s ease, border-color 0.35s ease;
+            will-change: transform;
+        }
+        .site-header.is-hidden {
+            transform: translateY(-100%);
+        }
+        .t-primary { color: var(--text-primary); }
+        .t-secondary { color: var(--text-secondary); }
+        .t-muted { color: var(--text-muted); }
+        .b-subtle { border-color: var(--border-subtle); }
+        .b-strong { border-color: var(--border-strong); }
+        .btn-contrast {
+            background-color: var(--accent-solid);
+            color: var(--accent-solid-text);
+        }
+
+        /* Escenario inicial cinematográfico que se desvanece suavemente al hacer scroll */
+        #cinema-intro-stage {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+            opacity: var(--intro-fade, 1);
+            transition: opacity 0.22s ease-out;
+            will-change: opacity;
+        }
+
+        #cinema-orbital-img {
+            position: absolute;
+            top: 8%;
+            right: 4%;
+            width: 44%;
+            max-width: 560px;
+            height: 82%;
+            object-fit: contain;
+            object-position: center;
+            filter: invert(var(--orbital-invert)) contrast(1.12) brightness(0.82);
+            mix-blend-mode: var(--orbital-blend);
+            transform-origin: 55% 48%;
+            will-change: transform;
+        }
+
+        #cinema-orbital-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @media (max-width: 1023px) {
+            #cinema-orbital-img {
+                top: 14%;
+                right: 50%;
+                transform: translateX(50%);
+                width: 86%;
+                height: 44%;
+                opacity: 0.45;
+            }
+        }
+
+        .cinema-card {
+            position: relative;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+        html.light-theme .cinema-card {
+            background:
+                radial-gradient(140% 95% at 20% 0%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.42) 48%, transparent 76%),
+                linear-gradient(160deg, rgba(255, 255, 255, 0.72) 0%, rgba(245, 246, 250, 0.56) 55%, rgba(255, 255, 255, 0.66) 100%);
+            backdrop-filter: blur(26px) saturate(150%) contrast(104%);
+            -webkit-backdrop-filter: blur(26px) saturate(150%) contrast(104%);
+            border: 1px solid rgba(9, 9, 11, 0.18);
+            box-shadow:
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.95),
+                inset 0 -1px 0 0 rgba(255, 255, 255, 0.5),
+                0 18px 38px rgba(9, 9, 11, 0.12);
+        }
+        .cinema-card:hover {
+            border-color: rgba(255, 255, 255, 0.42);
+            background:
+                linear-gradient(160deg, rgba(28, 31, 44, 0.64) 0%, rgba(12, 14, 20, 0.48) 55%, rgba(22, 25, 35, 0.58) 100%);
+            backdrop-filter: blur(32px) saturate(165%) contrast(108%);
+            -webkit-backdrop-filter: blur(32px) saturate(165%) contrast(108%);
+            box-shadow:
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.62),
+                inset 0 -1px 0 0 rgba(255, 255, 255, 0.2),
+                0 24px 50px rgba(0, 0, 0, 0.48);
+        }
+        html.light-theme .cinema-card:hover {
+            border-color: rgba(9, 9, 11, 0.28);
+            box-shadow:
+                inset 0 1px 0 0 rgba(255, 255, 255, 1),
+                inset 0 -1px 0 0 rgba(255, 255, 255, 0.65),
+                0 22px 44px rgba(9, 9, 11, 0.15);
+        }
+        .cinema-card .bg-field {
+            background: linear-gradient(160deg, rgba(16, 18, 26, 0.52) 0%, rgba(9, 10, 15, 0.38) 100%);
+            backdrop-filter: blur(18px) saturate(145%);
+            -webkit-backdrop-filter: blur(18px) saturate(145%);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow:
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.28),
+                inset 0 -1px 0 0 rgba(255, 255, 255, 0.08);
+        }
+        html.light-theme .cinema-card .bg-field {
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(244, 244, 247, 0.62) 100%);
+            border-color: rgba(9, 9, 11, 0.14);
+            box-shadow:
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.92),
+                inset 0 -1px 0 0 rgba(255, 255, 255, 0.4);
+        }
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+        .scroll-reveal.is-visible {
+            opacity: 1;
+            transform: translateY(0px);
+        }
+
+        /* Panel de código arquitectónico en el Hero */
+        .code-hero-window {
+            background:
+                radial-gradient(circle at 80% 0%, rgba(16, 185, 129, 0.12) 0%, transparent 55%),
+                linear-gradient(165deg, rgba(8, 20, 38, 0.92) 0%, rgba(3, 11, 24, 0.96) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow:
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.14),
+                0 22px 50px rgba(0, 0, 0, 0.55);
+        }
+        html.light-theme .code-hero-window {
+            background: linear-gradient(165deg, #0b192c 0%, #050d1a 100%);
+            border-color: rgba(9, 9, 11, 0.25);
+        }
+        .code-flow-step {
+            background: rgba(5, 16, 32, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+        }
+
+        input:not([type="checkbox"]),
+        select,
+        textarea {
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        input:not([type="checkbox"]):focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--border-strong) !important;
+            box-shadow: 0 0 0 2px rgba(128, 128, 128, 0.14);
+        }
+
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #111827 !important;
+            }
+            .no-print, #cinema-intro-stage {
+                display: none !important;
+            }
+            #pdf-modal-card {
+                box-shadow: none !important;
+                border: 1px solid #cbd5e1 !important;
+                background: #ffffff !important;
+                color: #0f172a !important;
+                padding: 20px !important;
+                max-width: 100% !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Barra superior de progreso de lectura -->
+    <div id="scroll-progress-bar" aria-hidden="true"
+        class="no-print fixed top-0 left-0 z-50 h-[2px] w-0 btn-contrast pointer-events-none transition-[width] duration-100 ease-out"></div>
+
+    <!-- Movimiento cinematográfico inicial con imagen que se desvanece al hacer scroll -->
+    <div id="cinema-intro-stage" aria-hidden="true" class="no-print">
+        <img id="cinema-orbital-img"
+            src=".fondo-filamentos.jpg"
+            alt=""
+            onerror="if (!this.dataset.fb) { this.dataset.fb = '1'; this.src = 'descarga (1).jpg'; } else { this.style.display = 'none'; }">
+        <canvas id="cinema-orbital-canvas"></canvas>
+    </div>
+
+    <!-- Barra de navegación superior minimalista -->
+    <header id="site-header" class="site-header no-print sticky top-0 z-40 border-b b-subtle bg-header backdrop-blur-md">
+        <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-10">
+            <a href="#top" class="flex items-center gap-3 group">
+                <div class="flex h-9 w-9 items-center justify-center rounded-lg border b-strong bg-field overflow-hidden transition-colors">
+                    <img src="dunkora.jpg" alt="Logo Dunkora Solutions" class="h-full w-full object-contain">
+                </div>
+                <div class="leading-none">
+                    <span class="block font-editorial text-lg font-bold tracking-[0.14em] t-primary">DUNKORA</span>
+                    <span class="block font-mono text-[9px] tracking-[0.26em] t-muted mt-0.5">SOLUTIONS</span>
+                </div>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-7 text-[11px] font-medium uppercase tracking-[0.2em] t-muted">
+                <a href="#diagnostico" class="hover:opacity-100 opacity-85 transition-opacity">Diagnóstico</a>
+                <a href="#servicios" class="hover:opacity-100 opacity-85 transition-opacity">Servicios</a>
+                <a href="#portafolio" class="hover:opacity-100 opacity-85 transition-opacity">Casos</a>
+                <a href="#cotizador" class="hover:opacity-100 opacity-85 transition-opacity">Cotizador</a>
+                <a href="#citas" class="hover:opacity-100 opacity-85 transition-opacity">Citas</a>
+            </nav>
+
+            <div class="flex items-center gap-2.5">
+                <button id="theme-toggle-btn" type="button" onclick="toggleColorTheme()"
+                    class="inline-flex items-center gap-2 rounded-full border b-strong bg-field px-3.5 py-1.5 text-xs font-medium t-primary hover:opacity-85 transition-opacity cursor-pointer">
+                    <span id="theme-toggle-icon"></span>
+                    <span id="theme-toggle-label">Tema Blanco</span>
+                </button>
+
+                <button type="button" onclick="toggleMobileMenu()" aria-label="Abrir menú"
+                    class="md:hidden inline-flex items-center justify-center rounded-lg border b-subtle bg-field p-2 t-primary cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 7h16M4 12h16M4 17h16"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="hidden md:hidden border-t b-subtle bg-cinema px-6 py-4 space-y-2.5 text-xs uppercase tracking-widest">
+            <a href="#diagnostico" onclick="toggleMobileMenu(false)" class="block py-1.5 t-secondary">Diagnóstico</a>
+            <a href="#servicios" onclick="toggleMobileMenu(false)" class="block py-1.5 t-secondary">Servicios</a>
+            <a href="#portafolio" onclick="toggleMobileMenu(false)" class="block py-1.5 t-secondary">Casos de Éxito</a>
+            <a href="#cotizador" onclick="toggleMobileMenu(false)" class="block py-1.5 t-secondary">Cotizador</a>
+            <a href="#citas" onclick="toggleMobileMenu(false)" class="block py-1.5 t-secondary">Citas</a>
+        </div>
+    </header>
+
+    <main id="top" class="relative z-10 flex-1">
+        <!-- Hero principal -->
+        <section class="relative min-h-[88vh] flex flex-col justify-between pt-14 pb-16 sm:pt-20 sm:pb-20">
+            <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-10">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b b-subtle pb-5">
+                    <span class="font-mono text-[11px] uppercase tracking-[0.24em] t-muted">
+                        INGENIERÍA WEB • APLICACIONES • AGENTES DE IA
+                    </span>
+                    <span class="font-mono text-[11px] tracking-widest t-secondary">
+                        DUNKORA SOLUTIONS
+                    </span>
+                </div>
+
+                <div class="grid gap-10 lg:grid-cols-12 items-end pt-12 sm:pt-20">
+                    <div class="lg:col-span-7 space-y-6">
+                        <h1 class="font-editorial text-5xl sm:text-7xl lg:text-[5.25rem] font-semibold tracking-tight t-primary leading-[0.98]">
+                            No solo hacemos que se vea bien.<br>
+                            <span class="italic font-normal t-secondary">Hacemos que funcione</span><br>
+                            e impulse tu negocio.
+                        </h1>
+
+                        <p class="max-w-xl text-sm sm:text-base t-secondary leading-relaxed font-light">
+                            En Dunkora Solutions: <strong class="t-primary font-semibold">Desarrollamos </strong> sitios web, aplicaciones a medida y agentes de IA para resolver cuellos de botella reales.
+                        </p>
+
+                        <div class="flex flex-wrap items-center gap-4 pt-2">
+                            <a href="#diagnostico"
+                                class="inline-flex items-center justify-center rounded-full btn-contrast px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.16em] hover:opacity-90 transition-opacity">
+                                Diagnosticar Mi Empresa
+                            </a>
+                            <a href="#cotizador"
+                                class="inline-flex items-center justify-center rounded-full border b-strong bg-field px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.16em] t-primary hover:opacity-85 transition-opacity">
+                                Cotizar a Medida
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-5 space-y-4 w-full">
+                        <!-- Ventana de código arquitectónico en el panel principal -->
+                        <div class="code-hero-window rounded-2xl p-4 sm:p-5 font-mono text-xs text-slate-200 space-y-4">
+                            <div class="flex items-center justify-between border-b border-white/10 pb-3 gap-2">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="h-2.5 w-2.5 rounded-full bg-rose-500 inline-block"></span>
+                                    <span class="h-2.5 w-2.5 rounded-full bg-amber-400 inline-block"></span>
+                                    <span class="h-2.5 w-2.5 rounded-full bg-emerald-400 inline-block"></span>
+                                </div>
+                                <span class="text-[11px] text-slate-400 truncate">dunkora-agent-core.ts</span>
+                                <span class="rounded border border-emerald-400/40 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-300 shrink-0">
+                                    ONLINE
+                                </span>
+                            </div>
+
+                            <pre class="overflow-x-auto text-[11px] sm:text-xs leading-relaxed text-slate-200"><code><span class="text-cyan-300">const</span> <span class="text-sky-200">dunkoraSystem</span> = <span class="text-indigo-300">await</span> <span class="text-sky-300">initArchitecture</span>({
+  <span class="text-slate-300">frontend:</span> <span class="text-emerald-300">'UltraFast_UI'</span>,
+  <span class="text-slate-300">database:</span> <span class="text-emerald-300">'Firebase_Realtime'</span>,
+  <span class="text-slate-300">aiAgent:</span> <span class="text-amber-300">true</span>, <span class="text-slate-400">// Ventas 24/7</span>
+});</code></pre>
+
+                            <div class="rounded-xl border border-white/10 bg-slate-950/75 p-3 space-y-2.5">
+                                <div class="flex items-center justify-between gap-2 text-[11px]">
+                                    <span class="inline-flex items-center gap-2 text-slate-300 font-medium">
+                                        <span class="h-2 w-2 rounded-full bg-emerald-400 inline-block"></span>
+                                        Flujo de Automatización Activo
+                                    </span>
+                                    <span class="font-semibold text-cyan-300">99.9% Uptime</span>
+                                </div>
+
+                                <div class="grid grid-cols-3 gap-2 text-center">
+                                    <div class="code-flow-step rounded-lg p-2">
+                                        <p class="text-[10px] font-bold text-cyan-300">1. Lead Web</p>
+                                        <p class="text-[10px] text-slate-400 mt-0.5">Captura</p>
+                                    </div>
+                                    <div class="code-flow-step rounded-lg p-2">
+                                        <p class="text-[10px] font-bold text-sky-300">2. Agente IA</p>
+                                        <p class="text-[10px] text-slate-400 mt-0.5">Califica &amp; Cotiza</p>
+                                    </div>
+                                    <div class="code-flow-step rounded-lg p-2">
+                                        <p class="text-[10px] font-bold text-emerald-300">3. Cierre CRM</p>
+                                        <p class="text-[10px] text-slate-400 mt-0.5">Venta Lista</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Visor 3D de Spline integrado en el Hero -->
+                        <div class="w-full h-[220px] sm:h-[250px] overflow-hidden">
+                            <spline-viewer url="https://my.spline.design/claritystream-TgaI7yxSiOXvN2WRaeXA8ht2/" style="width: 100%; height: 100%;"></spline-viewer>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección 02: Diagnóstico -->
+        <section id="diagnostico" class="scroll-reveal py-20 sm:py-28 border-t b-subtle">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+                <div class="grid gap-10 lg:grid-cols-12 items-end mb-12">
+                    <div class="lg:col-span-7 space-y-3">
+                        <span class="font-mono text-[11px] uppercase tracking-[0.25em] t-muted">02 / DIAGNÓSTICO INTELIGENTE</span>
+                        <h2 class="font-editorial text-4xl sm:text-6xl font-semibold t-primary leading-tight">
+                            Cuéntanos el problema<br>
+                            <span class="italic font-normal t-secondary">real de tu empresa</span>
+                        </h2>
+                    </div>
+                    <p class="lg:col-span-5 text-sm t-secondary leading-relaxed">
+                        Muchos negocios creen que necesitan una página web cuando en realidad
+                        <strong class="t-primary">pierden clientes porque nadie les contesta rápido</strong>
+                        o tienen <strong class="t-primary">caos administrativo y rotación de personal.</strong>
+
+                        No inviertas en lo equivocado. Averigüemos cuál es el cuello de botella que está frenando tu empresa.
+                    </p>
+                </div>
+
+                <div class="grid gap-8 lg:grid-cols-12 items-start">
+                    <form id="diagnostic-form" novalidate class="cinema-card rounded-2xl p-6 sm:p-8 space-y-6 lg:col-span-7">
+                        <div>
+                            <p class="font-mono text-[11px] uppercase tracking-wider t-muted mb-3">
+                                1. Situaciones que afectan hoy a tu empresa (opcional)
+                            </p>
+                            <div class="flex flex-wrap gap-2">
+                                <button type="button" data-symptom="Pérdida de clientes / No contestamos a tiempo"
+                                    class="symptom-chip rounded-full border b-subtle bg-field px-4 py-2 text-xs t-secondary hover:opacity-90 transition-all cursor-pointer">
+                                    Pérdida de clientes / Tardamos en responder
+                                </button>
+                                <button type="button" data-symptom="Rotación de empleados / Capacitación lenta"
+                                    class="symptom-chip rounded-full border b-subtle bg-field px-4 py-2 text-xs t-secondary hover:opacity-90 transition-all cursor-pointer">
+                                    Rotación de empleados
+                                </button>
+                                <button type="button" data-symptom="Problemas administrativos / Procesos manuales"
+                                    class="symptom-chip rounded-full border b-subtle bg-field px-4 py-2 text-xs t-secondary hover:opacity-90 transition-all cursor-pointer">
+                                    Problemas administrativos
+                                </button>
+                                <button type="button" data-symptom="Falta de presencia digital / Captación limitada"
+                                    class="symptom-chip rounded-full border b-subtle bg-field px-4 py-2 text-xs t-secondary hover:opacity-90 transition-all cursor-pointer">
+                                    Falta de presencia digital
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="diag-problem" class="block font-mono text-[11px] uppercase tracking-wider t-muted mb-2">
+                                2. Describe qué está pasando en tu operación *
+                            </label>
+                            <textarea id="diag-problem" rows="4"
+                                placeholder="Ej. Nos llegan mensajes pero tardamos horas en responder y se enfrían los prospectos; o tenemos mucha rotación y los procesos se quedan en hojas sueltas..."
+                                class="w-full rounded-xl border b-subtle bg-field px-4 py-3 text-sm t-primary focus:outline-none"></textarea>
+                        </div>
+
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label for="diag-name" class="block text-xs font-medium t-secondary mb-1.5">Tu nombre *</label>
+                                <input id="diag-name" type="text" placeholder="Ej. Valeria Ramírez"
+                                    class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-sm t-primary focus:outline-none">
+                            </div>
+                            <div>
+                                <label for="diag-email" class="block text-xs font-medium t-secondary mb-1.5">Correo electrónico *</label>
+                                <input id="diag-email" type="email" placeholder="contacto@tuempresa.com"
+                                    class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-sm t-primary focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label for="diag-whatsapp" class="block text-xs font-medium t-secondary mb-1.5">Número de WhatsApp *</label>
+                                <input id="diag-whatsapp" type="tel" placeholder="Ej. 477 123 4567"
+                                    class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-sm t-primary focus:outline-none">
+                            </div>
+                            <div>
+                                <label for="diag-company" class="block text-xs font-medium t-secondary mb-1.5">Nombre de tu empresa (opcional)</label>
+                                <input id="diag-company" type="text" placeholder="Ej. Comercializadora Bajío"
+                                    class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-sm t-primary focus:outline-none">
+                            </div>
+                        </div>
+
+                        <p id="diag-validation-msg" class="hidden rounded-xl border border-amber-400/50 bg-amber-500/15 px-4 py-2.5 text-xs font-medium t-primary"></p>
+
+                        <div class="flex flex-wrap items-center justify-between gap-4 pt-2">
+                            <button type="submit"
+                                class="inline-flex items-center justify-center rounded-full btn-contrast px-7 py-3 text-xs font-semibold uppercase tracking-widest hover:opacity-90 transition-opacity cursor-pointer">
+                                Enviar Diagnóstico
+                            </button>
+                            <a href="#citas" class="font-mono text-xs t-secondary hover:opacity-80 underline underline-offset-4">
+                                Revisarlo en vivo por Zoom / Presencial →
+                            </a>
+                        </div>
+                    </form>
+
+                    <div class="cinema-card rounded-2xl p-6 sm:p-8 space-y-5 lg:col-span-5">
+                        <div class="flex items-center justify-between border-b b-subtle pb-3">
+                            <span class="font-mono text-xs t-muted">PROTOCOLO DUNKORA</span>
+                            <span id="diag-status-badge" class="rounded-full border b-subtle bg-field px-3 py-0.5 font-mono text-[11px] t-secondary">
+                                Pendiente de envío
+                            </span>
+                        </div>
+
+                        <div id="diag-result-box" class="space-y-4">
+                            <h3 class="font-editorial text-2xl sm:text-3xl font-semibold t-primary leading-snug">
+                                La solución se define después de analizar tu caso
+                            </h3>
+                            <p class="text-sm t-secondary leading-relaxed">
+                                Revisamos tu diagnóstico para identificar si conviene un sitio web, una aplicación o sistema interno, o un agente de IA, o bien lo revisamos contigo en una cita.
+                            </p>
+                            <div class="rounded-xl border b-subtle bg-field p-4 space-y-2.5 text-xs t-secondary">
+                                <p class="font-mono text-[10px] uppercase tracking-widest t-muted">Flujo de análisis</p>
+                                <p><span class="font-mono t-primary font-bold">01.</span> Recibimos tu problemática y datos de contacto.</p>
+                                <p><span class="font-mono t-primary font-bold">02.</span> Detectamos dónde está el cuello de botella operativo.</p>
+                                <p><span class="font-mono t-primary font-bold">03.</span> Te contactamos o lo revisamos en cita Zoom / presencial.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección 03: Servicios -->
+        <section id="servicios" class="scroll-reveal py-20 sm:py-28 border-t b-subtle">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+                <div class="max-w-2xl space-y-3 mb-12">
+                    <span class="font-mono text-[11px] uppercase tracking-[0.25em] t-muted">03 / CAPACIDADES TÉCNICAS</span>
+                    <h2 class="font-editorial text-4xl sm:text-6xl font-semibold t-primary">
+                        Soluciones Construidas<br>
+                        <span class="italic font-normal t-secondary">para Operar</span>
+                    </h2>
+                </div>
+
+                <div class="grid gap-6 md:grid-cols-3">
+                    <div class="cinema-card rounded-2xl p-7 space-y-4">
+                        <div class="flex items-center justify-between border-b b-subtle pb-3">
+                            <span class="font-mono text-xs t-muted">CAPACIDAD 01</span>
+                            <span class="font-mono text-xs t-primary">WEB</span>
+                        </div>
+                        <h3 class="font-editorial text-3xl font-semibold t-primary">Páginas Web y Landing Pages</h3>
+                        <p class="text-sm t-secondary leading-relaxed">
+                            Sitios rápidos, responsivos y claros para presentar servicios, captar prospectos y guiar al usuario hacia la acción correcta.
+                        </p>
+                    </div>
+
+                    <div class="cinema-card rounded-2xl p-7 space-y-4">
+                        <div class="flex items-center justify-between border-b b-subtle pb-3">
+                            <span class="font-mono text-xs t-muted">CAPACIDAD 02</span>
+                            <span class="font-mono text-xs t-primary">APPS / SISTEMAS</span>
+                        </div>
+                        <h3 class="font-editorial text-3xl font-semibold t-primary">Aplicaciones y Sistemas Internos</h3>
+                        <p class="text-sm t-secondary leading-relaxed">
+                            Paneles operativos, seguimiento de órdenes, inventarios y flujos internos diseñados a la medida de tu operación.
+                        </p>
+                    </div>
+
+                    <div class="cinema-card rounded-2xl p-7 space-y-4">
+                        <div class="flex items-center justify-between border-b b-subtle pb-3">
+                            <span class="font-mono text-xs t-muted">CAPACIDAD 03</span>
+                            <span class="font-mono text-xs t-primary">AGENTE IA</span>
+                        </div>
+                        <h3 class="font-editorial text-3xl font-semibold t-primary">Chatbots y Agentes de IA</h3>
+                        <p class="text-sm t-secondary leading-relaxed">
+                            Asistentes entrenados con tu información y reglas de negocio para responder preguntas, filtrar consultas y dar seguimiento continuo.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección 04: Casos de Éxito -->
+        <section id="portafolio" class="scroll-reveal py-20 sm:py-28 border-t b-subtle">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+                <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between mb-10">
+                    <div class="space-y-3">
+                        <span class="font-mono text-[11px] uppercase tracking-[0.25em] t-muted">04 / IMPLEMENTACIONES REALES</span>
+                        <h2 id="portfolio-heading" class="font-editorial text-4xl sm:text-6xl font-semibold t-primary">
+                            Proyectos <span class="italic font-normal t-secondary">Destacados</span>
+                        </h2>
+                        <p class="text-sm t-secondary max-w-xl">
+                            Explora nuestras soluciones en producción o cambia a <strong class="t-primary">Ver todos los casos</strong> para revisar el catálogo completo.
+                        </p>
+                    </div>
+
+                    <div class="inline-flex rounded-full border b-subtle bg-field p-1 self-start sm:self-auto">
+                        <button type="button" data-view="featured"
+                            class="portfolio-tab rounded-full btn-contrast px-4 py-2 text-xs font-semibold transition-colors cursor-pointer">
+                            Destacados
+                        </button>
+                        <button type="button" data-view="all"
+                            class="portfolio-tab rounded-full px-4 py-2 text-xs font-semibold t-secondary hover:opacity-85 transition-colors cursor-pointer">
+                            Ver todos los casos
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-2 mb-8">
+                    <button type="button" data-category="all"
+                        class="category-btn rounded-full border b-strong bg-surface px-4 py-1.5 text-xs font-medium t-primary cursor-pointer">
+                        Todos
+                    </button>
+                    <button type="button" data-category="web"
+                        class="category-btn rounded-full border b-subtle bg-field px-4 py-1.5 text-xs font-medium t-secondary hover:opacity-90 cursor-pointer">
+                        Web / Apps
+                    </button>
+                    <button type="button" data-category="ia"
+                        class="category-btn rounded-full border b-subtle bg-field px-4 py-1.5 text-xs font-medium t-secondary hover:opacity-90 cursor-pointer">
+                        Agentes de IA
+                    </button>
+                </div>
+
+                <div id="projects-grid" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3"></div>
+            </div>
+        </section>
+
+        <!-- Sección 05: Cotizador a Medida -->
+        <section id="cotizador" class="scroll-reveal py-20 sm:py-28 border-t b-subtle">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+                <div class="max-w-3xl space-y-3 mb-10">
+                    <span class="font-mono text-[11px] uppercase tracking-[0.25em] t-muted">05 / SOLICITUD DE COTIZACIÓN A MEDIDA</span>
+                    <h2 class="font-editorial text-4xl sm:text-6xl font-semibold t-primary">
+                        Cuéntanos qué <span class="italic font-normal t-secondary">quieres construir</span>
+                    </h2>
+                    <p class="text-sm t-secondary leading-relaxed">
+                        Si ya tienes claro qué quieres implementar —una página web, una aplicación o un sistema interno con funciones definidas— cuéntanos los detalles aquí sin necesidad de agendar una cita previa. Con base en las funciones que requieras preparamos tu cotización personalizada, generamos tu comprobante en PDF y registramos tu solicitud en nuestro panel administrativo.
+                    </p>
+                </div>
+
+                <div class="grid gap-8 lg:grid-cols-12 items-start">
+                    <form id="quote-request-form" novalidate class="cinema-card rounded-2xl p-6 sm:p-8 space-y-6 lg:col-span-7">
+                        <div>
+                            <p class="font-mono text-[11px] uppercase tracking-wider t-muted mb-3">
+                                1. Tipo de implementación que ya tienes clara (opcional)
+                            </p>
+                            <div class="flex flex-wrap gap-2">
+                                <button type="button" data-solution="Página Web / Sitio Comercial"
+                                    class="solution-chip rounded-full border b-strong btn-contrast px-4 py-2 text-xs font-medium transition-all cursor-pointer">
+                                    Página Web / Sitio Comercial
+                                </button>
+                                <button type="button" data-solution="Aplicación Web"
+                                    class="solution-chip rounded-full border b-subtle bg-field px-4 py-2 text-xs t-secondary hover:opacity-90 transition-all cursor-pointer">
+                                    Aplicación Web
+                                </button>
+                                <button type="button" data-solution="Sistema Interno / Operativo"
+                                    class="solution-chip rounded-full border b-subtle bg-field px-4 py-2 text-xs t-secondary hover:opacity-90 transition-all cursor-pointer">
+                                    Sistema Interno / Operativo
+                                </button>
+                                <button type="button" data-solution="Agente de IA / Automatización"
+                                    class="solution-chip rounded-full border b-subtle bg-field px-4 py-2 text-xs t-secondary hover:opacity-90 transition-all cursor-pointer">
+                                    Agente de IA / Automatización
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="quote-scope" class="block font-mono text-[11px] uppercase tracking-wider t-muted mb-2">
+                                2. ¿Cómo te gustaría tu página web, app o sistema interno y qué funciones necesita? *
+                            </label>
+                            <textarea id="quote-scope" rows="5"
+                                placeholder="Describe el estilo o flujo que buscas y las funciones clave: usuarios/roles, registro de datos, cotizaciones, reportes, inventarios, panel administrativo, etc."
+                                class="w-full rounded-xl border b-subtle bg-field px-4 py-3 text-sm t-primary focus:outline-none"></textarea>
+                        </div>
+
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label for="quote-name" class="block text-xs font-medium t-secondary mb-1.5">Nombre de la persona *</label>
+                                <input id="quote-name" type="text" placeholder="Ej. Alejandro Torres"
+                                    class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-sm t-primary focus:outline-none">
+                            </div>
+                            <div>
+                                <label for="quote-company" class="block text-xs font-medium t-secondary mb-1.5">Nombre de la empresa *</label>
+                                <input id="quote-company" type="text" placeholder="Ej. Grupo Logístico Centro"
+                                    class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-sm t-primary focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label for="quote-social" class="block text-xs font-medium t-secondary mb-1.5">Redes sociales de la empresa *</label>
+                                <input id="quote-social" type="text" placeholder="Ej. @grupointerra • Instagram / Facebook / LinkedIn"
+                                    class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-sm t-primary focus:outline-none">
+                            </div>
+                            <div>
+                                <label for="quote-website" class="block text-xs font-medium t-secondary mb-1.5">Link de tu página actual (opcional)</label>
+                                <input id="quote-website" type="text" placeholder="Ej. https://tuempresa.com (si ya tienes)"
+                                    class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-sm t-primary focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label for="quote-whatsapp" class="block text-xs font-medium t-secondary mb-1.5">Número de WhatsApp *</label>
+                                <input id="quote-whatsapp" type="tel" placeholder="Ej. 477 123 4567"
+                                    class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-sm t-primary focus:outline-none">
+                            </div>
+                            <div>
+                                <label for="quote-email" class="block text-xs font-medium t-secondary mb-1.5">Correo electrónico *</label>
+                                <input id="quote-email" type="email" placeholder="contacto@tuempresa.com"
+                                    class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-sm t-primary focus:outline-none">
+                            </div>
+                        </div>
+
+                        <p id="quote-validation-msg" class="hidden rounded-xl border border-amber-400/50 bg-amber-500/15 px-4 py-2.5 text-xs font-medium t-primary"></p>
+
+                        <div class="flex flex-wrap items-center justify-between gap-4 pt-2">
+                            <button type="submit"
+                                class="inline-flex items-center justify-center rounded-full btn-contrast px-7 py-3.5 text-xs font-semibold uppercase tracking-wider hover:opacity-90 transition-opacity cursor-pointer">
+                                Enviar Solicitud y Generar PDF
+                            </button>
+                            <button type="button" onclick="openPdfPreviewModal()"
+                                class="inline-flex items-center justify-center rounded-full border b-strong bg-field px-5 py-3 text-xs font-semibold uppercase tracking-wider t-primary hover:opacity-85 transition-opacity cursor-pointer">
+                                Ver Comprobante PDF
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="cinema-card rounded-2xl p-6 sm:p-8 space-y-5 lg:col-span-5">
+                        <div class="flex items-center justify-between border-b b-subtle pb-3">
+                            <span class="font-mono text-xs t-muted">COTIZACIÓN PERSONALIZADA</span>
+                            <span class="rounded-full border b-subtle bg-field px-3 py-0.5 font-mono text-[10px] t-primary">SIN CITA PREVIA</span>
+                        </div>
+
+                        <h3 class="font-editorial text-2xl sm:text-3xl font-semibold t-primary leading-snug">
+                            Cotizamos según las funciones reales de tu proyecto
+                        </h3>
+                        <p class="text-sm t-secondary leading-relaxed">
+                            No publicamos tarifas estándar porque cada sitio web, aplicación o sistema interno varía según sus módulos, reglas de negocio y complejidad operativa.
+                        </p>
+
+                        <div class="rounded-xl border b-subtle bg-field p-4 space-y-2.5 text-xs t-secondary">
+                            <p class="font-mono text-[10px] uppercase tracking-widest t-muted">Al enviar tu solicitud</p>
+                            <p><span class="font-mono t-primary font-bold">01.</span> Se genera al instante tu hoja en PDF lista para descargar o imprimir.</p>
+                            <p><span class="font-mono t-primary font-bold">02.</span> Tu requerimiento queda registrado en nuestro panel administrativo.</p>
+                            <p><span class="font-mono t-primary font-bold">03.</span> Evaluamos las funciones descritas para enviarte tu cotización a medida.</p>
+                        </div>
+
+                        <div id="quote-feedback" class="hidden rounded-xl border b-strong bg-field p-4 text-xs t-primary space-y-2.5">
+                            <p id="quote-feedback-text"></p>
+                            <div class="flex flex-wrap items-center gap-2 pt-1">
+                                <button type="button" onclick="openPdfPreviewModal()"
+                                    class="rounded-full btn-contrast px-4 py-1.5 text-xs font-bold hover:opacity-90 transition-opacity cursor-pointer">
+                                    Descargar / Imprimir PDF
+                                </button>
+                                <button type="button" onclick="dismissQuoteFeedback()"
+                                    class="rounded-full border b-strong bg-surface px-4 py-1.5 text-xs font-semibold t-primary hover:opacity-85 transition-opacity cursor-pointer">
+                                    Cerrar ✕
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección 06: Citas -->
+        <section id="citas" class="scroll-reveal py-20 sm:py-28 border-t b-subtle">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+                <div class="max-w-2xl space-y-3 mb-10">
+                    <span class="font-mono text-[11px] uppercase tracking-[0.25em] t-muted">06 / REUNIÓN 1 A 1</span>
+                    <h2 class="font-editorial text-4xl sm:text-6xl font-semibold t-primary">
+                        Agendar Cita por <span class="italic font-normal t-secondary">Zoom o Presencial</span>
+                    </h2>
+                    <p class="text-sm t-secondary">
+                        Si aún estás definiendo el alcance o prefieres conversarlo directamente, agenda una sesión con nosotros.
+                    </p>
+                </div>
+
+                <div class="grid gap-8 lg:grid-cols-12 items-start">
+                    <form id="appointment-form" class="cinema-card rounded-2xl p-6 sm:p-8 lg:col-span-7 space-y-5">
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label for="appt-modality" class="block text-xs font-medium t-secondary mb-1.5">Modalidad de la cita *</label>
+                                <select id="appt-modality"
+                                    class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-sm t-primary focus:outline-none">
+                                    <option value="Zoom (Videollamada)">Zoom (Videollamada)</option>
+                                    <option value="Presencial">Presencial</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="appt-email" class="block text-xs font-medium t-secondary mb-1.5">Correo electrónico *</label>
+                                <input id="appt-email" type="email" required placeholder="tu@correo.com"
+                                    class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-sm t-primary focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid gap-4 sm:grid-cols-3">
+                            <div>
+                                <label for="appt-name" class="block text-xs font-medium t-secondary mb-1.5">Tu nombre *</label>
+                                <input id="appt-name" type="text" required placeholder="Ej. Carlos Mendoza"
+                                    class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-sm t-primary focus:outline-none">
+                            </div>
+                            <div>
+                                <label for="appt-date" class="block text-xs font-medium t-secondary mb-1.5">Fecha preferida *</label>
+                                <input id="appt-date" type="date" required
+                                    class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-sm t-primary focus:outline-none">
+                            </div>
+                            <div>
+                                <label for="appt-time" class="block text-xs font-medium t-secondary mb-1.5">Horario *</label>
+                                <input id="appt-time" type="time" required value="11:00"
+                                    class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-sm t-primary focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="appt-notes" class="block text-xs font-medium t-secondary mb-1.5">Tema principal a tratar (opcional)</label>
+                            <input id="appt-notes" type="text" placeholder="Ej. Revisar diagnóstico o definir funciones de sistema interno"
+                                class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2.5 text-sm t-primary focus:outline-none">
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-4 pt-1">
+                            <button type="submit"
+                                class="inline-flex items-center justify-center rounded-full btn-contrast px-7 py-3 text-xs font-semibold uppercase tracking-wider hover:opacity-90 transition-opacity cursor-pointer">
+                                Solicitar Cita
+                            </button>
+                            <span id="appt-feedback" class="text-xs t-primary font-medium"></span>
+                        </div>
+                    </form>
+
+                    <aside class="cinema-card rounded-2xl p-6 sm:p-8 lg:col-span-5 space-y-4">
+                        <div class="flex items-center justify-between border-b b-subtle pb-3">
+                            <span class="font-mono text-xs uppercase tracking-wider t-muted">¿Cuándo agendar?</span>
+                            <span class="rounded-full border b-subtle bg-field px-2.5 py-0.5 font-mono text-[10px] t-primary">OPCIONAL</span>
+                        </div>
+
+                        <h3 class="font-editorial text-2xl sm:text-3xl font-semibold t-primary leading-snug">
+                            Aterrizamos tu operación antes de construir
+                        </h3>
+                        <p class="text-sm t-secondary leading-relaxed">
+                            Si ya sabes qué quieres y qué funciones necesitas, ve directo al cotizador. Si prefieres analizar opciones primero, agenda aquí tu cita.
+                        </p>
+
+                        <ul class="space-y-2.5 pt-1 text-xs t-secondary">
+                            <li class="flex items-start gap-2.5">
+                                <span class="t-primary font-bold">✓</span>
+                                <span><strong class="t-primary">Enfoque directo:</strong> revisamos procesos, objetivos y alcances técnicos sin rodeos.</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <span class="t-primary font-bold">✓</span>
+                                <span><strong class="t-primary">Modalidad flexible:</strong> por videollamada en Zoom o reunión presencial.</span>
+                            </li>
+                        </ul>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="no-print relative z-10 border-t b-subtle bg-cinema py-8">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 mb-6">
+            <div class="grid gap-4 sm:grid-cols-3 text-xs">
+                <div class="rounded-xl border b-subtle bg-field p-4">
+                    <span class="font-mono text-[10px] uppercase tracking-widest t-muted block">Correo</span>
+                    <a href="mailto:contacto@dunkorasolutions.com?subject=Informaci%C3%B3n%20-%20Dunkora%20Solutions"
+                        class="font-medium t-primary hover:underline mt-1 inline-block">
+                        dunkorasolutions@gmail.com
+                    </a>
+                </div>
+                <div class="rounded-xl border b-subtle bg-field p-4">
+                    <span class="font-mono text-[10px] uppercase tracking-widest t-muted block">WhatsApp</span>
+                    <a href="https://wa.me/524776644229?text=Hola%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Dunkora%20Solutions."
+                        target="_blank" rel="noopener noreferrer"
+                        class="font-medium t-primary hover:underline mt-1 inline-block">
+                        +52 477 664 4229
+                    </a>
+                </div>
+                <div class="rounded-xl border b-subtle bg-field p-4">
+                    <span class="font-mono text-[10px] uppercase tracking-widest t-muted block">Atención</span>
+                    <p class="font-medium t-primary mt-1">León, Gto. • Zoom / Presencial</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mx-auto flex max-w-7xl flex-col gap-3 border-t b-subtle pt-5 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-10 text-xs t-muted">
+            <p>© <span id="year-label">2026</span> Dunkora Solutions. Desarrollo Web, Aplicaciones y Agentes de IA.</p>
+            <p class="font-mono text-[11px] tracking-widest t-secondary">DUNKORA SOLUTIONS • ARQUITECTURA FUNCIONAL</p>
+        </div>
+    </footer>
+
+    <!-- Modal de comprobante PDF de cotización personalizada -->
+    <div id="pdf-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-6 backdrop-blur-sm overflow-y-auto">
+        <div id="pdf-modal-card" style="font-family: Arial, Helvetica, sans-serif;" class="w-full max-w-2xl rounded-xl border border-slate-300 bg-white text-slate-900 p-6 sm:p-8 space-y-5 shadow-[0_24px_65px_rgba(0,0,0,0.65)]">
+            <div class="flex flex-wrap items-start justify-between gap-4 border-b-2 border-slate-900 pb-4">
+                <div>
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-xs font-bold uppercase tracking-[0.2em] text-slate-900">DUNKORA SOLUTIONS</span>
+                        <span class="rounded border border-slate-800 bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase text-slate-800">
+                            SOLICITUD DE COTIZACIÓN
+                        </span>
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-950 mt-1">
+                        Comprobante de Requerimiento a Medida
+                    </h3>
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-600 mt-1.5">
+                        <span id="pdf-folio">Folio: DNK-0000</span>
+                        <span id="pdf-date">Fecha: —</span>
+                        <span id="pdf-status">Estado: Registrado en Panel</span>
+                    </div>
+                </div>
+                <button type="button" onclick="closePdfPreviewModal()"
+                    class="no-print rounded-lg border border-slate-300 bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">
+                    Cerrar ✕
+                </button>
+            </div>
+
+            <div class="grid gap-3 sm:grid-cols-2 text-xs bg-slate-50 rounded-lg p-3.5 border border-slate-200">
+                <div>
+                    <span class="text-[10px] uppercase tracking-wider text-slate-500 block">Persona / Empresa</span>
+                    <span id="pdf-client-company" class="font-semibold text-slate-900 mt-0.5 block">—</span>
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase tracking-wider text-slate-500 block">Contacto (WhatsApp / Correo)</span>
+                    <span id="pdf-contact" class="font-semibold text-slate-900 mt-0.5 block break-all">—</span>
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase tracking-wider text-slate-500 block">Redes sociales</span>
+                    <span id="pdf-social" class="font-semibold text-slate-900 mt-0.5 block break-all">—</span>
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase tracking-wider text-slate-500 block">Sitio web actual</span>
+                    <span id="pdf-website" class="font-semibold text-slate-900 mt-0.5 block break-all">—</span>
+                </div>
+            </div>
+
+            <div class="space-y-2 text-xs text-slate-800">
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Tipo de solución seleccionada</span>
+                    <p id="pdf-solutions" class="font-semibold text-slate-950 mt-0.5">—</p>
+                </div>
+                <div class="rounded-lg border border-slate-200 bg-slate-50 p-3.5">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-1">Funciones y detalles solicitados</span>
+                    <p id="pdf-scope" class="text-slate-800 whitespace-pre-line leading-relaxed">—</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-slate-200 pt-4">
+                <p class="max-w-md text-[11px] text-slate-600 leading-relaxed">
+                    La cotización económica se elabora a medida con base en las funciones solicitadas. Conserva este comprobante o descárgalo en PDF.
+                </p>
+                <div class="no-print flex flex-wrap items-center gap-2.5 shrink-0">
+                    <button type="button" onclick="closePdfPreviewModal()"
+                        class="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer">
+                        Cerrar ✕
+                    </button>
+                    <button type="button" onclick="window.print()"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-xs font-semibold text-white hover:bg-slate-800 transition-colors cursor-pointer">
+                        <span>Descargar / Imprimir PDF</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* =========================================================================
+           1. MOVIMIENTO INICIAL CINEMATOGRÁFICO CON DESVANECIMIENTO AL HACER SCROLL
+        ========================================================================= */
+        function initIntroOrbitalMotion() {
+            const stage = document.getElementById('cinema-intro-stage');
+            const imgEl = document.getElementById('cinema-orbital-img');
+            const canvas = document.getElementById('cinema-orbital-canvas');
+            const progressBar = document.getElementById('scroll-progress-bar');
+
+            const updateScrollFade = () => {
+                const y = window.scrollY || window.pageYOffset || 0;
+                const fadeDistance = Math.max(260, window.innerHeight * 0.65);
+                const remaining = Math.max(0.24, 1 - (y / fadeDistance) * 0.76);
+                if (stage) {
+                    stage.style.setProperty('--intro-fade', remaining.toFixed(3));
+                    stage.style.visibility = 'visible';
+                }
+
+                if (progressBar) {
+                    const docHeight = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+                    const pct = Math.min(100, Math.max(0, (y / docHeight) * 100));
+                    progressBar.style.width = `${pct.toFixed(1)}%`;
+                }
+            };
+
+            updateScrollFade();
+            window.addEventListener('scroll', updateScrollFade, { passive: true });
+
+            const ctx = canvas instanceof HTMLCanvasElement ? canvas.getContext('2d') : null;
+            let width = 0;
+            let height = 0;
+            let dpr = 1;
+
+            const resizeCanvas = () => {
+                if (!canvas || !ctx) return;
+                dpr = Math.min(window.devicePixelRatio || 1, 2);
+                width = window.innerWidth || document.documentElement.clientWidth || 1280;
+                height = window.innerHeight || document.documentElement.clientHeight || 800;
+                canvas.width = Math.floor(width * dpr);
+                canvas.height = Math.floor(height * dpr);
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            };
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas, { passive: true });
+
+            const particleCount = 68;
+            const particles = Array.from({ length: particleCount }, (_, idx) => {
+                const depth = 0.45 + ((idx * 37) % 100) / 140;
+                const speedScale = 0.00011 * depth;
+                return {
+                    xRatio: ((idx * 73) % 100) / 100,
+                    yRatio: ((idx * 41 + 19) % 100) / 100,
+                    vx: (((idx * 29) % 19) - 9) * speedScale,
+                    vy: (((idx * 53) % 17) - 8) * speedScale,
+                    radius: (1.2 + ((idx * 13) % 22) / 12) * depth,
+                    alpha: (0.42 + ((idx * 23) % 52) / 100),
+                    twinkleSpeed: 0.016 + ((idx * 7) % 15) * 0.0012,
+                    twinklePhase: idx * 0.85,
+                    trail: []
+                };
+            });
+
+            let tick = 0;
+
+            const renderFrame = () => {
+                tick += 1;
+
+                if (imgEl) {
+                    const driftX = Math.sin(tick * 0.006) * 10;
+                    const driftY = Math.cos(tick * 0.005) * 8;
+                    const rotDeg = Math.sin(tick * 0.0035) * 1.4;
+                    const scale = 1.02 + Math.cos(tick * 0.0045) * 0.02;
+                    imgEl.style.transform = `translate3d(${driftX.toFixed(1)}px, ${driftY.toFixed(1)}px, 0) rotate(${rotDeg.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
+                }
+
+                if (ctx && width > 0 && height > 0) {
+                    ctx.clearRect(0, 0, width, height);
+                    const isLight = document.documentElement.classList.contains('light-theme');
+                    const dotRgb = isLight ? '9, 9, 11' : '245, 245, 247';
+
+                    particles.forEach((p, i) => {
+                        const waveX = Math.sin(tick * 0.0055 + i * 0.7) * 0.000095;
+                        const waveY = Math.cos(tick * 0.0048 + i * 0.9) * 0.000095;
+
+                        p.xRatio += p.vx + waveX;
+                        p.yRatio += p.vy + waveY;
+
+                        if (p.xRatio < -0.04) { p.xRatio = 1.04; p.trail = []; }
+                        if (p.xRatio > 1.04) { p.xRatio = -0.04; p.trail = []; }
+                        if (p.yRatio < -0.04) { p.yRatio = 1.04; p.trail = []; }
+                        if (p.yRatio > 1.04) { p.yRatio = -0.04; p.trail = []; }
+
+                        const px = p.xRatio * width;
+                        const py = p.yRatio * height;
+
+                        p.trail.push({ x: px, y: py });
+                        if (p.trail.length > 26) {
+                            p.trail.shift();
+                        }
+
+                        const pulse = 0.78 + Math.sin(tick * p.twinkleSpeed + p.twinklePhase) * 0.22;
+                        const finalAlpha = Math.min(0.95, Math.max(0.16, p.alpha * pulse));
+
+                        if (p.trail.length > 1) {
+                            for (let t = 1; t < p.trail.length; t++) {
+                                const prev = p.trail[t - 1];
+                                const curr = p.trail[t];
+                                const ratio = t / p.trail.length;
+                                const easedRatio = ratio * ratio;
+
+                                ctx.beginPath();
+                                ctx.moveTo(prev.x, prev.y);
+                                ctx.lineTo(curr.x, curr.y);
+                                ctx.strokeStyle = `rgba(${dotRgb}, ${(finalAlpha * easedRatio * 0.68).toFixed(3)})`;
+                                ctx.lineWidth = Math.max(0.65, p.radius * 0.9 * ratio);
+                                ctx.lineCap = 'round';
+                                ctx.stroke();
+                            }
+                        }
+
+                        ctx.beginPath();
+                        ctx.arc(px, py, p.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(${dotRgb}, ${finalAlpha.toFixed(3)})`;
+                        ctx.fill();
+                    });
+                }
+
+                requestAnimationFrame(renderFrame);
+            };
+
+            requestAnimationFrame(renderFrame);
+        }
+
+        /* =========================================================================
+           2. ALTERNADOR DE TEMA OSCURO (POR DEFECTO) / TEMA BLANCO
+        ========================================================================= */
+        function applyThemeState(isLight) {
+            const htmlEl = document.documentElement;
+            const iconEl = document.getElementById('theme-toggle-icon');
+            const labelEl = document.getElementById('theme-toggle-label');
+
+            if (isLight) {
+                htmlEl.classList.remove('dark');
+                htmlEl.classList.add('light-theme');
+                if (iconEl) iconEl.textContent = '';
+                if (labelEl) labelEl.textContent = 'Tema Negro';
+            } else {
+                htmlEl.classList.remove('light-theme');
+                htmlEl.classList.add('dark');
+                if (iconEl) iconEl.textContent = '';
+                if (labelEl) labelEl.textContent = 'Tema Blanco';
+            }
+
+            try {
+                localStorage.setItem('dunkora_theme_mode', isLight ? 'light' : 'dark');
+            } catch (_err) {}
+        }
+
+        function toggleColorTheme() {
+            applyThemeState(!document.documentElement.classList.contains('light-theme'));
+        }
+
+        /* =========================================================================
+           3. DATOS, CASOS DE ÉXITO, FORMULARIOS, PDF Y SINCRONIZACIÓN
+        ========================================================================= */
+        let PROJECTS = [];
+
+        let currentPortfolioView = 'featured';
+        let currentPortfolioCategory = 'all';
+        let selectedSymptoms = [];
+        let selectedSolutions = ['Página Web / Sitio Comercial'];
+        let lastCustomQuote = null;
+
+        const SHARED_PANEL_KEY = 'dunkora_solutions_protocolo_v1';
+        const SHARED_PANEL_CHANNEL = 'dunkora_solutions_sync_channel';
+        let panelSyncChannel = null;
+
+        if ('BroadcastChannel' in window) {
+            try {
+                panelSyncChannel = new BroadcastChannel(SHARED_PANEL_CHANNEL);
+            } catch (_err) {
+                panelSyncChannel = null;
+            }
+        }
+
+        function publishSubmissionToPanel(entry) {
+            if (!entry) return;
+            const record = {
+                ...entry,
+                id: entry.id || `SUB-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                createdAtIso: new Date().toISOString(),
+                updatedAtIso: new Date().toISOString()
+            };
+
+            try {
+                const raw = localStorage.getItem(SHARED_PANEL_KEY);
+                const parsed = raw ? JSON.parse(raw) : {};
+                const currentSubmissions = Array.isArray(parsed.submissions) ? parsed.submissions : [];
+                currentSubmissions.unshift(record);
+                localStorage.setItem(SHARED_PANEL_KEY, JSON.stringify({ ...parsed, submissions: currentSubmissions }));
+                if (panelSyncChannel) {
+                    panelSyncChannel.postMessage({ type: 'STATE_UPDATED', at: Date.now() });
+                }
+            } catch (_err) {}
+
+            if (typeof window.__dunkoraPushToCloud === 'function') {
+                window.__dunkoraPushToCloud(record);
+            }
+        }
+
+        function formatNowLabel() {
+            return `Hoy • ${new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}`;
+        }
+
+        function escapeText(value) {
+            return String(value || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function renderProjects() {
+            const grid = document.getElementById('projects-grid');
+            const heading = document.getElementById('portfolio-heading');
+            if (!grid) return;
+
+            if (heading) {
+                heading.innerHTML = currentPortfolioView === 'featured'
+                    ? 'Proyectos <span class="italic font-normal t-secondary">Destacados</span>'
+                    : 'Todos los <span class="italic font-normal t-secondary">Casos de Éxito</span>';
+            }
+
+            const filtered = PROJECTS.filter((project) => {
+                const viewMatch = currentPortfolioView === 'all' || project.featured;
+                const categoryMatch = currentPortfolioCategory === 'all' || project.category === currentPortfolioCategory;
+                return viewMatch && categoryMatch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="cinema-card rounded-2xl p-8 text-center md:col-span-2 lg:col-span-3 space-y-2">
+                        <p class="font-mono text-xs uppercase tracking-widest t-muted">Catálogo en preparación</p>
+                        <p class="text-sm t-secondary">Aún no hay casos de éxito publicados en esta categoría.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map((project) => `
+                <article class="cinema-card rounded-2xl overflow-hidden flex flex-col justify-between">
+                    <div>
+                        <div class="bg-field p-6 border-b b-subtle space-y-3">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="rounded-full border b-strong bg-surface px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider t-primary">
+                                    ${escapeText(project.badge)}
+                                </span>
+                                <span class="font-mono text-[11px] t-muted">${escapeText(project.stack)}</span>
+                            </div>
+                            <div>
+                                <h3 class="font-mono text-sm font-bold tracking-wider t-primary">${escapeText(project.code)}</h3>
+                                <p class="text-xs t-muted mt-0.5">${escapeText(project.subtitle)}</p>
+                            </div>
+                        </div>
+
+                        <div class="p-6 space-y-2.5">
+                            <h4 class="font-editorial text-2xl font-semibold t-primary">${escapeText(project.title)}</h4>
+                            <p class="text-sm t-secondary leading-relaxed">${escapeText(project.description)}</p>
+                        </div>
+                    </div>
+
+                    <div class="px-6 pb-6 pt-3 flex items-center justify-between border-t b-subtle">
+                        <span class="font-mono text-[10px] uppercase tracking-widest t-muted">En producción</span>
+                        <a href="${escapeText(project.clientUrl)}" target="_blank" rel="noopener noreferrer"
+                            class="inline-flex items-center gap-1.5 rounded-full border b-strong px-3.5 py-1.5 text-xs font-medium t-primary hover:opacity-80 transition-opacity">
+                            <span>Ver caso</span>
+                            <span aria-hidden="true">↗</span>
+                        </a>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function bindPortfolioFilters() {
+            document.querySelectorAll('.portfolio-tab').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const view = btn.getAttribute('data-view');
+                    if (!view) return;
+                    currentPortfolioView = view;
+
+                    document.querySelectorAll('.portfolio-tab').forEach((tab) => {
+                        const active = tab === btn;
+                        tab.classList.toggle('btn-contrast', active);
+                        tab.classList.toggle('t-secondary', !active);
+                    });
+
+                    renderProjects();
+                });
+            });
+
+            document.querySelectorAll('.category-btn').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const cat = btn.getAttribute('data-category');
+                    if (!cat) return;
+                    currentPortfolioCategory = cat;
+
+                    document.querySelectorAll('.category-btn').forEach((cBtn) => {
+                        const active = cBtn === btn;
+                        cBtn.classList.toggle('b-strong', active);
+                        cBtn.classList.toggle('bg-surface', active);
+                        cBtn.classList.toggle('t-primary', active);
+                        cBtn.classList.toggle('b-subtle', !active);
+                        cBtn.classList.toggle('bg-field', !active);
+                        cBtn.classList.toggle('t-secondary', !active);
+                    });
+
+                    renderProjects();
+                });
+            });
+        }
+
+        function bindDiagnosticForm() {
+            document.querySelectorAll('.symptom-chip').forEach((chip) => {
+                chip.addEventListener('click', () => {
+                    const symptom = chip.getAttribute('data-symptom') || '';
+                    const idx = selectedSymptoms.indexOf(symptom);
+                    if (idx >= 0) {
+                        selectedSymptoms.splice(idx, 1);
+                        chip.classList.remove('btn-contrast', 'b-strong');
+                        chip.classList.add('border', 'b-subtle', 'bg-field', 't-secondary');
+                    } else {
+                        selectedSymptoms.push(symptom);
+                        chip.classList.add('btn-contrast', 'b-strong');
+                        chip.classList.remove('bg-field', 't-secondary');
+                    }
+                });
+            });
+
+            const form = document.getElementById('diagnostic-form');
+            if (!form) return;
+
+            const requiredFields = [
+                { id: 'diag-problem', message: 'describir qué está pasando en tu operación' },
+                { id: 'diag-name', message: 'escribir tu nombre' },
+                { id: 'diag-email', message: 'ingresar un correo electrónico válido' },
+                { id: 'diag-whatsapp', message: 'escribir tu número de WhatsApp' }
+            ];
+
+            const validationEl = document.getElementById('diag-validation-msg');
+
+            requiredFields.forEach(({ id }) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', () => {
+                        el.classList.remove('border-rose-400');
+                        if (validationEl) validationEl.classList.add('hidden');
+                    });
+                }
+            });
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const nameInput = document.getElementById('diag-name');
+                const emailInput = document.getElementById('diag-email');
+                const whatsappInput = document.getElementById('diag-whatsapp');
+                const companyInput = document.getElementById('diag-company');
+                const problemInput = document.getElementById('diag-problem');
+                const badge = document.getElementById('diag-status-badge');
+                const resultBox = document.getElementById('diag-result-box');
+
+                const missing = [];
+                let firstInvalidEl = null;
+
+                requiredFields.forEach(({ id, message }) => {
+                    const el = document.getElementById(id);
+                    const val = el && 'value' in el ? String(el.value || '').trim() : '';
+                    const badEmail = id === 'diag-email' && (!val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val));
+                    if (!val || badEmail) {
+                        if (el) el.classList.add('border-rose-400');
+                        if (!firstInvalidEl) firstInvalidEl = el;
+                        missing.push(message);
+                    }
+                });
+
+                if (missing.length > 0) {
+                    if (validationEl) {
+                        validationEl.textContent = `Falta por completar: debes ${missing.join(', ')}.`;
+                        validationEl.classList.remove('hidden');
+                    }
+                    if (firstInvalidEl && 'focus' in firstInvalidEl) firstInvalidEl.focus();
+                    return;
+                }
+
+                if (validationEl) validationEl.classList.add('hidden');
+
+                const problemText = problemInput instanceof HTMLTextAreaElement ? problemInput.value.trim() : '';
+                const nameText = nameInput instanceof HTMLInputElement ? nameInput.value.trim() : '';
+                const emailText = emailInput instanceof HTMLInputElement ? emailInput.value.trim() : '';
+                const whatsappText = whatsappInput instanceof HTMLInputElement ? whatsappInput.value.trim() : '';
+                const companyText = companyInput instanceof HTMLInputElement ? companyInput.value.trim() : '';
+
+                if (badge) {
+                    badge.textContent = 'Registrado';
+                    badge.className = 'rounded-full border b-strong btn-contrast px-3 py-0.5 font-mono text-[11px] font-bold';
+                }
+
+                if (resultBox) {
+                    resultBox.innerHTML = `
+                        <div class="rounded-xl border b-strong bg-field p-4 space-y-2">
+                            <p class="text-sm font-bold t-primary">Diagnóstico recibido de ${escapeText(nameText)}</p>
+                            <p class="text-xs t-secondary leading-relaxed">
+                                Registramos tu caso${companyText ? ` de <strong>${escapeText(companyText)}</strong>` : ''} (${escapeText(emailText)} • WhatsApp ${escapeText(whatsappText)}).
+                            </p>
+                        </div>
+                        <p class="text-sm t-secondary leading-relaxed">
+                            Ya puedes enviar otro diagnóstico o agendar una cita si deseas revisarlo en vivo.
+                        </p>
+                        <div class="flex flex-wrap gap-2.5">
+                            <a href="#citas" class="inline-flex items-center justify-center rounded-full btn-contrast px-4 py-2 text-xs font-semibold hover:opacity-90 transition-opacity">
+                                Agendar cita →
+                            </a>
+                        </div>
+                    `;
+                }
+
+                publishSubmissionToPanel({
+                    id: `SUB-${Date.now()}`,
+                    folio: `DIAG-${Math.floor(1000 + Math.random() * 9000)}`,
+                    tipo: 'diagnostico',
+                    origen: 'web_publica',
+                    etapa: 'llegadas',
+                    creadoEn: formatNowLabel(),
+                    cliente: {
+                        nombre: nameText,
+                        empresa: companyText,
+                        correo: emailText,
+                        telefono: whatsappText
+                    },
+                    resumen: problemText,
+                    detalleExtra: selectedSymptoms.length ? `Síntomas: ${selectedSymptoms.join(', ')}` : 'Enviado desde Diagnóstico web',
+                    montoEstimado: 0,
+                    precioCliente: 0,
+                    pagado: 0,
+                    acuerdos: ''
+                });
+
+                form.reset();
+                selectedSymptoms = [];
+                document.querySelectorAll('.symptom-chip').forEach((chip) => {
+                    chip.classList.remove('btn-contrast', 'b-strong');
+                    chip.classList.add('border', 'b-subtle', 'bg-field', 't-secondary');
+                });
+            });
+        }
+
+        function bindQuoteForm() {
+            document.querySelectorAll('.solution-chip').forEach((chip) => {
+                chip.addEventListener('click', () => {
+                    const sol = chip.getAttribute('data-solution') || '';
+                    if (!sol) return;
+                    const idx = selectedSolutions.indexOf(sol);
+                    if (idx >= 0) {
+                        selectedSolutions.splice(idx, 1);
+                        chip.classList.remove('btn-contrast', 'b-strong');
+                        chip.classList.add('border', 'b-subtle', 'bg-field', 't-secondary');
+                    } else {
+                        selectedSolutions.push(sol);
+                        chip.classList.add('btn-contrast', 'b-strong');
+                        chip.classList.remove('bg-field', 't-secondary');
+                    }
+                });
+            });
+
+            const form = document.getElementById('quote-request-form');
+            if (!form) return;
+
+            const requiredFields = [
+                { id: 'quote-scope', message: 'describir qué quieres construir y sus funciones' },
+                { id: 'quote-name', message: 'escribir el nombre de la persona' },
+                { id: 'quote-company', message: 'escribir el nombre de la empresa' },
+                { id: 'quote-social', message: 'indicar las redes sociales de la empresa' },
+                { id: 'quote-whatsapp', message: 'escribir el número de WhatsApp' },
+                { id: 'quote-email', message: 'ingresar un correo electrónico válido' }
+            ];
+
+            const validationEl = document.getElementById('quote-validation-msg');
+
+            requiredFields.forEach(({ id }) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', () => {
+                        el.classList.remove('border-rose-400');
+                        if (validationEl) validationEl.classList.add('hidden');
+                    });
+                }
+            });
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const missing = [];
+                let firstInvalidEl = null;
+
+                requiredFields.forEach(({ id, message }) => {
+                    const el = document.getElementById(id);
+                    const val = el && 'value' in el ? String(el.value || '').trim() : '';
+                    const badEmail = id === 'quote-email' && (!val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val));
+                    if (!val || badEmail) {
+                        if (el) el.classList.add('border-rose-400');
+                        if (!firstInvalidEl) firstInvalidEl = el;
+                        missing.push(message);
+                    }
+                });
+
+                if (missing.length > 0) {
+                    if (validationEl) {
+                        validationEl.textContent = `Falta por completar: debes ${missing.join(', ')}.`;
+                        validationEl.classList.remove('hidden');
+                    }
+                    if (firstInvalidEl && 'focus' in firstInvalidEl) firstInvalidEl.focus();
+                    return;
+                }
+
+                if (validationEl) validationEl.classList.add('hidden');
+
+                const scopeVal = document.getElementById('quote-scope')?.value.trim() || '';
+                const nameVal = document.getElementById('quote-name')?.value.trim() || '';
+                const companyVal = document.getElementById('quote-company')?.value.trim() || '';
+                const socialVal = document.getElementById('quote-social')?.value.trim() || '';
+                const websiteVal = document.getElementById('quote-website')?.value.trim() || 'No especificado';
+                const whatsappVal = document.getElementById('quote-whatsapp')?.value.trim() || '';
+                const emailVal = document.getElementById('quote-email')?.value.trim() || '';
+
+                const folio = `DNK-${Math.floor(1000 + Math.random() * 9000)}`;
+                const solutionsList = selectedSolutions.length ? [...selectedSolutions] : ['Proyecto a Medida'];
+
+                lastCustomQuote = {
+                    folio,
+                    name: nameVal,
+                    company: companyVal,
+                    social: socialVal,
+                    website: websiteVal,
+                    whatsapp: whatsappVal,
+                    email: emailVal,
+                    solutions: solutionsList,
+                    scope: scopeVal
+                };
+
+                const fb = document.getElementById('quote-feedback');
+                const fbText = document.getElementById('quote-feedback-text');
+                if (fb && fbText) {
+                    fb.classList.remove('hidden');
+                    fbText.textContent = `Solicitud ${folio} registrada en el panel administrativo para ${nameVal} (${companyVal}). Tu comprobante PDF está listo.`;
+                }
+
+                publishSubmissionToPanel({
+                    id: `SUB-${Date.now()}`,
+                    folio,
+                    tipo: 'cotizacion_medida',
+                    origen: 'web_publica',
+                    etapa: 'llegadas',
+                    creadoEn: formatNowLabel(),
+                    cliente: {
+                        nombre: nameVal,
+                        empresa: companyVal,
+                        correo: emailVal,
+                        telefono: whatsappVal
+                    },
+                    resumen: `${solutionsList.join(' + ')} — ${scopeVal}`,
+                    detalleExtra: `Redes: ${socialVal} • Web: ${websiteVal} • Folio ${folio}`,
+                    montoEstimado: 0,
+                    precioCliente: 0,
+                    pagado: 0,
+                    acuerdos: ''
+                });
+
+                form.reset();
+                selectedSolutions = ['Página Web / Sitio Comercial'];
+                document.querySelectorAll('.solution-chip').forEach((chip) => {
+                    const isDefault = chip.getAttribute('data-solution') === 'Página Web / Sitio Comercial';
+                    chip.classList.toggle('btn-contrast', isDefault);
+                    chip.classList.toggle('b-strong', isDefault);
+                    chip.classList.toggle('bg-field', !isDefault);
+                    chip.classList.toggle('t-secondary', !isDefault);
+                });
+
+                openPdfPreviewModal();
+            });
+        }
+
+        function dismissQuoteFeedback() {
+            document.getElementById('quote-feedback')?.classList.add('hidden');
+        }
+
+        function openPdfPreviewModal() {
+            const modal = document.getElementById('pdf-modal');
+            const rec = lastCustomQuote || {
+                folio: 'DNK-0000',
+                name: 'Sin registrar aún',
+                company: '—',
+                social: '—',
+                website: 'No especificado',
+                whatsapp: '—',
+                email: '—',
+                solutions: ['Proyecto a Medida'],
+                scope: 'Completa y envía el formulario de cotización a medida para generar tu comprobante con tus datos y funciones.'
+            };
+
+            const formattedDate = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+
+            const setText = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = val;
+            };
+
+            setText('pdf-folio', `Folio: ${rec.folio}`);
+            setText('pdf-date', `Fecha: ${formattedDate}`);
+            setText('pdf-client-company', `${rec.name} • ${rec.company}`);
+            setText('pdf-contact', `${rec.whatsapp} • ${rec.email}`);
+            setText('pdf-social', rec.social);
+            setText('pdf-website', rec.website);
+            setText('pdf-solutions', rec.solutions.join(' + '));
+            setText('pdf-scope', rec.scope);
+
+            modal?.classList.remove('hidden');
+        }
+
+        function closePdfPreviewModal() {
+            document.getElementById('pdf-modal')?.classList.add('hidden');
+        }
+
+        function bindAppointmentForm() {
+            const form = document.getElementById('appointment-form');
+            if (!form) return;
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const modality = document.getElementById('appt-modality')?.value || 'Zoom (Videollamada)';
+                const email = document.getElementById('appt-email')?.value.trim() || '';
+                const name = document.getElementById('appt-name')?.value.trim() || '';
+                const date = document.getElementById('appt-date')?.value || '';
+                const time = document.getElementById('appt-time')?.value || '';
+                const notes = document.getElementById('appt-notes')?.value.trim() || '';
+                const feedbackEl = document.getElementById('appt-feedback');
+
+                if (feedbackEl) {
+                    feedbackEl.textContent = `Solicitud registrada para ${name} (${email}) en modalidad ${modality} el ${date} a las ${time}.`;
+                }
+
+                publishSubmissionToPanel({
+                    id: `SUB-${Date.now()}`,
+                    folio: `CITA-${Math.floor(100 + Math.random() * 900)}`,
+                    tipo: 'cita',
+                    origen: 'web_publica',
+                    etapa: 'llegadas',
+                    creadoEn: formatNowLabel(),
+                    cliente: {
+                        nombre: name,
+                        empresa: '',
+                        correo: email,
+                        telefono: ''
+                    },
+                    resumen: `Cita ${modality} (${date} • ${time})${notes ? ` — ${notes}` : ''}`,
+                    detalleExtra: `Modalidad: ${modality} • Fecha: ${date} • Hora: ${time}`,
+                    montoEstimado: 0,
+                    precioCliente: 0,
+                    pagado: 0,
+                    acuerdos: ''
+                });
+
+                form.reset();
+            });
+        }
+
+        function toggleMobileMenu(forceState) {
+            const menu = document.getElementById('mobile-menu');
+            if (!menu) return;
+            if (typeof forceState === 'boolean') {
+                menu.classList.toggle('hidden', !forceState);
+            } else {
+                menu.classList.toggle('hidden');
+            }
+        }
+
+        function bindScrollReveal() {
+            const elements = document.querySelectorAll('.scroll-reveal');
+            if (!elements.length) return;
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                        } else {
+                            entry.target.classList.remove('is-visible');
+                        }
+                    });
+                },
+                { threshold: 0.12, rootMargin: '0px 0px -30px 0px' }
+            );
+            elements.forEach((el) => observer.observe(el));
+        }
+
+        function bindSmartHeaderScroll() {
+            const header = document.getElementById('site-header');
+            if (!header) return;
+
+            let lastY = Math.max(0, window.scrollY || window.pageYOffset || 0);
+            let ticking = false;
+            const deltaThreshold = 6;
+
+            const updateHeaderVisibility = () => {
+                const currentY = Math.max(0, window.scrollY || window.pageYOffset || 0);
+                const diff = currentY - lastY;
+                const mobileMenuOpen = !document.getElementById('mobile-menu')?.classList.contains('hidden');
+
+                if (currentY <= 24 || mobileMenuOpen) {
+                    header.classList.remove('is-hidden');
+                } else if (diff > deltaThreshold && currentY > 72) {
+                    header.classList.add('is-hidden');
+                    toggleMobileMenu(false);
+                } else if (diff < -deltaThreshold) {
+                    header.classList.remove('is-hidden');
+                }
+
+                lastY = currentY;
+                ticking = false;
+            };
+
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    window.requestAnimationFrame(updateHeaderVisibility);
+                    ticking = true;
+                }
+            }, { passive: true });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            let savedLight = false;
+            try {
+                savedLight = localStorage.getItem('dunkora_theme_mode') === 'light';
+            } catch (_err) {
+                savedLight = false;
+            }
+            applyThemeState(savedLight);
+
+            const yearEl = document.getElementById('year-label');
+            if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+
+            initIntroOrbitalMotion();
+            renderProjects();
+            bindPortfolioFilters();
+            bindDiagnosticForm();
+            bindQuoteForm();
+            bindAppointmentForm();
+            bindScrollReveal();
+            bindSmartHeaderScroll();
+        });
+    </script>
+
+    <!-- Sincronización en tiempo real de envíos hacia Firestore y Realtime Database -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { getAnalytics } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js';
+        import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAC0Pb5I6bXhX5t3CL-w7VRsTFu8njtIZg",
+            authDomain: "dunkora-solutions.firebaseapp.com",
+            databaseURL: "https://dunkora-solutions-default-rtdb.firebaseio.com",
+            projectId: "dunkora-solutions",
+            storageBucket: "dunkora-solutions.firebasestorage.app",
+            messagingSenderId: "584762226406",
+            appId: "1:584762226406:web:f7f1d7ebf172945a10ed27",
+            measurementId: "G-E9L5EWKMEV"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        try {
+            getAnalytics(app);
+        } catch (_analyticsErr) {}
+
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const rtdb = getDatabase(app);
+
+        onValue(ref(rtdb, 'projects'), (snapshot) => {
+            const val = snapshot.val();
+            const list = val ? (Array.isArray(val) ? val : Object.values(val)) : [];
+            PROJECTS = list.filter((item) => item && item.published !== false);
+            renderProjects();
+        });
+
+        signInAnonymously(auth).catch(() => {});
+
+        window.__dunkoraPushToCloud = async function(record) {
+            if (!record || !record.id) return;
+            try {
+                await signInAnonymously(auth);
+            } catch (_authErr) {}
+
+            const idStr = String(record.id);
+            setDoc(doc(db, 'submissions', idStr), {
+                ...record,
+                updatedAtIso: new Date().toISOString(),
+                createdAtServer: serverTimestamp()
+            }, { merge: true }).catch((err) => {
+                console.error('Error enviando a Firestore:', err);
+            });
+
+            set(ref(rtdb, `submissions/${idStr}`), {
+                ...record,
+                updatedAtIso: new Date().toISOString()
+            }).catch((err) => {
+                console.error('Error enviando a Realtime DB:', err);
+            });
+        };
+    </script>
+
+    <!-- Visor 3D de Spline -->
+    <script type="module" src="https://cdn.spline.design/@splinetool/viewer@2.0.222/build/spline-viewer.js"></script>
+
+    <!-- Audio ambiental cinematográfico generado en tiempo real con Web Audio API -->
+    <button id="inmexpara-audio-btn" type="button" aria-label="Activar o silenciar música de fondo" style="position:fixed;bottom:20px;right:20px;z-index:9999;padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.2);background:rgba(15,23,42,0.85);color:#fff;font-size:13px;cursor:pointer;backdrop-filter:blur(6px);">
+        Música: Off
+    </button>
+
+    <script>
+    (function () {
+        const btn = document.getElementById('inmexpara-audio-btn');
+        if (!btn) return;
+
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+
+        let ctx = null;
+        let masterGain = null;
+        let filterNode = null;
+        let progressionTimer = null;
+        let stepIndex = 0;
+        let activeVoices = [];
+        let isPlaying = false;
+
+        const acordes = [
+            [174.61, 220.00, 261.63, 329.63, 440.00], // Fmaj9 con presencia en medios/agudos
+            [146.83, 220.00, 261.63, 329.63, 440.00], // Dm9 con presencia en medios/agudos
+            [116.54, 174.61, 220.00, 293.66, 392.00], // Bbmaj7/9 abierto
+            [130.81, 196.00, 246.94, 293.66, 392.00]  // C6/9 abierto
+        ];
+
+        function actualizarBoton() {
+            btn.textContent = isPlaying ? 'Música: On' : 'Música: Off';
+        }
+
+        function crearReverbImpulse(context, duracion = 3.8, decaimiento = 2.2) {
+            const length = Math.floor(context.sampleRate * duracion);
+            const impulse = context.createBuffer(2, length, context.sampleRate);
+            for (let ch = 0; ch < 2; ch++) {
+                const data = impulse.getChannelData(ch);
+                for (let i = 0; i < length; i++) {
+                    const env = Math.pow(1 - i / length, decaimiento);
+                    data[i] = (Math.random() * 2 - 1) * env;
+                }
+            }
+            return impulse;
+        }
+
+        function limpiarVocesAnteriores(context, fadeOutSec = 2.0) {
+            const now = context.currentTime;
+            activeVoices.forEach(({ oscA, oscB, gain }) => {
+                try {
+                    gain.gain.cancelScheduledValues(now);
+                    gain.gain.setValueAtTime(Math.max(gain.gain.value, 0.0001), now);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + fadeOutSec);
+                    oscA.stop(now + fadeOutSec + 0.1);
+                    oscB.stop(now + fadeOutSec + 0.1);
+                } catch (_) {}
+            });
+            activeVoices = [];
+        }
+
+        function dispararAcordeArmonico(context, destino, notas, esInicio = false) {
+            const now = context.currentTime;
+            const ataque = esInicio ? 1.8 : 1.4;
+
+            limpiarVocesAnteriores(context, esInicio ? 0.4 : 2.0);
+
+            notas.forEach((freq, idx) => {
+                const oscA = context.createOscillator();
+                const oscB = context.createOscillator();
+                const voiceGain = context.createGain();
+
+                oscA.type = idx === 0 ? 'triangle' : 'sawtooth';
+                oscB.type = 'sine';
+
+                oscA.frequency.setValueAtTime(freq, now);
+                oscB.frequency.setValueAtTime(freq * 1.004, now);
+
+                const entradaNota = now + idx * (esInicio ? 0.35 : 0.2);
+                const picoNota = idx === 0 ? 0.16 : 0.095 / (idx * 0.25 + 1);
+
+                voiceGain.gain.setValueAtTime(0.0001, now);
+                if (entradaNota > now) {
+                    voiceGain.gain.setValueAtTime(0.0001, entradaNota);
+                }
+                voiceGain.gain.exponentialRampToValueAtTime(picoNota, entradaNota + ataque);
+
+                oscA.connect(voiceGain);
+                oscB.connect(voiceGain);
+                voiceGain.connect(destino);
+
+                oscA.start(now);
+                oscB.start(now);
+
+                activeVoices.push({ oscA, oscB, gain: voiceGain });
+            });
+
+            if (filterNode) {
+                filterNode.frequency.cancelScheduledValues(now);
+                filterNode.frequency.setValueAtTime(Math.max(filterNode.frequency.value, 450), now);
+                const destinoFiltro = stepIndex % 2 === 0 ? 2500 : 1850;
+                filterNode.frequency.exponentialRampToValueAtTime(destinoFiltro, now + 4.0);
+            }
+        }
+
+        function iniciarArmoniaDunkora() {
+            if (!ctx) {
+                ctx = new AudioCtx();
+                masterGain = ctx.createGain();
+                masterGain.gain.setValueAtTime(0.0001, ctx.currentTime);
+
+                const compressor = ctx.createDynamicsCompressor();
+                compressor.threshold.setValueAtTime(-18, ctx.currentTime);
+                compressor.knee.setValueAtTime(12, ctx.currentTime);
+                compressor.ratio.setValueAtTime(4, ctx.currentTime);
+                compressor.attack.setValueAtTime(0.02, ctx.currentTime);
+                compressor.release.setValueAtTime(0.25, ctx.currentTime);
+
+                const wetGain = ctx.createGain();
+                wetGain.gain.setValueAtTime(0.45, ctx.currentTime);
+
+                const dryGain = ctx.createGain();
+                dryGain.gain.setValueAtTime(0.9, ctx.currentTime);
+
+                const convolver = ctx.createConvolver();
+                convolver.buffer = crearReverbImpulse(ctx, 3.8, 2.2);
+
+                filterNode = ctx.createBiquadFilter();
+                filterNode.type = 'lowpass';
+                filterNode.frequency.setValueAtTime(1300, ctx.currentTime);
+                filterNode.Q.setValueAtTime(1.0, ctx.currentTime);
+
+                filterNode.connect(dryGain);
+                filterNode.connect(convolver);
+                convolver.connect(wetGain);
+
+                dryGain.connect(masterGain);
+                wetGain.connect(masterGain);
+
+                masterGain.connect(compressor);
+                compressor.connect(ctx.destination);
+
+                dispararAcordeArmonico(ctx, filterNode, acordes[stepIndex], true);
+
+                progressionTimer = setInterval(() => {
+                    if (!isPlaying || !ctx || ctx.state !== 'running') return;
+                    stepIndex = (stepIndex + 1) % acordes.length;
+                    dispararAcordeArmonico(ctx, filterNode, acordes[stepIndex], false);
+                }, 6500);
+            }
+
+            if (ctx.state === 'suspended') {
+                ctx.resume();
+            }
+
+            const now = ctx.currentTime;
+            masterGain.gain.cancelScheduledValues(now);
+            masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value, 0.0001), now);
+            masterGain.gain.exponentialRampToValueAtTime(0.75, now + 1.0);
+
+            isPlaying = true;
+            actualizarBoton();
+        }
+
+        function detenerArmoniaDunkora() {
+            if (!ctx || !masterGain) {
+                isPlaying = false;
+                actualizarBoton();
+                return;
+            }
+
+            const now = ctx.currentTime;
+            masterGain.gain.cancelScheduledValues(now);
+            masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value, 0.0001), now);
+            masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+
+            setTimeout(() => {
+                if (!isPlaying && ctx && ctx.state === 'running') {
+                    ctx.suspend();
+                }
+            }, 550);
+
+            isPlaying = false;
+            actualizarBoton();
+        }
+
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isPlaying) {
+                detenerArmoniaDunkora();
+            } else {
+                iniciarArmoniaDunkora();
+            }
+        });
+
+        document.addEventListener('click', () => {
+            if (!isPlaying) {
+                iniciarArmoniaDunkora();
+            }
+        }, { once: true });
+
+        actualizarBoton();
+    })();
+    </script>
+</body>
+</html>
