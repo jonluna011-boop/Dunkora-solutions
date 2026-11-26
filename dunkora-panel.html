@@ -1472,14 +1472,32 @@
                     const url = document.getElementById('caso-url').value.trim();
                     const resumen = document.getElementById('caso-resumen').value.trim();
 
-                    state.casos.unshift({
-                        id: `cs-${Date.now()}`,
-                        titulo,
-                        categoria,
-                        url,
-                        logoUrl: obtenerLogoEmpresaUrl(url),
-                        resumen
-                    });
+                   const casoId = `cs-${Date.now()}`;
+const logoUrl = obtenerLogoEmpresaUrl(url);
+const nuevoCaso = {
+    id: casoId,
+    titulo,
+    categoria,
+    url,
+    logoUrl,
+    resumen
+};
+
+state.casos.unshift(nuevoCaso);
+
+set(ref(rtdb, `projects/${casoId}`), {
+    id: casoId,
+    code: titulo.toUpperCase(),
+    subtitle: categoria,
+    title: titulo,
+    description: resumen,
+    category: categoria,
+    clientUrl: url,
+    badge: 'EN PRODUCCIÓN',
+    stack: 'Live',
+    featured: true,
+    published: true
+}).catch(() => {});
 
                     guardarEstado(true);
                     renderTodo();
