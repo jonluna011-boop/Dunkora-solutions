@@ -1777,7 +1777,7 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
 <button id="inmexpara-audio-btn" type="button" aria-label="Activar o silenciar música de fondo" style="position:fixed;bottom:20px;right:20px;z-index:9999;padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.2);background:rgba(15,23,42,0.85);color:#fff;font-size:13px;cursor:pointer;backdrop-filter:blur(6px);">
    Música: Off
 </button>
-   <script>
+  <script>
 (function () {
   const btn = document.getElementById('inmexpara-audio-btn');
   if (!btn) return;
@@ -1793,19 +1793,19 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
   let activeVoices = [];
   let isPlaying = false;
 
-  // Progresión armónica cinematográfica (en Hz)
+  // Acordes con registro medio-agudo reforzado para que se escuche en bocinas de teléfono
   const acordes = [
-    [87.31, 130.81, 196.00, 220.00, 329.63], // Fmaj9 abierta
-    [73.42, 110.00, 164.81, 220.00, 261.63], // Dm9 abierta
-    [58.27, 87.31,  146.83, 174.61, 261.63], // Bbmaj7 abierta
-    [65.41, 98.00,  146.83, 196.00, 246.94]  // C6/9 abierta
+    [174.61, 220.00, 261.63, 329.63, 440.00], // Fmaj9 con presencia en medios/agudos
+    [146.83, 220.00, 261.63, 329.63, 440.00], // Dm9 con presencia en medios/agudos
+    [116.54, 174.61, 220.00, 293.66, 392.00], // Bbmaj7/9 abierto
+    [130.81, 196.00, 246.94, 293.66, 392.00]  // C6/9 abierto
   ];
 
   function actualizarBoton() {
-    btn.textContent = isPlaying ? ' Música: On' : ' Música: Off';
+    btn.textContent = isPlaying ? '🔊 Música: On' : '🔇 Música: Off';
   }
 
-  function crearReverbImpulse(context, duracion = 4.0, decaimiento = 2.3) {
+  function crearReverbImpulse(context, duracion = 3.8, decaimiento = 2.2) {
     const length = Math.floor(context.sampleRate * duracion);
     const impulse = context.createBuffer(2, length, context.sampleRate);
     for (let ch = 0; ch < 2; ch++) {
@@ -1818,7 +1818,7 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
     return impulse;
   }
 
-  function limpiarVocesAnteriores(context, fadeOutSec = 2.2) {
+  function limpiarVocesAnteriores(context, fadeOutSec = 2.0) {
     const now = context.currentTime;
     activeVoices.forEach(({ oscA, oscB, gain }) => {
       try {
@@ -1834,9 +1834,9 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
 
   function dispararAcordeArmonico(context, destino, notas, esInicio = false) {
     const now = context.currentTime;
-    const ataque = esInicio ? 2.4 : 1.6;
+    const ataque = esInicio ? 1.8 : 1.4;
 
-    limpiarVocesAnteriores(context, esInicio ? 0.5 : 2.2);
+    limpiarVocesAnteriores(context, esInicio ? 0.4 : 2.0);
 
     notas.forEach((freq, idx) => {
       const oscA = context.createOscillator();
@@ -1847,10 +1847,10 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
       oscB.type = 'sine';
 
       oscA.frequency.setValueAtTime(freq, now);
-      oscB.frequency.setValueAtTime(freq * 1.003, now);
+      oscB.frequency.setValueAtTime(freq * 1.004, now);
 
-      const entradaNota = now + idx * (esInicio ? 0.45 : 0.25);
-      const picoNota = idx === 0 ? 0.11 : 0.04 / (idx * 0.35 + 1);
+      const entradaNota = now + idx * (esInicio ? 0.35 : 0.2);
+      const picoNota = idx === 0 ? 0.14 : 0.085 / (idx * 0.25 + 1);
 
       voiceGain.gain.setValueAtTime(0.0001, now);
       if (entradaNota > now) {
@@ -1868,12 +1868,11 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
       activeVoices.push({ oscA, oscB, gain: voiceGain });
     });
 
-    // Modulación suave del brillo armónico al cambiar de acorde
     if (filterNode) {
       filterNode.frequency.cancelScheduledValues(now);
-      filterNode.frequency.setValueAtTime(Math.max(filterNode.frequency.value, 180), now);
-      const destinoFiltro = stepIndex % 2 === 0 ? 1350 : 880;
-      filterNode.frequency.exponentialRampToValueAtTime(destinoFiltro, now + 4.5);
+      filterNode.frequency.setValueAtTime(Math.max(filterNode.frequency.value, 400), now);
+      const destinoFiltro = stepIndex % 2 === 0 ? 2400 : 1750;
+      filterNode.frequency.exponentialRampToValueAtTime(destinoFiltro, now + 4.0);
     }
   }
 
@@ -1884,18 +1883,18 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
       masterGain.gain.setValueAtTime(0.0001, ctx.currentTime);
 
       const wetGain = ctx.createGain();
-      wetGain.gain.setValueAtTime(0.58, ctx.currentTime);
+      wetGain.gain.setValueAtTime(0.45, ctx.currentTime);
 
       const dryGain = ctx.createGain();
-      dryGain.gain.setValueAtTime(0.55, ctx.currentTime);
+      dryGain.gain.setValueAtTime(0.85, ctx.currentTime);
 
       const convolver = ctx.createConvolver();
-      convolver.buffer = crearReverbImpulse(ctx, 4.0, 2.3);
+      convolver.buffer = crearReverbImpulse(ctx, 3.8, 2.2);
 
       filterNode = ctx.createBiquadFilter();
       filterNode.type = 'lowpass';
-      filterNode.frequency.setValueAtTime(520, ctx.currentTime);
-      filterNode.Q.setValueAtTime(1.1, ctx.currentTime);
+      filterNode.frequency.setValueAtTime(1200, ctx.currentTime);
+      filterNode.Q.setValueAtTime(1.0, ctx.currentTime);
 
       filterNode.connect(dryGain);
       filterNode.connect(convolver);
@@ -1921,7 +1920,7 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
     const now = ctx.currentTime;
     masterGain.gain.cancelScheduledValues(now);
     masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value, 0.0001), now);
-    masterGain.gain.exponentialRampToValueAtTime(0.24, now + 1.8);
+    masterGain.gain.exponentialRampToValueAtTime(0.65, now + 1.2);
 
     isPlaying = true;
     actualizarBoton();
@@ -1937,13 +1936,13 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
     const now = ctx.currentTime;
     masterGain.gain.cancelScheduledValues(now);
     masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value, 0.0001), now);
-    masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+    masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
 
     setTimeout(() => {
       if (!isPlaying && ctx && ctx.state === 'running') {
         ctx.suspend();
       }
-    }, 650);
+    }, 550);
 
     isPlaying = false;
     actualizarBoton();
