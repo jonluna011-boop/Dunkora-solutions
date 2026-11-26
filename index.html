@@ -1777,7 +1777,7 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
 <button id="inmexpara-audio-btn" type="button" aria-label="Activar o silenciar música de fondo" style="position:fixed;bottom:20px;right:20px;z-index:9999;padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.2);background:rgba(15,23,42,0.85);color:#fff;font-size:13px;cursor:pointer;backdrop-filter:blur(6px);">
   🔇 Música: Off
 </button>
-    <script>
+   <script>
 (function () {
   const btn = document.getElementById('inmexpara-audio-btn');
   if (!btn) return;
@@ -1788,76 +1788,112 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
   let ctx = null;
   let masterGain = null;
   let isPlaying = false;
-  let nodes = [];
 
   function actualizarBoton() {
     btn.textContent = isPlaying ? '🔊 Música: On' : '🔇 Música: Off';
   }
 
-  function iniciarAmbienteCinematografico() {
+  function crearReverbImpulse(context, duracion = 3.2, decaimiento = 2.6) {
+    const length = Math.floor(context.sampleRate * duracion);
+    const impulse = context.createBuffer(2, length, context.sampleRate);
+    for (let ch = 0; ch < 2; ch++) {
+      const data = impulse.getChannelData(ch);
+      for (let i = 0; i < length; i++) {
+        const env = Math.pow(1 - i / length, decaimiento);
+        data[i] = (Math.random() * 2 - 1) * env;
+      }
+    }
+    return impulse;
+  }
+
+  function crearRiserSuave(context, destino) {
+    // Ruido blanco filtrado para simular el soplo/barrido inicial del video
+    const bufferSize = context.sampleRate * 6;
+    const noiseBuffer = context.createBuffer(1, bufferSize, context.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = Math.random() * 2 - 1;
+    }
+
+    const whiteNoise = context.createBufferSource();
+    whiteNoise.buffer = noiseBuffer;
+    whiteNoise.loop = true;
+
+    const bandpass = context.createBiquadFilter();
+    bandpass.type = 'bandpass';
+    bandpass.Q.setValueAtTime(1.8, context.currentTime);
+    bandpass.frequency.setValueAtTime(220, context.currentTime);
+    bandpass.frequency.exponentialRampToValueAtTime(950, context.currentTime + 5.2);
+
+    const riserGain = context.createGain();
+    riserGain.gain.setValueAtTime(0.0001, context.currentTime);
+    riserGain.gain.exponentialRampToValueAtTime(0.045, context.currentTime + 4.5);
+    riserGain.gain.exponentialRampToValueAtTime(0.004, context.currentTime + 6.5);
+
+    whiteNoise.connect(bandpass);
+    bandpass.connect(riserGain);
+    riserGain.connect(destino);
+    whiteNoise.start();
+  }
+
+  function iniciarAmbienteVideoSimilar() {
     if (!ctx) {
       ctx = new AudioCtx();
       masterGain = ctx.createGain();
       masterGain.gain.setValueAtTime(0.0001, ctx.currentTime);
-      masterGain.connect(ctx.destination);
 
-      // Filtro pasa-bajos cálido para dar sensación atmosférica
+      const wetGain = ctx.createGain();
+      wetGain.gain.setValueAtTime(0.55, ctx.currentTime);
+
+      const dryGain = ctx.createGain();
+      dryGain.gain.setValueAtTime(0.65, ctx.currentTime);
+
+      const convolver = ctx.createConvolver();
+      convolver.buffer = crearReverbImpulse(ctx, 3.5, 2.4);
+
       const lowpass = ctx.createBiquadFilter();
       lowpass.type = 'lowpass';
-      lowpass.frequency.setValueAtTime(420, ctx.currentTime);
-      lowpass.Q.setValueAtTime(1.2, ctx.currentTime);
+      lowpass.frequency.setValueAtTime(1400, ctx.currentTime);
 
-      // LFO lento para abrir y cerrar el filtro suavemente
-      const lfo = ctx.createOscillator();
-      const lfoGain = ctx.createGain();
-      lfo.type = 'sine';
-      lfo.frequency.setValueAtTime(0.08, ctx.currentTime); // ciclo lento cada ~12.5s
-      lfoGain.gain.setValueAtTime(180, ctx.currentTime);
-      lfo.connect(lfoGain);
-      lfoGain.connect(lowpass.frequency);
+      lowpass.connect(dryGain);
+      lowpass.connect(convolver);
+      convolver.connect(wetGain);
 
-      // Acorde cinematográfico abierto (D2, A2, E3, F#3 / Re menor-mayor atmosférico)
-      const notas = [73.42, 110.00, 146.83, 220.00];
+      dryGain.connect(masterGain);
+      wetGain.connect(masterGain);
+      masterGain.connect(ctx.destination);
+
+      crearRiserSuave(ctx, lowpass);
+
+      // Acorde etéreo luminoso que entra suave alrededor de los 4.5s
+      const notas = [146.83, 220.00, 277.18, 329.63, 440.00]; // D3, A3, C#4, E4, A4
+      const entradaAcorde = ctx.currentTime + 4.2;
 
       notas.forEach((freq, idx) => {
-        const osc1 = ctx.createOscillator();
-        const osc2 = ctx.createOscillator();
+        const osc = ctx.createOscillator();
         const voiceGain = ctx.createGain();
 
-        osc1.type = idx === 0 ? 'triangle' : 'sawtooth';
-        osc2.type = 'sine';
+        osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
 
-        osc1.frequency.setValueAtTime(freq, ctx.currentTime);
-        // Ligero desafinado (detune) para dar amplitud tipo pad
-        osc2.frequency.setValueAtTime(freq, ctx.currentTime);
-        osc2.detune.setValueAtTime(idx % 2 === 0 ? 7 : -7, ctx.currentTime);
+        voiceGain.gain.setValueAtTime(0.0001, ctx.currentTime);
+        voiceGain.gain.setValueAtTime(0.0001, entradaAcorde);
+        voiceGain.gain.exponentialRampToValueAtTime(0.055 / (idx * 0.35 + 1), entradaAcorde + 1.6);
 
-        const nivelVoz = idx === 0 ? 0.16 : 0.06;
-        voiceGain.gain.setValueAtTime(nivelVoz, ctx.currentTime);
-
-        osc1.connect(voiceGain);
-        osc2.connect(voiceGain);
+        osc.connect(voiceGain);
         voiceGain.connect(lowpass);
-
-        osc1.start();
-        osc2.start();
-        nodes.push(osc1, osc2);
+        osc.start();
       });
-
-      lowpass.connect(masterGain);
-      lfo.start();
-      nodes.push(lfo);
     }
 
     if (ctx.state === 'suspended') {
       ctx.resume();
     }
 
-    // Entrada suave (fade-in) para que no entre de golpe
     const now = ctx.currentTime;
     masterGain.gain.cancelScheduledValues(now);
     masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value, 0.0001), now);
-    masterGain.gain.exponentialRampToValueAtTime(0.18, now + 1.8);
+    masterGain.gain.exponentialRampToValueAtTime(0.22, now + 1.2);
 
     isPlaying = true;
     actualizarBoton();
@@ -1873,13 +1909,13 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
     const now = ctx.currentTime;
     masterGain.gain.cancelScheduledValues(now);
     masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value, 0.0001), now);
-    masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+    masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
 
     setTimeout(() => {
       if (!isPlaying && ctx && ctx.state === 'running') {
         ctx.suspend();
       }
-    }, 650);
+    }, 550);
 
     isPlaying = false;
     actualizarBoton();
@@ -1890,14 +1926,13 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
     if (isPlaying) {
       detenerAmbiente();
     } else {
-      iniciarAmbienteCinematografico();
+      iniciarAmbienteVideoSimilar();
     }
   });
 
-  // Arranca suave tras la primera interacción en la página
   document.addEventListener('click', () => {
     if (!isPlaying) {
-      iniciarAmbienteCinematografico();
+      iniciarAmbienteVideoSimilar();
     }
   }, { once: true });
 
