@@ -111,8 +111,8 @@
         }
 
         body {
-            background-color: #010918;
-            background-image: radial-gradient(ellipse at 62% 45%, rgba(4, 58, 145, 0.55) 0%, rgba(2, 24, 64, 0.35) 45%, rgba(1, 9, 24, 0.95) 85%);
+            background-color: #000000;
+            background-image: radial-gradient(ellipse at 50% 50%, rgba(2, 10, 28, 0.35) 0%, #000000 90%);
             background-attachment: fixed;
             color: var(--text-primary);
             font-family: 'Inter', system-ui, sans-serif;
@@ -159,43 +159,7 @@
             will-change: opacity;
         }
 
-        #cinema-orbital-img {
-            position: absolute;
-            top: 8%;
-            right: 4%;
-            width: 44%;
-            max-width: 560px;
-            height: 82%;
-            object-fit: contain;
-            object-position: center;
-            filter: invert(var(--orbital-invert)) contrast(1.12) brightness(0.82);
-            mix-blend-mode: var(--orbital-blend);
-            transform-origin: 55% 48%;
-            will-change: transform;
-        }
-
-        #cinema-orbital-canvas {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            display: block;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        @media (max-width: 1023px) {
-            #cinema-orbital-img {
-                top: 14%;
-                right: 50%;
-                transform: translateX(50%);
-                width: 86%;
-                height: 44%;
-                opacity: 0.45;
-            }
-        }
-
-        .cinema-card {
+        #cinema-orbital-img { position: absolute; top: 50%; left: 52%; height: min(106vh, 74vw); width: auto; max-width: none; object-fit: contain; filter: invert(var(--orbital-invert)) contrast(1.15) saturate(1.24) brightness(0.95); mix-blend-mode: var(--orbital-blend); -webkit-mask-image: radial-gradient(ellipse 33.5% 48.5% at 50% 50%, #000 72%, rgba(0,0,0,0.62) 88%, transparent 98%); mask-image: radial-gradient(ellipse 33.5% 48.5% at 50% 50%, #000 72%, rgba(0,0,0,0.62) 88%, transparent 98%); transform-origin: center center; will-change: transform; } #cinema-orbital-stage::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(560px circle at var(--cursor-x, 56%) var(--cursor-y, 48%), rgba(56, 189, 248, 0.14) 0%, rgba(168, 85, 247, 0.10) 40%, transparent 74%); z-index: 0; } #cinema-orbital-stage::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: rgba(0, 0, 0, var(--scroll-darken, 0)), linear-gradient(90deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.22) 48%, rgba(0,0,0,0.08) 100%), radial-gradient(circle at 50% 50%, transparent 48%, rgba(0,0,0,0.82) 100%); z-index: 2; } html.light-theme #cinema-orbital-stage::after { background: rgba(248, 248, 250, var(--scroll-darken, 0)), linear-gradient(90deg, rgba(248,248,250,0.78) 0%, rgba(248,248,250,0.25) 48%, rgba(248,248,250,0.08) 100%); } #cinema-orbital-canvas { display: none; } .cinema-card {
             position: relative;
             background: var(--bg-surface);
             border: 1px solid var(--border-subtle);
@@ -306,6 +270,168 @@
                 max-width: 100% !important;
             }
         }
+    
+        /* =========================================================================
+           DUNKORA MOTION GRAPHICS PRO SUITE (INGENIERÍA & MICRO-INTERACCIONES)
+           ========================================================================= */
+        .cinema-card {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.45s ease, box-shadow 0.45s ease !important;
+        }
+        .cinema-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(420px circle at var(--card-mx, 50%) var(--card-my, 50%), rgba(56, 189, 248, 0.13), rgba(168, 85, 247, 0.06) 45%, transparent 75%);
+            opacity: var(--card-hover, 0);
+            transition: opacity 0.4s ease;
+            z-index: 1;
+        }
+        html.light-theme .cinema-card::before {
+            background: radial-gradient(420px circle at var(--card-mx, 50%) var(--card-my, 50%), rgba(14, 165, 233, 0.14), rgba(139, 92, 246, 0.07) 45%, transparent 75%);
+        }
+
+        /* Flujo de datos activo en los nodos de la terminal del Hero */
+        .terminal-step-active {
+            border-color: rgba(56, 189, 248, 0.65) !important;
+            background: rgba(56, 189, 248, 0.09) !important;
+            box-shadow: 0 0 18px rgba(56, 189, 248, 0.16);
+            transform: translateY(-2px);
+            transition: all 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Coreografía tipográfica editorial */
+        .mg-heading-reveal {
+            opacity: 0;
+            transform: translateY(26px);
+            filter: blur(4px);
+            transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), filter 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform, filter;
+        }
+        .mg-heading-reveal.is-inview {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+
+        /* Botones magnéticos fluidos */
+        .mg-magnetic-btn {
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, background-color 0.3s ease !important;
+            will-change: transform;
+        }
+    
+        /* =========================================================================
+           DUNKORA MASTER MOTION GRAPHICS LAYER (NON-INTRUSIVE VISUAL ENGINE)
+           ========================================================================= */
+        #dunkora-architect-grid {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background-image:
+                linear-gradient(to right, rgba(56, 189, 248, 0.055) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(56, 189, 248, 0.055) 1px, transparent 1px);
+            background-size: 64px 64px;
+            -webkit-mask-image: radial-gradient(460px circle at var(--cursor-x, 56%) var(--cursor-y, 48%), rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.22) 55%, transparent 85%);
+            mask-image: radial-gradient(460px circle at var(--cursor-x, 56%) var(--cursor-y, 48%), rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.22) 55%, transparent 85%);
+            opacity: calc(var(--intro-fade, 0.95) * 0.9);
+        }
+        html.light-theme #dunkora-architect-grid {
+            background-image:
+                linear-gradient(to right, rgba(14, 165, 233, 0.08) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(14, 165, 233, 0.08) 1px, transparent 1px);
+        }
+
+        #dunkora-orbital-rings {
+            position: absolute;
+            top: 50%;
+            left: 52%;
+            width: min(94vh, 66vw);
+            height: min(94vh, 66vw);
+            transform: translate3d(-50%, -50%, 0);
+            pointer-events: none;
+            z-index: 1;
+            opacity: calc(var(--intro-fade, 0.95) * 0.72);
+        }
+        #dunkora-orbital-rings svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+        #dunkora-orbital-rings .ring-outer {
+            transform-origin: 400px 400px;
+            animation: dunkoraSpinCW 95s linear infinite;
+        }
+        #dunkora-orbital-rings .ring-inner {
+            transform-origin: 400px 400px;
+            animation: dunkoraSpinCCW 68s linear infinite;
+        }
+        @keyframes dunkoraSpinCW {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes dunkoraSpinCCW {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+
+        /* Destello diagonal tipo cristal técnico al pasar el cursor sobre tarjetas */
+        .cinema-card::after {
+            content: "";
+            position: absolute;
+            top: -120%;
+            left: -140%;
+            width: 90%;
+            height: 320%;
+            pointer-events: none;
+            background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.055) 50%, transparent 65%);
+            transform: rotate(18deg) translateX(-100%);
+            transition: transform 0.95s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1;
+        }
+        .cinema-card:hover::after {
+            transform: rotate(18deg) translateX(460%);
+        }
+        html.light-theme .cinema-card::after {
+            background: linear-gradient(115deg, transparent 35%, rgba(56, 189, 248, 0.09) 50%, transparent 65%);
+        }
+        /* DUNKORA MOTION GRAPHICS SHOWCASE & TERMINAL */
+        .mg-arch-node {
+            cursor: pointer !important;
+            position: relative !important;
+            overflow: hidden !important;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease, background-color 0.4s ease !important;
+        }
+        .mg-arch-node:hover {
+            border-color: rgba(56, 189, 248, 0.55) !important;
+            background: rgba(56, 189, 248, 0.08) !important;
+        }
+        .mg-arch-node.is-selected {
+            border-color: rgba(56, 189, 248, 0.9) !important;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.16), rgba(168, 85, 247, 0.12)) !important;
+            box-shadow: 0 0 24px rgba(56, 189, 248, 0.25), inset 0 0 12px rgba(56, 189, 248, 0.15) !important;
+            transform: translateY(-2px) !important;
+        }
+        .mg-arch-node.is-selected::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            width: 100%;
+            background: linear-gradient(90deg, #38bdf8, #a855f7, #38bdf8);
+            background-size: 200% 100%;
+            animation: mgStreamFlow 1.6s linear infinite;
+        }
+        @keyframes mgStreamFlow {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .mg-scramble-ready {
+            cursor: default;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -314,13 +440,23 @@
     <div id="scroll-progress-bar" aria-hidden="true"
         class="no-print fixed top-0 left-0 z-50 h-[2px] w-0 btn-contrast pointer-events-none transition-[width] duration-100 ease-out"></div>
 
-    <!-- Movimiento cinematográfico inicial con imagen que se desvanece al hacer scroll -->
+            <!-- Filtro SVG para ondulación de agua -->
+    <svg aria-hidden="true" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden;">
+        <defs>
+            <filter id="dunkora-water-ripple" x="-50%" y="-50%" width="200%" height="200%">
+                <feTurbulence id="water-turbulence" type="fractalNoise" baseFrequency="0.0065 0.0085" numOctaves="3" seed="12" result="noise" />
+                <feDisplacementMap id="water-displacement" in="SourceGraphic" in2="noise" scale="16" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- Movimiento cinematográfico inicial con vortice-ia.png y ondas de agua -->
     <div id="cinema-intro-stage" aria-hidden="true" class="no-print">
-        <img id="cinema-orbital-img"
-            src=".fondo-filamentos.jpg"
-            alt=""
-            onerror="if (!this.dataset.fb) { this.dataset.fb = '1'; this.src = 'descarga (1).jpg'; } else { this.style.display = 'none'; }">
-        <canvas id="cinema-orbital-canvas"></canvas>
+        <div id="cinema-orbital-water-wrap" style="position:absolute;inset:0;filter:url(#dunkora-water-ripple);">
+            <img id="cinema-orbital-img"
+                src="vortice-ia.png"
+                alt="">
+        </div>
     </div>
 
     <!-- Barra de navegación superior minimalista -->
@@ -328,7 +464,7 @@
         <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-10">
             <a href="#top" class="flex items-center gap-3 group">
                 <div class="flex h-9 w-9 items-center justify-center rounded-lg border b-strong bg-field overflow-hidden transition-colors">
-                    <img src="dunkora.jpg" alt="Logo Dunkora Solutions" class="h-full w-full object-contain">
+                    <img src="DK.jpg" alt="Logo Dunkora Solutions" class="h-full w-full object-contain">
                 </div>
                 <div class="leading-none">
                     <span class="block font-editorial text-lg font-bold tracking-[0.14em] t-primary">DUNKORA</span>
@@ -1021,133 +1157,122 @@
         function initIntroOrbitalMotion() {
             const stage = document.getElementById('cinema-intro-stage');
             const imgEl = document.getElementById('cinema-orbital-img');
-            const canvas = document.getElementById('cinema-orbital-canvas');
+            const turbEl = document.getElementById('water-turbulence');
+            const dispEl = document.getElementById('water-displacement');
             const progressBar = document.getElementById('scroll-progress-bar');
 
-            const updateScrollFade = () => {
-                const y = window.scrollY || window.pageYOffset || 0;
-                const fadeDistance = Math.max(260, window.innerHeight * 0.65);
-                const remaining = Math.max(0.24, 1 - (y / fadeDistance) * 0.76);
-                if (stage) {
-                    stage.style.setProperty('--intro-fade', remaining.toFixed(3));
-                    stage.style.visibility = 'visible';
-                }
+            let targetScroll = window.scrollY || window.pageYOffset || 0;
+            let smoothScroll = targetScroll;
+            let pointerX = 0;
+            let pointerY = 0;
+            let smoothPX = 0;
+            let smoothPY = 0;
+            let cursorPctX = 56;
+            let cursorPctY = 48;
+            let smoothCursorPctX = 56;
+            let smoothCursorPctY = 48;
+            let lastClientX = null;
+            let lastClientY = null;
+            let targetRipple = 0;
+            let smoothRipple = 0;
 
+            const onScroll = () => {
+                targetScroll = window.scrollY || window.pageYOffset || 0;
                 if (progressBar) {
                     const docHeight = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-                    const pct = Math.min(100, Math.max(0, (y / docHeight) * 100));
+                    const pct = Math.min(100, Math.max(0, (targetScroll / docHeight) * 100));
                     progressBar.style.width = `${pct.toFixed(1)}%`;
                 }
             };
 
-            updateScrollFade();
-            window.addEventListener('scroll', updateScrollFade, { passive: true });
+            const onPointerMove = (clientX, clientY) => {
+                const w = window.innerWidth || 1;
+                const h = window.innerHeight || 1;
+                pointerX = (clientX / w - 0.5) * 2;
+                pointerY = (clientY / h - 0.5) * 2;
+                cursorPctX = (clientX / w) * 100;
+                cursorPctY = (clientY / h) * 100;
 
-            const ctx = canvas instanceof HTMLCanvasElement ? canvas.getContext('2d') : null;
-            let width = 0;
-            let height = 0;
-            let dpr = 1;
-
-            const resizeCanvas = () => {
-                if (!canvas || !ctx) return;
-                dpr = Math.min(window.devicePixelRatio || 1, 2);
-                width = window.innerWidth || document.documentElement.clientWidth || 1280;
-                height = window.innerHeight || document.documentElement.clientHeight || 800;
-                canvas.width = Math.floor(width * dpr);
-                canvas.height = Math.floor(height * dpr);
-                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            };
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas, { passive: true });
-
-            const particleCount = 68;
-            const particles = Array.from({ length: particleCount }, (_, idx) => {
-                const depth = 0.45 + ((idx * 37) % 100) / 140;
-                const speedScale = 0.00011 * depth;
-                return {
-                    xRatio: ((idx * 73) % 100) / 100,
-                    yRatio: ((idx * 41 + 19) % 100) / 100,
-                    vx: (((idx * 29) % 19) - 9) * speedScale,
-                    vy: (((idx * 53) % 17) - 8) * speedScale,
-                    radius: (1.2 + ((idx * 13) % 22) / 12) * depth,
-                    alpha: (0.42 + ((idx * 23) % 52) / 100),
-                    twinkleSpeed: 0.016 + ((idx * 7) % 15) * 0.0012,
-                    twinklePhase: idx * 0.85,
-                    trail: []
-                };
-            });
-
-            let tick = 0;
-
-            const renderFrame = () => {
-                tick += 1;
-
-                if (imgEl) {
-                    const driftX = Math.sin(tick * 0.006) * 10;
-                    const driftY = Math.cos(tick * 0.005) * 8;
-                    const rotDeg = Math.sin(tick * 0.0035) * 1.4;
-                    const scale = 1.02 + Math.cos(tick * 0.0045) * 0.02;
-                    imgEl.style.transform = `translate3d(${driftX.toFixed(1)}px, ${driftY.toFixed(1)}px, 0) rotate(${rotDeg.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
+                if (lastClientX !== null && lastClientY !== null) {
+                    const dist = Math.min(35, Math.hypot(clientX - lastClientX, clientY - lastClientY));
+                    if (dist > 0.5) {
+                        targetRipple = Math.min(18, targetRipple + dist * 0.14);
+                    }
                 }
-
-                if (ctx && width > 0 && height > 0) {
-                    ctx.clearRect(0, 0, width, height);
-                    const isLight = document.documentElement.classList.contains('light-theme');
-                    const dotRgb = isLight ? '9, 9, 11' : '245, 245, 247';
-
-                    particles.forEach((p, i) => {
-                        const waveX = Math.sin(tick * 0.0055 + i * 0.7) * 0.000095;
-                        const waveY = Math.cos(tick * 0.0048 + i * 0.9) * 0.000095;
-
-                        p.xRatio += p.vx + waveX;
-                        p.yRatio += p.vy + waveY;
-
-                        if (p.xRatio < -0.04) { p.xRatio = 1.04; p.trail = []; }
-                        if (p.xRatio > 1.04) { p.xRatio = -0.04; p.trail = []; }
-                        if (p.yRatio < -0.04) { p.yRatio = 1.04; p.trail = []; }
-                        if (p.yRatio > 1.04) { p.yRatio = -0.04; p.trail = []; }
-
-                        const px = p.xRatio * width;
-                        const py = p.yRatio * height;
-
-                        p.trail.push({ x: px, y: py });
-                        if (p.trail.length > 26) {
-                            p.trail.shift();
-                        }
-
-                        const pulse = 0.78 + Math.sin(tick * p.twinkleSpeed + p.twinklePhase) * 0.22;
-                        const finalAlpha = Math.min(0.95, Math.max(0.16, p.alpha * pulse));
-
-                        if (p.trail.length > 1) {
-                            for (let t = 1; t < p.trail.length; t++) {
-                                const prev = p.trail[t - 1];
-                                const curr = p.trail[t];
-                                const ratio = t / p.trail.length;
-                                const easedRatio = ratio * ratio;
-
-                                ctx.beginPath();
-                                ctx.moveTo(prev.x, prev.y);
-                                ctx.lineTo(curr.x, curr.y);
-                                ctx.strokeStyle = `rgba(${dotRgb}, ${(finalAlpha * easedRatio * 0.68).toFixed(3)})`;
-                                ctx.lineWidth = Math.max(0.65, p.radius * 0.9 * ratio);
-                                ctx.lineCap = 'round';
-                                ctx.stroke();
-                            }
-                        }
-
-                        ctx.beginPath();
-                        ctx.arc(px, py, p.radius, 0, Math.PI * 2);
-                        ctx.fillStyle = `rgba(${dotRgb}, ${finalAlpha.toFixed(3)})`;
-                        ctx.fill();
-                    });
-                }
-
-                requestAnimationFrame(renderFrame);
+                lastClientX = clientX;
+                lastClientY = clientY;
             };
 
-            requestAnimationFrame(renderFrame);
+            window.addEventListener('pointermove', (e) => {
+                onPointerMove(e.clientX, e.clientY);
+            }, { passive: true });
+
+            window.addEventListener('touchmove', (e) => {
+                if (e.touches && e.touches[0]) {
+                    onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
+                }
+            }, { passive: true });
+
+            onScroll();
+            window.addEventListener('scroll', onScroll, { passive: true });
+
+            let breathTime = 0;
+            let wavePhase = 0;
+
+            const renderCalmMotion = () => {
+                breathTime += 0.015;
+
+                // Doble suavizado: la onda entra sin golpes y se disipa con lentitud
+                targetRipple *= 0.965;
+                smoothRipple += (targetRipple - smoothRipple) * 0.09;
+
+                wavePhase += 0.018 + smoothRipple * 0.0012;
+
+                smoothScroll += (targetScroll - smoothScroll) * 0.05;
+                smoothPX += (pointerX - smoothPX) * 0.035;
+                smoothPY += (pointerY - smoothPY) * 0.035;
+                smoothCursorPctX += (cursorPctX - smoothCursorPctX) * 0.04;
+                smoothCursorPctY += (cursorPctY - smoothCursorPctY) * 0.04;
+
+                const breathWave = (Math.sin(breathTime) + 1) * 0.5;
+
+                if (turbEl && dispEl) {
+                    const rippleFactor = Math.min(1, smoothRipple / 14);
+                    const bfX = 0.0052 + Math.sin(wavePhase * 0.65) * (0.0013 + rippleFactor * 0.0007);
+                    const bfY = 0.0068 + Math.cos(wavePhase * 0.55) * (0.0015 + rippleFactor * 0.0007);
+                    turbEl.setAttribute('baseFrequency', `${bfX.toFixed(5)} ${bfY.toFixed(5)}`);
+
+                    const calmBreathRipple = 8.5 + breathWave * 4.5;
+                    const totalWaveScale = calmBreathRipple + smoothRipple;
+                    dispEl.setAttribute('scale', totalWaveScale.toFixed(2));
+                }
+
+                // Progreso suave de oscurecimiento al bajar (0 en el Hero -> 1 en las secciones inferiores)
+                const vh = Math.max(1, window.innerHeight || 800);
+                const scrollFadeProgress = Math.max(0, Math.min(1, (smoothScroll - vh * 0.14) / (vh * 0.72)));
+                const easedProgress = scrollFadeProgress * scrollFadeProgress * (3 - 2 * scrollFadeProgress);
+
+                const dynamicOpacity = 0.95 - easedProgress * 0.77;
+                const dynamicDarken = easedProgress * 0.88;
+
+                if (imgEl && stage) {
+                    const floatX = Math.sin(breathTime * 0.6) * 7 + smoothPX * 28;
+                    const floatY = Math.cos(breathTime * 0.5) * 7 + smoothPY * 20;
+                    const breathingScale = 1.00 + breathWave * 0.032;
+
+                    stage.style.setProperty('--intro-fade', dynamicOpacity.toFixed(3));
+                    stage.style.setProperty('--scroll-darken', dynamicDarken.toFixed(3));
+                    stage.style.setProperty('--cursor-x', `${smoothCursorPctX.toFixed(1)}%`);
+                    stage.style.setProperty('--cursor-y', `${smoothCursorPctY.toFixed(1)}%`);
+                    stage.style.visibility = 'visible';
+
+                    imgEl.style.transform = `translate3d(calc(-50% + ${floatX.toFixed(2)}px), calc(-50% + ${floatY.toFixed(2)}px), 0) scale(${breathingScale.toFixed(4)})`;
+                }
+                requestAnimationFrame(renderCalmMotion);
+            };
+
+            requestAnimationFrame(renderCalmMotion);
         }
-
         /* =========================================================================
            2. ALTERNADOR DE TEMA OSCURO (POR DEFECTO) / TEMA BLANCO
         ========================================================================= */
@@ -2041,5 +2166,937 @@
         actualizarBoton();
     })();
     </script>
+    <canvas id="dunkora-fx-overlay" class="no-print" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9998;"></canvas>
+    <script id="dunkora-motion-master-engine">
+    (function() {
+        function bootDunkoraMasterFX() {
+            // A. CANVAS FX: Estela luminosa del cursor + Ondas expansivas al hacer clic
+            const fxCanvas = document.getElementById('dunkora-fx-overlay');
+            if (fxCanvas instanceof HTMLCanvasElement) {
+                const ctx = fxCanvas.getContext('2d');
+                let w = window.innerWidth || 1280;
+                let h = window.innerHeight || 800;
+                let dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+                const resizeFx = () => {
+                    w = window.innerWidth || 1280;
+                    h = window.innerHeight || 800;
+                    dpr = Math.min(window.devicePixelRatio || 1, 2);
+                    fxCanvas.width = Math.floor(w * dpr);
+                    fxCanvas.height = Math.floor(h * dpr);
+                    if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                };
+                resizeFx();
+                window.addEventListener('resize', resizeFx, { passive: true });
+
+                const trail = [];
+                const waves = [];
+                let lx = null, ly = null;
+
+                window.addEventListener('pointermove', (e) => {
+                    if (e.pointerType === 'touch') return;
+                    if (lx !== null && ly !== null && Math.hypot(e.clientX - lx, e.clientY - ly) > 1.5) {
+                        trail.push({ x: e.clientX, y: e.clientY, life: 1 });
+                        if (trail.length > 26) trail.shift();
+                    }
+                    lx = e.clientX;
+                    ly = e.clientY;
+                }, { passive: true });
+
+                window.addEventListener('pointerdown', (e) => {
+                    waves.push({ x: e.clientX, y: e.clientY, r: 8, a: 0.65 });
+                }, { passive: true });
+
+                const tickFx = () => {
+                    if (ctx) {
+                        ctx.clearRect(0, 0, w, h);
+                        if (trail.length > 1) {
+                            for (let i = 1; i < trail.length; i++) {
+                                const p0 = trail[i - 1], p1 = trail[i];
+                                const ratio = i / trail.length;
+                                const alpha = p1.life * ratio * 0.34;
+                                if (alpha > 0.005) {
+                                    ctx.beginPath();
+                                    ctx.moveTo(p0.x, p0.y);
+                                    ctx.lineTo(p1.x, p1.y);
+                                    ctx.lineWidth = ratio * 2.4;
+                                    ctx.lineCap = 'round';
+                                    ctx.strokeStyle = `rgba(56, 189, 248, ${alpha.toFixed(3)})`;
+                                    ctx.stroke();
+                                }
+                            }
+                        }
+                        for (let i = trail.length - 1; i >= 0; i--) {
+                            trail[i].life -= 0.042;
+                            if (trail[i].life <= 0) trail.splice(i, 1);
+                        }
+                        for (let i = waves.length - 1; i >= 0; i--) {
+                            const sw = waves[i];
+                            sw.r += 5.4;
+                            sw.a *= 0.94;
+                            ctx.beginPath();
+                            ctx.arc(sw.x, sw.y, sw.r, 0, Math.PI * 2);
+                            ctx.lineWidth = 1.4;
+                            ctx.strokeStyle = `rgba(56, 189, 248, ${sw.a.toFixed(3)})`;
+                            ctx.stroke();
+
+                            if (sw.r > 22) {
+                                ctx.beginPath();
+                                ctx.arc(sw.x, sw.y, sw.r * 0.65, 0, Math.PI * 2);
+                                ctx.lineWidth = 1.0;
+                                ctx.strokeStyle = `rgba(168, 85, 247, ${(sw.a * 0.7).toFixed(3)})`;
+                                ctx.stroke();
+                            }
+                            if (sw.a < 0.01) waves.splice(i, 1);
+                        }
+                    }
+                    requestAnimationFrame(tickFx);
+                };
+                requestAnimationFrame(tickFx);
+            }
+
+            // B. DECODIFICADOR BINARIO / HEXADECIMAL EN ETIQUETAS (01 /, 02 /, 03 /, 04 /, 05 /)
+            const glyphs = '010110ABCDEF/#*+';
+            const allElements = Array.from(document.querySelectorAll('div, span, p, h3, h4'));
+            const labelNodes = allElements.filter((el) => {
+                if (el.children.length > 0) return false;
+                const t = (el.textContent || '').trim();
+                return /^0[1-9]\s*\//.test(t) && t.length >= 6 && t.length <= 60;
+            });
+
+            const runBinaryDecode = (el) => {
+                if (el.dataset.decoding === '1') return;
+                el.dataset.decoding = '1';
+                const original = el.dataset.origText || el.textContent.trim();
+                el.dataset.origText = original;
+                let frame = 0;
+                const total = 24;
+                const timer = setInterval(() => {
+                    frame++;
+                    const revealed = Math.floor((frame / total) * original.length);
+                    let str = '';
+                    for (let i = 0; i < original.length; i++) {
+                        const c = original[i];
+                        if (c === ' ' || c === '/' || i < revealed) str += c;
+                        else str += glyphs[Math.floor(Math.random() * glyphs.length)];
+                    }
+                    el.textContent = str;
+                    if (frame >= total) {
+                        el.textContent = original;
+                        el.dataset.decoding = '0';
+                        clearInterval(timer);
+                    }
+                }, 26);
+            };
+
+            labelNodes.forEach((lbl) => {
+                lbl.classList.add('mg-scramble-ready');
+                lbl.addEventListener('pointerenter', () => runBinaryDecode(lbl));
+            });
+
+            if ('IntersectionObserver' in window && labelNodes.length > 0) {
+                const io = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            runBinaryDecode(entry.target);
+                        }
+                    });
+                }, { threshold: 0.2 });
+                labelNodes.forEach((lbl) => io.observe(lbl));
+            }
+
+            // C. SIMULADOR INTERACTIVO DE ARQUITECTURA EN TIEMPO REAL (HERO TERMINAL)
+            const findStepCard = (needle) => {
+                const leaf = Array.from(document.querySelectorAll('span, div, p')).find((el) => {
+                    return el.children.length === 0 && (el.textContent || '').trim() === needle;
+                });
+                if (!leaf) return null;
+                return leaf.closest('[class*="rounded"]') || leaf.parentElement;
+            };
+
+            const box1 = findStepCard('1. Lead Web');
+            const box2 = findStepCard('2. Agente IA');
+            const box3 = findStepCard('3. Cierre CRM');
+
+            const codeLeaf = Array.from(document.querySelectorAll('*')).find((el) => {
+                return el.children.length === 0 && (el.textContent || '').includes('dunkoraSystem');
+            });
+            const codeEl = codeLeaf ? (codeLeaf.closest('pre') || codeLeaf.parentElement) : null;
+
+            if (box1 && box2 && box3 && codeEl) {
+                const stepBoxes = [box1, box2, box3];
+                const scenarios = [
+                    `<span class="text-purple-400">const</span> <span class="text-sky-300">dunkoraSystem</span> = <span class="text-purple-400">await</span> <span class="text-emerald-300">initArchitecture</span>({\n  frontend: <span class="text-amber-300">'UltraFast_UI'</span>,\n  database: <span class="text-amber-300">'Firebase_Realtime'</span>,\n  aiAgent: <span class="text-sky-400">true</span>, <span class="text-slate-500">// Ventas 24/7</span>\n});`,
+                    `<span class="text-purple-400">const</span> <span class="text-sky-300">aiQualifier</span> = <span class="text-purple-400">await</span> <span class="text-emerald-300">dunkoraAgent.run</span>({\n  channel: <span class="text-amber-300">'WhatsApp_&_Web'</span>,\n  intentScore: <span class="text-sky-400">0.994</span>,\n  autoQuote: <span class="text-amber-300">'Cotizacion_3s'</span> <span class="text-slate-500">// IA Activa</span>\n});`,
+                    `<span class="text-purple-400">await</span> <span class="text-emerald-300">crmPipeline.closeDeal</span>({\n  status: <span class="text-amber-300">'Lead_Calificado'</span>,\n  calendar: <span class="text-amber-300">'Cita_Agendada'</span>,\n  conversionLift: <span class="text-sky-400">'+340%'</span> <span class="text-slate-500">// Cierre</span>\n});`
+                ];
+
+                let activeIdx = 0;
+                let paused = false;
+                let pauseTimer = null;
+
+                const selectStep = (idx) => {
+                    activeIdx = idx;
+                    stepBoxes.forEach((b, i) => {
+                        b.classList.add('mg-arch-node');
+                        if (i === idx) b.classList.add('is-selected');
+                        else b.classList.remove('is-selected');
+                    });
+
+                    codeEl.style.transition = 'opacity 0.18s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+                    codeEl.style.opacity = '0.2';
+                    codeEl.style.transform = 'translateY(3px)';
+                    setTimeout(() => {
+                        codeEl.innerHTML = scenarios[idx];
+                        codeEl.style.opacity = '1';
+                        codeEl.style.transform = 'translateY(0px)';
+                    }, 150);
+                };
+
+                stepBoxes.forEach((box, idx) => {
+                    box.classList.add('mg-arch-node');
+                    box.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        paused = true;
+                        selectStep(idx);
+                        clearTimeout(pauseTimer);
+                        pauseTimer = setTimeout(() => { paused = false; }, 8000);
+                    });
+                });
+
+                selectStep(0);
+                setInterval(() => {
+                    if (!paused) {
+                        selectStep((activeIdx + 1) % 3);
+                    }
+                }, 3800);
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', bootDunkoraMasterFX);
+        } else {
+            bootDunkoraMasterFX();
+        }
+    })();
+    </script>
+<!-- DUNKORA ULTRA MOTION SUITE -->
+<style id="dunkora-ultra-motion-css">
+    /* 1. Nebulosa ambiental reactiva al scroll */
+    #dunkora-aurora-ambient {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        background:
+            radial-gradient(680px circle at 12% 28%, var(--aurora-c1, rgba(56, 189, 248, 0.055)), transparent 70%),
+            radial-gradient(640px circle at 88% 74%, var(--aurora-c2, rgba(168, 85, 247, 0.055)), transparent 70%);
+        transition: background 0.8s ease;
+    }
+
+    /* 2. Haz de luz en divisores horizontales */
+    .mg-laser-divider {
+        position: relative;
+        overflow: hidden;
+    }
+    .mg-laser-divider::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -30%;
+        width: 30%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.75), rgba(168, 85, 247, 0.75), transparent);
+        animation: mgLaserSweep 6.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+    @keyframes mgLaserSweep {
+        0%, 45% { left: -35%; opacity: 0; }
+        55% { opacity: 1; }
+        85% { left: 105%; opacity: 1; }
+        100% { left: 105%; opacity: 0; }
+    }
+
+    /* 4. Paleta de comandos Ctrl+K */
+    #dunkora-cmd-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: rgba(2, 6, 14, 0.72);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        display: none;
+        align-items: flex-start;
+        justify-content: center;
+        padding-top: 14vh;
+        opacity: 0;
+        transition: opacity 0.22s ease;
+    }
+    #dunkora-cmd-backdrop.is-open {
+        display: flex;
+        opacity: 1;
+    }
+    #dunkora-cmd-modal {
+        width: min(92vw, 520px);
+        border-radius: 16px;
+        background: rgba(11, 16, 28, 0.94);
+        border: 1px solid rgba(56, 189, 248, 0.28);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), 0 0 35px rgba(56, 189, 248, 0.12);
+        overflow: hidden;
+        font-family: 'JetBrains Mono', monospace;
+        transform: translateY(-10px) scale(0.98);
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #dunkora-cmd-backdrop.is-open #dunkora-cmd-modal {
+        transform: translateY(0) scale(1);
+    }
+    html.light-theme #dunkora-cmd-modal {
+        background: rgba(255, 255, 255, 0.96);
+        border-color: rgba(14, 165, 233, 0.35);
+    }
+    .mg-cmd-item {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 18px;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        color: #e2e8f0;
+        font-size: 12px;
+        text-align: left;
+        cursor: pointer;
+        transition: background 0.2s ease, padding-left 0.2s ease;
+    }
+    html.light-theme .mg-cmd-item {
+        color: #0f172a;
+        border-bottom-color: rgba(15, 23, 42, 0.06);
+    }
+    .mg-cmd-item:hover {
+        background: rgba(56, 189, 248, 0.12);
+        padding-left: 22px;
+    }
+</style>
+
+<div id="dunkora-aurora-ambient" class="no-print" aria-hidden="true"></div>
+
+<div id="dunkora-cmd-backdrop" class="no-print" role="dialog" aria-modal="true" aria-label="Paleta de comandos rápidos">
+    <div id="dunkora-cmd-modal">
+        <div style="padding:12px 18px;border-bottom:1px solid rgba(56,189,248,0.18);display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#38bdf8;">
+            <span>DUNKORA_CMD // NAVEGACIÓN RÁPIDA</span>
+            <span style="opacity:0.65;">ESC</span>
+        </div>
+        <div id="dunkora-cmd-list">
+            <button type="button" class="mg-cmd-item" data-target="#inicio"><span>01 // Portada & Arquitectura Core</span><span style="opacity:0.5;">JUMP</span></button>
+            <button type="button" class="mg-cmd-item" data-target="#diagnostico"><span>02 // Diagnóstico Inteligente IA</span><span style="opacity:0.5;">JUMP</span></button>
+            <button type="button" class="mg-cmd-item" data-target="#servicios"><span>03 // Capacidades Técnicas</span><span style="opacity:0.5;">JUMP</span></button>
+            <button type="button" class="mg-cmd-item" data-target="#proyectos"><span>04 // Implementaciones Reales</span><span style="opacity:0.5;">JUMP</span></button>
+            <button type="button" class="mg-cmd-item" data-target="#cotizador"><span>05 // Solicitar Cotización a Medida</span><span style="opacity:0.5;">JUMP</span></button>
+        </div>
+    </div>
+</div>
+
+<script id="dunkora-ultra-motion-js">
+(function() {
+    function initUltraMotionSuite() {
+        // 1. Activar haces de luz en bordes divisores horizontales
+        document.querySelectorAll('hr, [class*="border-t"], [class*="border-b"]').forEach((el) => {
+            if (el.offsetHeight <= 2 && el.offsetWidth > 200) {
+                el.classList.add('mg-laser-divider');
+            }
+        });
+
+        // 2. Aurora ambiental reactiva al scroll
+        const aurora = document.getElementById('dunkora-aurora-ambient');
+        const sections = Array.from(document.querySelectorAll('section[id]'));
+
+        const updateScrollAtmosphere = () => {
+            const docH = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+            const ratio = Math.min(1, Math.max(0, (window.scrollY || 0) / docH));
+
+            if (aurora) {
+                if (ratio < 0.33) {
+                    aurora.style.setProperty('--aurora-c1', 'rgba(56, 189, 248, 0.06)');
+                    aurora.style.setProperty('--aurora-c2', 'rgba(168, 85, 247, 0.06)');
+                } else if (ratio < 0.68) {
+                    aurora.style.setProperty('--aurora-c1', 'rgba(168, 85, 247, 0.065)');
+                    aurora.style.setProperty('--aurora-c2', 'rgba(14, 165, 233, 0.055)');
+                } else {
+                    aurora.style.setProperty('--aurora-c1', 'rgba(16, 185, 129, 0.055)');
+                    aurora.style.setProperty('--aurora-c2', 'rgba(56, 189, 248, 0.06)');
+                }
+            }
+        };
+        window.addEventListener('scroll', updateScrollAtmosphere, { passive: true });
+        updateScrollAtmosphere();
+
+        // 3. Paleta de comandos Ctrl+K / Cmd+K
+        const backdrop = document.getElementById('dunkora-cmd-backdrop');
+        if (backdrop) {
+            const closeCmd = () => backdrop.classList.remove('is-open');
+            const toggleCmd = () => backdrop.classList.toggle('is-open');
+
+            window.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                    e.preventDefault();
+                    toggleCmd();
+                } else if (e.key === 'Escape' && backdrop.classList.contains('is-open')) {
+                    closeCmd();
+                }
+            });
+
+            backdrop.addEventListener('click', (e) => {
+                if (e.target === backdrop) closeCmd();
+            });
+
+            backdrop.querySelectorAll('.mg-cmd-item').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const targetSel = btn.getAttribute('data-target');
+                    const targetEl = targetSel ? document.querySelector(targetSel) : null;
+                    closeCmd();
+                    if (targetEl) {
+                        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initUltraMotionSuite);
+    } else {
+        initUltraMotionSuite();
+    }
+})();
+</script>
+<!-- END DUNKORA ULTRA MOTION SUITE -->
+<!-- DUNKORA HERO WOW SUITE -->
+<style id="dunkora-hero-wow-css">
+    /* 1. Coreografía de apertura en el Hero (visible al instante al cargar) */
+    @keyframes mgHeroRevealUp {
+        0% {
+            opacity: 0;
+            transform: translate3d(0, 34px, 0) scale(0.985);
+            filter: blur(8px);
+        }
+        100% {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) scale(1);
+            filter: blur(0);
+        }
+    }
+
+    .mg-hero-seq-1 {
+        animation: mgHeroRevealUp 1.05s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
+    }
+    .mg-hero-seq-2 {
+        animation: mgHeroRevealUp 1.15s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
+    }
+    .mg-hero-seq-3 {
+        animation: mgHeroRevealUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.36s both;
+    }
+
+    /* 2. Reflejo metálico vivo en las palabras en cursiva del Hero */
+    #inicio h1 em,
+    #inicio h1 i {
+        background: linear-gradient(
+            110deg,
+            #ffffff 20%,
+            #7dd3fc 42%,
+            #e0f2fe 50%,
+            #c084fc 58%,
+            #ffffff 80%
+        );
+        background-size: 240% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: mgEditorialShimmer 5.5s ease-in-out infinite;
+        display: inline-block;
+        padding-right: 0.06em;
+    }
+    html.light-theme #inicio h1 em,
+    html.light-theme #inicio h1 i {
+        background: linear-gradient(
+            110deg,
+            #0f172a 20%,
+            #0284c7 45%,
+            #7c3aed 55%,
+            #0f172a 80%
+        );
+        background-size: 240% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    @keyframes mgEditorialShimmer {
+        0%, 25% { background-position: 120% center; }
+        75%, 100% { background-position: -120% center; }
+    }
+
+    /* 3. Levitación espacial 3D y halo dinámico en la ventana de código del Hero */
+    .mg-hero-terminal-float {
+        position: relative;
+        transform-style: preserve-3d;
+        will-change: transform;
+        box-shadow:
+            0 28px 70px -15px rgba(0, 0, 0, 0.78),
+            0 0 40px -10px rgba(56, 189, 248, 0.22),
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.14) !important;
+        transition: box-shadow 0.4s ease;
+    }
+    .mg-hero-terminal-float:hover {
+        box-shadow:
+            0 34px 85px -12px rgba(0, 0, 0, 0.85),
+            0 0 55px -6px rgba(56, 189, 248, 0.34),
+            0 0 30px -8px rgba(168, 85, 247, 0.25),
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.22) !important;
+    }
+</style>
+
+<script id="dunkora-hero-wow-js">
+(function() {
+    function initHeroWowExperience() {
+        const hero = document.getElementById('inicio');
+        if (!hero) return;
+
+        // 1. Asignar secuencia escalonada de entrada a los bloques principales del Hero
+        const h1 = hero.querySelector('h1');
+        if (h1) h1.classList.add('mg-hero-seq-1');
+
+        const heroParagraph = hero.querySelector('p');
+        if (heroParagraph) heroParagraph.classList.add('mg-hero-seq-2');
+
+        // 2. Localizar la tarjeta/ventana de código de la terminal del Hero para darle levitación 3D real
+        const codeLeaf = Array.from(hero.querySelectorAll('*')).find((el) => {
+            return el.children.length === 0 && (el.textContent || '').includes('dunkoraSystem');
+        });
+        const terminalWindow = codeLeaf
+            ? (codeLeaf.closest('[class*="backdrop-blur"]') || codeLeaf.closest('[class*="rounded-2xl"]') || codeLeaf.closest('[class*="rounded-xl"]'))
+            : null;
+
+        if (terminalWindow) {
+            terminalWindow.classList.add('mg-hero-terminal-float', 'mg-hero-seq-3');
+
+            let targetRotX = 0, targetRotY = 0;
+            let currentRotX = 0, currentRotY = 0;
+            let floatPhase = 0;
+
+            window.addEventListener('pointermove', (e) => {
+                if (e.pointerType === 'touch') return;
+                const w = window.innerWidth || 1280;
+                const h = window.innerHeight || 800;
+                const nx = (e.clientX / w - 0.5) * 2;
+                const ny = (e.clientY / h - 0.5) * 2;
+                targetRotY = nx * 6.5;
+                targetRotX = -ny * 5.0;
+            }, { passive: true });
+
+            window.addEventListener('pointerleave', () => {
+                targetRotX = 0;
+                targetRotY = 0;
+            }, { passive: true });
+
+            const animateTerminal3D = () => {
+                floatPhase += 0.022;
+                currentRotX += (targetRotX - currentRotX) * 0.06;
+                currentRotY += (targetRotY - currentRotY) * 0.06;
+
+                const hoverY = Math.sin(floatPhase) * 6.5;
+                const hoverTilt = Math.cos(floatPhase * 0.8) * 1.1;
+
+                terminalWindow.style.transform = `perspective(1200px) translate3d(0, ${hoverY.toFixed(2)}px, 0) rotateX(${(currentRotX + hoverTilt).toFixed(2)}deg) rotateY(${currentRotY.toFixed(2)}deg)`;
+                requestAnimationFrame(animateTerminal3D);
+            };
+            requestAnimationFrame(animateTerminal3D);
+        }
+
+        // 3. Campo magnético interactivo de partículas luminosas en primer plano del Hero
+        const synCanvas = document.getElementById('dunkora-synapse-canvas');
+        if (synCanvas instanceof HTMLCanvasElement) {
+            const ctx = synCanvas.getContext('2d');
+            let sw = window.innerWidth || 1280;
+            let sh = window.innerHeight || 800;
+            const mouse = { x: -9999, y: -9999, active: false };
+
+            window.addEventListener('pointermove', (e) => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+                mouse.active = true;
+            }, { passive: true });
+            window.addEventListener('pointerleave', () => {
+                mouse.active = false;
+            }, { passive: true });
+            window.addEventListener('resize', () => {
+                sw = window.innerWidth || 1280;
+                sh = window.innerHeight || 800;
+            }, { passive: true });
+
+            const motes = Array.from({ length: 34 }, (_, i) => ({
+                baseAngle: (i / 34) * Math.PI * 2,
+                orbitRatio: 0.18 + (i % 7) * 0.052,
+                speed: (0.0012 + (i % 5) * 0.00045) * (i % 2 === 0 ? 1 : -1),
+                ox: 0,
+                oy: 0,
+                vx: 0,
+                vy: 0,
+                size: 1.5 + (i % 3) * 0.85,
+                hue: i % 2 === 0 ? '56, 189, 248' : '192, 132, 252'
+            }));
+
+            let t = 0;
+            const renderMagneticField = () => {
+                t += 0.02;
+                if (ctx && (window.scrollY || 0) < sh * 1.1) {
+                    const cx = sw * 0.52;
+                    const cy = sh * 0.50;
+                    const minDim = Math.min(sw, sh);
+
+                    for (let i = 0; i < motes.length; i++) {
+                        const m = motes[i];
+                        m.baseAngle += m.speed;
+                        const r = minDim * m.orbitRatio + Math.sin(t + i) * 14;
+                        const targetX = cx + Math.cos(m.baseAngle) * r;
+                        const targetY = cy + Math.sin(m.baseAngle) * r;
+
+                        // Repulsión magnética suave cuando el cursor pasa cerca
+                        if (mouse.active) {
+                            const dx = (targetX + m.ox) - mouse.x;
+                            const dy = (targetY + m.oy) - mouse.y;
+                            const dist = Math.hypot(dx, dy);
+                            if (dist < 150 && dist > 0.1) {
+                                const force = (1 - dist / 150) * 3.8;
+                                m.vx += (dx / dist) * force;
+                                m.vy += (dy / dist) * force;
+                            }
+                        }
+
+                        // Resorte elástico de retorno a su órbita
+                        m.vx += -m.ox * 0.045;
+                        m.vy += -m.oy * 0.045;
+                        m.vx *= 0.86;
+                        m.vy *= 0.86;
+                        m.ox += m.vx;
+                        m.oy += m.vy;
+
+                        const px = targetX + m.ox;
+                        const py = targetY + m.oy;
+
+                        ctx.beginPath();
+                        ctx.arc(px, py, m.size, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(${m.hue}, 0.72)`;
+                        ctx.shadowColor = `rgba(${m.hue}, 0.85)`;
+                        ctx.shadowBlur = 8;
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                    }
+                }
+                requestAnimationFrame(renderMagneticField);
+            };
+            requestAnimationFrame(renderMagneticField);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initHeroWowExperience);
+    } else {
+        initHeroWowExperience();
+    }
+})();
+</script>
+<!-- END DUNKORA HERO WOW SUITE -->
+<!-- DUNKORA MOTION HEADER SUITE -->
+<style id="dunkora-motion-header-css">
+    /* Contenedor principal del encabezado con transición cinemática */
+    header.mg-header-shell,
+    nav.mg-header-shell {
+        transition:
+            background-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+            backdrop-filter 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+            border-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+            box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+            transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+            padding 0.45s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    header.mg-header-shell.is-scrolled,
+    nav.mg-header-shell.is-scrolled {
+        background: rgba(6, 10, 19, 0.76) !important;
+        backdrop-filter: blur(18px) saturate(160%) !important;
+        -webkit-backdrop-filter: blur(18px) saturate(160%) !important;
+        border-bottom-color: rgba(56, 189, 248, 0.22) !important;
+        box-shadow: 0 14px 40px -10px rgba(0, 0, 0, 0.72), 0 1px 0 0 rgba(56, 189, 248, 0.12) !important;
+    }
+
+    html.light-theme header.mg-header-shell.is-scrolled,
+    html.light-theme nav.mg-header-shell.is-scrolled {
+        background: rgba(255, 255, 255, 0.84) !important;
+        border-bottom-color: rgba(14, 165, 233, 0.24) !important;
+        box-shadow: 0 12px 32px -8px rgba(15, 23, 42, 0.12) !important;
+    }
+
+    /* Envoltura del logo DK.jpg con halo sutil y micro-interacción */
+    .mg-brand-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .mg-brand-wrap:hover {
+        transform: translateY(-1px);
+    }
+    .mg-logo-badge {
+        position: relative;
+        width: 42px;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        border-radius: 12px;
+        overflow: visible;
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease;
+        z-index: 2;
+    }
+    .mg-logo-badge svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+        overflow: visible;
+        filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.35)) drop-shadow(0 0 14px rgba(168, 85, 247, 0.25));
+    }
+    .mg-brand-wrap:hover .mg-logo-badge img {
+        transform: scale(1.12);
+    }
+    .mg-brand-wrap:hover .mg-logo-badge {
+        box-shadow: 0 0 24px rgba(56, 189, 248, 0.45), 0 0 12px rgba(168, 85, 247, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.15); border-color: rgba(56, 189, 248, 0.62);
+        transform: scale(1.04);
+    }
+
+    /* Píldora líquida deslizante para los enlaces del menú */
+    .mg-nav-track {
+        position: relative !important;
+    }
+    #mg-nav-liquid-pill {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        height: 32px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.14), rgba(168, 85, 247, 0.12));
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        box-shadow: 0 0 16px rgba(56, 189, 248, 0.18);
+        pointer-events: none;
+        opacity: 0;
+        transform: translate3d(0, -50%, 0);
+        transition:
+            transform 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+            width 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+            opacity 0.25s ease;
+        z-index: 0;
+    }
+    html.light-theme #mg-nav-liquid-pill {
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(139, 92, 246, 0.10));
+        border-color: rgba(14, 165, 233, 0.38);
+    }
+
+    .mg-nav-link {
+        position: relative;
+        z-index: 1;
+        padding: 6px 13px !important;
+        border-radius: 999px;
+        transition: color 0.3s ease, text-shadow 0.3s ease !important;
+    }
+    .mg-nav-link:hover,
+    .mg-nav-link.is-current-sec {
+        color: #f8fafc !important;
+        text-shadow: 0 0 14px rgba(56, 189, 248, 0.55);
+    }
+    html.light-theme .mg-nav-link:hover,
+    html.light-theme .mg-nav-link.is-current-sec {
+        color: #0284c7 !important;
+        text-shadow: none;
+    }
+
+    /* Botón de tema estilizado sin alterar su función */
+    .mg-theme-pill {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(56, 189, 248, 0.32) !important;
+        box-shadow: 0 0 20px rgba(56, 189, 248, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease !important;
+    }
+    .mg-theme-pill:hover {
+        transform: translateY(-1px);
+        border-color: rgba(56, 189, 248, 0.72) !important;
+        box-shadow: 0 0 26px rgba(56, 189, 248, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    }
+</style>
+
+<script id="dunkora-motion-header-js">
+(function() {
+    function initMotionHeader() {
+        const headerEl = document.querySelector('header') || document.querySelector('nav');
+        if (!headerEl) return;
+
+        headerEl.classList.add('mg-header-shell');
+
+        // 1. Verificar y estilizar el DK.jpg de la carpeta raíz
+        const logoImg = headerEl.querySelector('img');
+        const badgeWrap = logoImg ? logoImg.parentElement : headerEl.querySelector('.mg-logo-badge');
+        if (badgeWrap) {
+            badgeWrap.classList.add('mg-logo-badge');
+            badgeWrap.innerHTML = '<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="dkBg" x1="10" y1="10" x2="110" y2="110" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#0b192c"/><stop offset="55%" stop-color="#090d1e"/><stop offset="100%" stop-color="#170f2e"/></linearGradient><linearGradient id="dkStroke" x1="8" y1="8" x2="112" y2="112" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#38bdf8"/><stop offset="50%" stop-color="#818cf8"/><stop offset="100%" stop-color="#a855f7"/></linearGradient></defs><rect x="8" y="8" width="104" height="104" rx="26" fill="url(#dkBg)" stroke="url(#dkStroke)" stroke-width="3.2"/><polygon points="8,8 76,8 46,112 8,112" fill="#ffffff" fill-opacity="0.12"/><path d="M27 38H44C56.5 38 64.5 45.8 64.5 60C64.5 74.2 56.5 82 44 82H27V38ZM36.2 46.2V73.8H43.5C51.2 73.8 55.3 68.8 55.3 60C55.3 51.2 51.2 46.2 43.5 46.2H36.2Z" fill="#ffffff"/><path d="M44.2 54.6L39.4 60L44.2 65.4" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M47.8 54.6L52.6 60L47.8 65.4" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M70.5 38H79.7V56.4L94.8 38H105.8L88.8 58.2L106.8 82H95.4L82.4 64.4L79.7 67.6V82H70.5V38Z" fill="#ffffff"/></svg>';
+            const brandLink = badgeWrap.closest('a') || badgeWrap.parentElement;
+            if (brandLink) brandLink.classList.add('mg-brand-wrap');
+        }
+
+        // 2. Localizar los enlaces de navegación (DIAGNÓSTICO, SERVICIOS, CASOS, COTIZADOR, CITAS)
+        const navLinks = Array.from(headerEl.querySelectorAll('a[href^="#"], button[data-scroll], a')).filter((el) => {
+            const txt = (el.textContent || '').trim().toUpperCase();
+            return ['DIAGNÓSTICO', 'DIAGNOSTICO', 'SERVICIOS', 'CASOS', 'COTIZADOR', 'CITAS'].some((k) => txt.includes(k));
+        });
+
+        if (navLinks.length > 0) {
+            const track = navLinks[0].parentElement;
+            if (track) {
+                track.classList.add('mg-nav-track');
+
+                let pill = document.getElementById('mg-nav-liquid-pill');
+                if (!pill) {
+                    pill = document.createElement('div');
+                    pill.id = 'mg-nav-liquid-pill';
+                    track.insertBefore(pill, track.firstChild);
+                }
+
+                let activeLink = null;
+
+                const movePillTo = (targetEl) => {
+                    if (!targetEl || !pill) return;
+                    const trackRect = track.getBoundingClientRect();
+                    const itemRect = targetEl.getBoundingClientRect();
+                    const offsetLeft = itemRect.left - trackRect.left;
+                    pill.style.width = `${itemRect.width.toFixed(1)}px`;
+                    pill.style.transform = `translate3d(${offsetLeft.toFixed(1)}px, -50%, 0)`;
+                    pill.style.opacity = '1';
+                };
+
+                navLinks.forEach((link) => {
+                    link.classList.add('mg-nav-link');
+                    link.addEventListener('pointerenter', () => movePillTo(link), { passive: true });
+                });
+
+                track.addEventListener('pointerleave', () => {
+                    if (activeLink) {
+                        movePillTo(activeLink);
+                    } else if (pill) {
+                        pill.style.opacity = '0';
+                    }
+                }, { passive: true });
+
+                // Sincronizar píldora con la sección visible al hacer scroll
+                const linkTargets = navLinks.map((lnk) => {
+                    const href = lnk.getAttribute('href') || '';
+                    const sec = href.startsWith('#') && href.length > 1 ? document.querySelector(href) : null;
+                    return { lnk, sec };
+                }).filter((item) => item.sec !== null);
+
+                const syncActiveNav = () => {
+                    const y = window.scrollY || 0;
+                    headerEl.classList.toggle('is-scrolled', y > 24);
+
+                    if (linkTargets.length > 0) {
+                        const triggerY = (window.innerHeight || 800) * 0.35;
+                        let found = null;
+                        linkTargets.forEach((item) => {
+                            const rect = item.sec.getBoundingClientRect();
+                            if (rect.top <= triggerY && rect.bottom > 80) {
+                                found = item.lnk;
+                            }
+                        });
+                        activeLink = found;
+                        navLinks.forEach((l) => l.classList.toggle('is-current-sec', l === activeLink));
+                        if (activeLink) {
+                            movePillTo(activeLink);
+                        } else if (y < 140 && pill) {
+                            pill.style.opacity = '0';
+                        }
+                    }
+                };
+
+                window.addEventListener('scroll', syncActiveNav, { passive: true });
+                window.addEventListener('resize', () => { if (activeLink) movePillTo(activeLink); }, { passive: true });
+                syncActiveNav();
+            }
+        }
+
+        // 3. Estilizar el botón de cambio de tema existente sin modificar su evento
+        const themeBtn = Array.from(headerEl.querySelectorAll('button')).find((b) => {
+            const t = (b.textContent || '').toLowerCase();
+            return t.includes('tema') || b.id.toLowerCase().includes('theme');
+        });
+        if (themeBtn) {
+            themeBtn.classList.add('mg-theme-pill');
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initMotionHeader);
+    } else {
+        initMotionHeader();
+    }
+})();
+</script>
+<!-- END DUNKORA MOTION HEADER SUITE -->
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
