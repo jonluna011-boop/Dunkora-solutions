@@ -1779,30 +1779,142 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
 </button>
    <script>
 (function () {
-  const audio = document.getElementById('inmexpara-bg-music');
   const btn = document.getElementById('inmexpara-audio-btn');
-  if (!audio || !btn) return;
+  if (!btn) return;
 
-  audio.volume = 0.25;
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return;
+
+  let ctx = null;
+  let masterGain = null;
   let isPlaying = false;
 
   function actualizarBoton() {
     btn.textContent = isPlaying ? '🔊 Música: On' : '🔇 Música: Off';
   }
 
-  async function reproducirAudio() {
-    try {
-      await audio.play();
-      isPlaying = true;
-      actualizarBoton();
-    } catch (_) {
-      isPlaying = false;
-      actualizarBoton();
+  function crearReverbImpulse(context, duracion = 3.2, decaimiento = 2.6) {
+    const length = Math.floor(context.sampleRate * duracion);
+    const impulse = context.createBuffer(2, length, context.sampleRate);
+    for (let ch = 0; ch < 2; ch++) {
+      const data = impulse.getChannelData(ch);
+      for (let i = 0; i < length; i++) {
+        const env = Math.pow(1 - i / length, decaimiento);
+        data[i] = (Math.random() * 2 - 1) * env;
+      }
     }
+    return impulse;
   }
 
-  function pausarAudio() {
-    audio.pause();
+  function crearRiserSuave(context, destino) {
+    const bufferSize = context.sampleRate * 6;
+    const noiseBuffer = context.createBuffer(1, bufferSize, context.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = Math.random() * 2 - 1;
+    }
+
+    const whiteNoise = context.createBufferSource();
+    whiteNoise.buffer = noiseBuffer;
+    whiteNoise.loop = true;
+
+    const bandpass = context.createBiquadFilter();
+    bandpass.type = 'bandpass';
+    bandpass.Q.setValueAtTime(1.8, context.currentTime);
+    bandpass.frequency.setValueAtTime(220, context.currentTime);
+    bandpass.frequency.exponentialRampToValueAtTime(950, context.currentTime + 5.2);
+
+    const riserGain = context.createGain();
+    riserGain.gain.setValueAtTime(0.0001, context.currentTime);
+    riserGain.gain.exponentialRampToValueAtTime(0.045, context.currentTime + 4.5);
+    riserGain.gain.exponentialRampToValueAtTime(0.004, context.currentTime + 6.5);
+
+    whiteNoise.connect(bandpass);
+    bandpass.connect(riserGain);
+    riserGain.connect(destino);
+    whiteNoise.start();
+  }
+
+  function iniciarAmbienteVideoSimilar() {
+    if (!ctx) {
+      ctx = new AudioCtx();
+      masterGain = ctx.createGain();
+      masterGain.gain.setValueAtTime(0.0001, ctx.currentTime);
+
+      const wetGain = ctx.createGain();
+      wetGain.gain.setValueAtTime(0.55, ctx.currentTime);
+
+      const dryGain = ctx.createGain();
+      dryGain.gain.setValueAtTime(0.65, ctx.currentTime);
+
+      const convolver = ctx.createConvolver();
+      convolver.buffer = crearReverbImpulse(ctx, 3.5, 2.4);
+
+      const lowpass = ctx.createBiquadFilter();
+      lowpass.type = 'lowpass';
+      lowpass.frequency.setValueAtTime(1400, ctx.currentTime);
+
+      lowpass.connect(dryGain);
+      lowpass.connect(convolver);
+      convolver.connect(wetGain);
+
+      dryGain.connect(masterGain);
+      wetGain.connect(masterGain);
+      masterGain.connect(ctx.destination);
+
+      crearRiserSuave(ctx, lowpass);
+
+      const notas = [146.83, 220.00, 277.18, 329.63, 440.00];
+      const entradaAcorde = ctx.currentTime + 4.2;
+
+      notas.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const voiceGain = ctx.createGain();
+
+        osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+        voiceGain.gain.setValueAtTime(0.0001, ctx.currentTime);
+        voiceGain.gain.setValueAtTime(0.0001, entradaAcorde);
+        voiceGain.gain.exponentialRampToValueAtTime(0.055 / (idx * 0.35 + 1), entradaAcorde + 1.6);
+
+        osc.connect(voiceGain);
+        voiceGain.connect(lowpass);
+        osc.start();
+      });
+    }
+
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+
+    const now = ctx.currentTime;
+    masterGain.gain.cancelScheduledValues(now);
+    masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value, 0.0001), now);
+    masterGain.gain.exponentialRampToValueAtTime(0.22, now + 1.2);
+
+    isPlaying = true;
+    actualizarBoton();
+  }
+
+  function detenerAmbiente() {
+    if (!ctx || !masterGain) {
+      isPlaying = false;
+      actualizarBoton();
+      return;
+    }
+
+    const now = ctx.currentTime;
+    masterGain.gain.cancelScheduledValues(now);
+    masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value, 0.0001), now);
+    masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+
+    setTimeout(() => {
+      if (!isPlaying && ctx && ctx.state === 'running') {
+        ctx.suspend();
+      }
+    }, 550);
+
     isPlaying = false;
     actualizarBoton();
   }
@@ -1810,15 +1922,15 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
     if (isPlaying) {
-      pausarAudio();
+      detenerAmbiente();
     } else {
-      reproducirAudio();
+      iniciarAmbienteVideoSimilar();
     }
   });
 
   document.addEventListener('click', () => {
-    if (!isPlaying && audio.paused) {
-      reproducirAudio();
+    if (!isPlaying) {
+      iniciarAmbienteVideoSimilar();
     }
   }, { once: true });
 
