@@ -1793,7 +1793,6 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
   let activeVoices = [];
   let isPlaying = false;
 
-  // Acordes con registro medio-agudo reforzado para que se escuche en bocinas de teléfono
   const acordes = [
     [174.61, 220.00, 261.63, 329.63, 440.00], // Fmaj9 con presencia en medios/agudos
     [146.83, 220.00, 261.63, 329.63, 440.00], // Dm9 con presencia en medios/agudos
@@ -1802,7 +1801,7 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
   ];
 
   function actualizarBoton() {
-    btn.textContent = isPlaying ? ' Música: On' : ' Música: Off';
+    btn.textContent = isPlaying ? '🔊 Música: On' : '🔇 Música: Off';
   }
 
   function crearReverbImpulse(context, duracion = 3.8, decaimiento = 2.2) {
@@ -1850,7 +1849,7 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
       oscB.frequency.setValueAtTime(freq * 1.004, now);
 
       const entradaNota = now + idx * (esInicio ? 0.35 : 0.2);
-      const picoNota = idx === 0 ? 0.14 : 0.085 / (idx * 0.25 + 1);
+      const picoNota = idx === 0 ? 0.16 : 0.095 / (idx * 0.25 + 1);
 
       voiceGain.gain.setValueAtTime(0.0001, now);
       if (entradaNota > now) {
@@ -1870,8 +1869,8 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
 
     if (filterNode) {
       filterNode.frequency.cancelScheduledValues(now);
-      filterNode.frequency.setValueAtTime(Math.max(filterNode.frequency.value, 400), now);
-      const destinoFiltro = stepIndex % 2 === 0 ? 2400 : 1750;
+      filterNode.frequency.setValueAtTime(Math.max(filterNode.frequency.value, 450), now);
+      const destinoFiltro = stepIndex % 2 === 0 ? 2500 : 1850;
       filterNode.frequency.exponentialRampToValueAtTime(destinoFiltro, now + 4.0);
     }
   }
@@ -1882,18 +1881,26 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
       masterGain = ctx.createGain();
       masterGain.gain.setValueAtTime(0.0001, ctx.currentTime);
 
+      // Compresor para subir la presencia en teléfono sin saturar ni distorsionar
+      const compressor = ctx.createDynamicsCompressor();
+      compressor.threshold.setValueAtTime(-18, ctx.currentTime);
+      compressor.knee.setValueAtTime(12, ctx.currentTime);
+      compressor.ratio.setValueAtTime(4, ctx.currentTime);
+      compressor.attack.setValueAtTime(0.02, ctx.currentTime);
+      compressor.release.setValueAtTime(0.25, ctx.currentTime);
+
       const wetGain = ctx.createGain();
       wetGain.gain.setValueAtTime(0.45, ctx.currentTime);
 
       const dryGain = ctx.createGain();
-      dryGain.gain.setValueAtTime(0.85, ctx.currentTime);
+      dryGain.gain.setValueAtTime(0.9, ctx.currentTime);
 
       const convolver = ctx.createConvolver();
       convolver.buffer = crearReverbImpulse(ctx, 3.8, 2.2);
 
       filterNode = ctx.createBiquadFilter();
       filterNode.type = 'lowpass';
-      filterNode.frequency.setValueAtTime(1200, ctx.currentTime);
+      filterNode.frequency.setValueAtTime(1300, ctx.currentTime);
       filterNode.Q.setValueAtTime(1.0, ctx.currentTime);
 
       filterNode.connect(dryGain);
@@ -1902,7 +1909,10 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
 
       dryGain.connect(masterGain);
       wetGain.connect(masterGain);
-      masterGain.connect(ctx.destination);
+
+      // Ruta final: masterGain -> compressor -> salida
+      masterGain.connect(compressor);
+      compressor.connect(ctx.destination);
 
       dispararAcordeArmonico(ctx, filterNode, acordes[stepIndex], true);
 
@@ -1920,7 +1930,7 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
     const now = ctx.currentTime;
     masterGain.gain.cancelScheduledValues(now);
     masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value, 0.0001), now);
-    masterGain.gain.exponentialRampToValueAtTime(0.75, now + 1.2);
+    masterGain.gain.exponentialRampToValueAtTime(0.95, now + 1.2);
 
     isPlaying = true;
     actualizarBoton();
