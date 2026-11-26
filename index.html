@@ -258,6 +258,25 @@
             transform: translateY(0px);
         }
 
+        /* Panel de código arquitectónico en el Hero */
+        .code-hero-window {
+            background:
+                radial-gradient(circle at 80% 0%, rgba(16, 185, 129, 0.12) 0%, transparent 55%),
+                linear-gradient(165deg, rgba(8, 20, 38, 0.92) 0%, rgba(3, 11, 24, 0.96) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow:
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.14),
+                0 22px 50px rgba(0, 0, 0, 0.55);
+        }
+        html.light-theme .code-hero-window {
+            background: linear-gradient(165deg, #0b192c 0%, #050d1a 100%);
+            border-color: rgba(9, 9, 11, 0.25);
+        }
+        .code-flow-step {
+            background: rgba(5, 16, 32, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+        }
+
         input:not([type="checkbox"]),
         select,
         textarea {
@@ -309,13 +328,13 @@
         <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-10">
             <a href="#top" class="flex items-center gap-3 group">
                 <div class="flex h-9 w-9 items-center justify-center rounded-lg border b-strong bg-field transition-colors">
-                    <svg class="h-5 w-5" viewBox="0 0 36 28" fill="none" aria-label="DK">
-                        <path d="M4.5 5.5H10.5C13.6 5.5 15.8 7.6 15.8 14C15.8 20.4 13.6 22.5 10.5 22.5H4.5V5.5Z"
-                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M15.8 11.2C17.3 11.2 18.2 9.4 18.2 6.2"
-                            stroke="currentColor" stroke-opacity="0.65" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M21.5 5.5V22.5M31.5 5.5L23.6 14L31.8 22.5"
-                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <!-- Logo DK con etiquetas de código -->
+                    <svg class="h-5 w-6 t-primary" viewBox="0 0 120 76" fill="none" aria-label="Logo DK Dunkora">
+                        <!-- Letra D abierta con <> adentro -->
+                        <path d="M12 10H48C66.5 10 78 21.5 78 38C78 54.5 66.5 66 48 66H12V54H46.5C59 54 66 47.2 66 38C66 28.8 59 22 46.5 22H24V30H12V10ZM12 46H24V54H12V46Z" fill="currentColor"/>
+                        <path d="M35 28L23 38L35 48M43 28L55 38L43 48" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <!-- Letra K estilizada -->
+                        <path d="M84 10H96V33.5L113.5 12.5C116.2 9.4 120 11.4 120 15.2C120 17.5 119 19.6 117.3 21.1L101.5 35.2L116.8 55.8C118.9 58.6 117 62.5 113.5 62.5C111.3 62.5 109.2 61.4 107.9 59.6L96 43.5V66H84V10Z" fill="currentColor"/>
                     </svg>
                 </div>
                 <div class="leading-none">
@@ -394,8 +413,57 @@
                         </div>
                     </div>
 
-                    <div class="lg:col-span-5 w-full h-[320px] sm:h-[380px] lg:h-[440px] rounded-2xl overflow-hidden">
-                        <spline-viewer url="https://my.spline.design/claritystream-TgaI7yxSiOXvN2WRaeXA8ht2/" style="width: 100%; height: 100%;"></spline-viewer>
+                    <div class="lg:col-span-5 space-y-4 w-full">
+                        <!-- Ventana de código arquitectónico en el panel principal -->
+                        <div class="code-hero-window rounded-2xl p-4 sm:p-5 font-mono text-xs text-slate-200 space-y-4">
+                            <div class="flex items-center justify-between border-b border-white/10 pb-3 gap-2">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="h-2.5 w-2.5 rounded-full bg-rose-500 inline-block"></span>
+                                    <span class="h-2.5 w-2.5 rounded-full bg-amber-400 inline-block"></span>
+                                    <span class="h-2.5 w-2.5 rounded-full bg-emerald-400 inline-block"></span>
+                                </div>
+                                <span class="text-[11px] text-slate-400 truncate">dunkora-agent-core.ts</span>
+                                <span class="rounded border border-emerald-400/40 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-300 shrink-0">
+                                    ONLINE
+                                </span>
+                            </div>
+
+                            <pre class="overflow-x-auto text-[11px] sm:text-xs leading-relaxed text-slate-200"><code><span class="text-cyan-300">const</span> <span class="text-sky-200">dunkoraSystem</span> = <span class="text-indigo-300">await</span> <span class="text-sky-300">initArchitecture</span>({
+  <span class="text-slate-300">frontend:</span> <span class="text-emerald-300">'UltraFast_UI'</span>,
+  <span class="text-slate-300">database:</span> <span class="text-emerald-300">'Firebase_Realtime'</span>,
+  <span class="text-slate-300">aiAgent:</span> <span class="text-amber-300">true</span>, <span class="text-slate-400">// Ventas 24/7</span>
+});</code></pre>
+
+                            <div class="rounded-xl border border-white/10 bg-slate-950/75 p-3 space-y-2.5">
+                                <div class="flex items-center justify-between gap-2 text-[11px]">
+                                    <span class="inline-flex items-center gap-2 text-slate-300 font-medium">
+                                        <span class="h-2 w-2 rounded-full bg-emerald-400 inline-block"></span>
+                                        Flujo de Automatización Activo
+                                    </span>
+                                    <span class="font-semibold text-cyan-300">99.9% Uptime</span>
+                                </div>
+
+                                <div class="grid grid-cols-3 gap-2 text-center">
+                                    <div class="code-flow-step rounded-lg p-2">
+                                        <p class="text-[10px] font-bold text-cyan-300">1. Lead Web</p>
+                                        <p class="text-[10px] text-slate-400 mt-0.5">Captura</p>
+                                    </div>
+                                    <div class="code-flow-step rounded-lg p-2">
+                                        <p class="text-[10px] font-bold text-sky-300">2. Agente IA</p>
+                                        <p class="text-[10px] text-slate-400 mt-0.5">Califica &amp; Cotiza</p>
+                                    </div>
+                                    <div class="code-flow-step rounded-lg p-2">
+                                        <p class="text-[10px] font-bold text-emerald-300">3. Cierre CRM</p>
+                                        <p class="text-[10px] text-slate-400 mt-0.5">Venta Lista</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Visor 3D de Spline integrado en el Hero -->
+                        <div class="w-full h-[220px] sm:h-[250px] rounded-2xl overflow-hidden border b-subtle bg-field">
+                            <spline-viewer url="https://my.spline.design/claritystream-TgaI7yxSiOXvN2WRaeXA8ht2/" style="width: 100%; height: 100%;"></spline-viewer>
+                        </div>
                     </div>
                 </div>
             </div>
