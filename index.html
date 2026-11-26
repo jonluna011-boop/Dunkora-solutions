@@ -1787,14 +1787,25 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
 
   let ctx = null;
   let masterGain = null;
-  let pulseTimer = null;
+  let filterNode = null;
+  let progressionTimer = null;
+  let stepIndex = 0;
+  let activeVoices = [];
   let isPlaying = false;
+
+  // Progresión armónica cinematográfica (en Hz)
+  const acordes = [
+    [87.31, 130.81, 196.00, 220.00, 329.63], // Fmaj9 abierta
+    [73.42, 110.00, 164.81, 220.00, 261.63], // Dm9 abierta
+    [58.27, 87.31,  146.83, 174.61, 261.63], // Bbmaj7 abierta
+    [65.41, 98.00,  146.83, 196.00, 246.94]  // C6/9 abierta
+  ];
 
   function actualizarBoton() {
     btn.textContent = isPlaying ? '🔊 Música: On' : '🔇 Música: Off';
   }
 
-  function crearReverbImpulse(context, duracion = 4.2, decaimiento = 2.2) {
+  function crearReverbImpulse(context, duracion = 4.0, decaimiento = 2.3) {
     const length = Math.floor(context.sampleRate * duracion);
     const impulse = context.createBuffer(2, length, context.sampleRate);
     for (let ch = 0; ch < 2; ch++) {
@@ -1807,109 +1818,100 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
     return impulse;
   }
 
-  function dispararPulsoCinematografico(context, destino) {
-    if (!isPlaying || !context || context.state !== 'running') return;
+  function limpiarVocesAnteriores(context, fadeOutSec = 2.2) {
     const now = context.currentTime;
-
-    // Golpe grave suave (sub-kick/heartbeat cinematográfico sin golpe brusco)
-    const subOsc = context.createOscillator();
-    const subGain = context.createGain();
-    subOsc.type = 'sine';
-    subOsc.frequency.setValueAtTime(92, now);
-    subOsc.frequency.exponentialRampToValueAtTime(43.65, now + 0.35); // F1
-
-    subGain.gain.setValueAtTime(0.0001, now);
-    subGain.gain.linearRampToValueAtTime(0.14, now + 0.08);
-    subGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.6);
-
-    subOsc.connect(subGain);
-    subGain.connect(destino);
-    subOsc.start(now);
-    subOsc.stop(now + 1.7);
-
-    // Destello armónico sutil en registro medio-alto
-    const shimmerNotes = [349.23, 523.25, 659.25, 783.99]; // F4, C5, E5, G5
-    const note = shimmerNotes[Math.floor(Math.random() * shimmerNotes.length)];
-
-    const shimmerOsc = context.createOscillator();
-    const shimmerGain = context.createGain();
-    shimmerOsc.type = 'triangle';
-    shimmerOsc.frequency.setValueAtTime(note, now + 0.2);
-
-    shimmerGain.gain.setValueAtTime(0.0001, now + 0.2);
-    shimmerGain.gain.linearRampToValueAtTime(0.025, now + 1.1);
-    shimmerGain.gain.exponentialRampToValueAtTime(0.0001, now + 3.4);
-
-    shimmerOsc.connect(shimmerGain);
-    shimmerGain.connect(destino);
-    shimmerOsc.start(now + 0.2);
-    shimmerOsc.stop(now + 3.5);
+    activeVoices.forEach(({ oscA, oscB, gain }) => {
+      try {
+        gain.gain.cancelScheduledValues(now);
+        gain.gain.setValueAtTime(Math.max(gain.gain.value, 0.0001), now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + fadeOutSec);
+        oscA.stop(now + fadeOutSec + 0.1);
+        oscB.stop(now + fadeOutSec + 0.1);
+      } catch (_) {}
+    });
+    activeVoices = [];
   }
 
-  function iniciarExperienciaDunkora() {
+  function dispararAcordeArmonico(context, destino, notas, esInicio = false) {
+    const now = context.currentTime;
+    const ataque = esInicio ? 2.4 : 1.6;
+
+    limpiarVocesAnteriores(context, esInicio ? 0.5 : 2.2);
+
+    notas.forEach((freq, idx) => {
+      const oscA = context.createOscillator();
+      const oscB = context.createOscillator();
+      const voiceGain = context.createGain();
+
+      oscA.type = idx === 0 ? 'triangle' : 'sawtooth';
+      oscB.type = 'sine';
+
+      oscA.frequency.setValueAtTime(freq, now);
+      oscB.frequency.setValueAtTime(freq * 1.003, now);
+
+      const entradaNota = now + idx * (esInicio ? 0.45 : 0.25);
+      const picoNota = idx === 0 ? 0.11 : 0.04 / (idx * 0.35 + 1);
+
+      voiceGain.gain.setValueAtTime(0.0001, now);
+      if (entradaNota > now) {
+        voiceGain.gain.setValueAtTime(0.0001, entradaNota);
+      }
+      voiceGain.gain.exponentialRampToValueAtTime(picoNota, entradaNota + ataque);
+
+      oscA.connect(voiceGain);
+      oscB.connect(voiceGain);
+      voiceGain.connect(destino);
+
+      oscA.start(now);
+      oscB.start(now);
+
+      activeVoices.push({ oscA, oscB, gain: voiceGain });
+    });
+
+    // Modulación suave del brillo armónico al cambiar de acorde
+    if (filterNode) {
+      filterNode.frequency.cancelScheduledValues(now);
+      filterNode.frequency.setValueAtTime(Math.max(filterNode.frequency.value, 180), now);
+      const destinoFiltro = stepIndex % 2 === 0 ? 1350 : 880;
+      filterNode.frequency.exponentialRampToValueAtTime(destinoFiltro, now + 4.5);
+    }
+  }
+
+  function iniciarArmoniaDunkora() {
     if (!ctx) {
       ctx = new AudioCtx();
       masterGain = ctx.createGain();
       masterGain.gain.setValueAtTime(0.0001, ctx.currentTime);
 
       const wetGain = ctx.createGain();
-      wetGain.gain.setValueAtTime(0.62, ctx.currentTime);
+      wetGain.gain.setValueAtTime(0.58, ctx.currentTime);
 
       const dryGain = ctx.createGain();
       dryGain.gain.setValueAtTime(0.55, ctx.currentTime);
 
       const convolver = ctx.createConvolver();
-      convolver.buffer = crearReverbImpulse(ctx, 4.2, 2.2);
+      convolver.buffer = crearReverbImpulse(ctx, 4.0, 2.3);
 
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(650, ctx.currentTime);
-      filter.Q.setValueAtTime(1.1, ctx.currentTime);
+      filterNode = ctx.createBiquadFilter();
+      filterNode.type = 'lowpass';
+      filterNode.frequency.setValueAtTime(520, ctx.currentTime);
+      filterNode.Q.setValueAtTime(1.1, ctx.currentTime);
 
-      // Apertura gradual del filtro (sensación de que se abre el escenario)
-      filter.frequency.exponentialRampToValueAtTime(1950, ctx.currentTime + 9.0);
-
-      filter.connect(dryGain);
-      filter.connect(convolver);
+      filterNode.connect(dryGain);
+      filterNode.connect(convolver);
       convolver.connect(wetGain);
 
       dryGain.connect(masterGain);
       wetGain.connect(masterGain);
       masterGain.connect(ctx.destination);
 
-      // Acorde expansivo en Fa mayor 9 abierta (F2, C3, G3, A3, E4)
-      const padNotes = [87.31, 130.81, 196.00, 220.00, 329.63];
-      padNotes.forEach((freq, i) => {
-        const oscA = ctx.createOscillator();
-        const oscB = ctx.createOscillator();
-        const gainNode = ctx.createGain();
+      dispararAcordeArmonico(ctx, filterNode, acordes[stepIndex], true);
 
-        oscA.type = i === 0 ? 'triangle' : 'sawtooth';
-        oscB.type = 'sine';
-
-        oscA.frequency.setValueAtTime(freq, ctx.currentTime);
-        oscB.frequency.setValueAtTime(freq, ctx.currentTime);
-        oscB.detune.setValueAtTime(i % 2 === 0 ? 8 : -8, ctx.currentTime);
-
-        const entrada = ctx.currentTime + i * 0.9;
-        const pico = i === 0 ? 0.11 : 0.035 / (i * 0.4 + 1);
-
-        gainNode.gain.setValueAtTime(0.0001, ctx.currentTime);
-        gainNode.gain.setValueAtTime(0.0001, entrada);
-        gainNode.gain.exponentialRampToValueAtTime(pico, entrada + 2.2);
-
-        oscA.connect(gainNode);
-        oscB.connect(gainNode);
-        gainNode.connect(filter);
-
-        oscA.start();
-        oscB.start();
-      });
-
-      // Pulso suave cada 3.2 segundos
-      pulseTimer = setInterval(() => {
-        dispararPulsoCinematografico(ctx, filter);
-      }, 3200);
+      progressionTimer = setInterval(() => {
+        if (!isPlaying || !ctx || ctx.state !== 'running') return;
+        stepIndex = (stepIndex + 1) % acordes.length;
+        dispararAcordeArmonico(ctx, filterNode, acordes[stepIndex], false);
+      }, 6500);
     }
 
     if (ctx.state === 'suspended') {
@@ -1919,13 +1921,13 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
     const now = ctx.currentTime;
     masterGain.gain.cancelScheduledValues(now);
     masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value, 0.0001), now);
-    masterGain.gain.exponentialRampToValueAtTime(0.24, now + 1.4);
+    masterGain.gain.exponentialRampToValueAtTime(0.24, now + 1.8);
 
     isPlaying = true;
     actualizarBoton();
   }
 
-  function detenerExperienciaDunkora() {
+  function detenerArmoniaDunkora() {
     if (!ctx || !masterGain) {
       isPlaying = false;
       actualizarBoton();
@@ -1950,15 +1952,15 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
     if (isPlaying) {
-      detenerExperienciaDunkora();
+      detenerArmoniaDunkora();
     } else {
-      iniciarExperienciaDunkora();
+      iniciarArmoniaDunkora();
     }
   });
 
   document.addEventListener('click', () => {
     if (!isPlaying) {
-      iniciarExperienciaDunkora();
+      iniciarArmoniaDunkora();
     }
   }, { once: true });
 
