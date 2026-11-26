@@ -1769,5 +1769,140 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
             });
         };
     </script>
+    <audio id="inmexpara-bg-music" loop preload="metadata">
+  <!-- Sustituye la URL por tu archivo MP3 o audio local/alojado -->
+  <source src="TU_URL_DE_AUDIO.mp3" type="audio/mpeg">
+</audio>
+
+<button id="inmexpara-audio-btn" type="button" aria-label="Activar o silenciar música de fondo" style="position:fixed;bottom:20px;right:20px;z-index:9999;padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.2);background:rgba(15,23,42,0.85);color:#fff;font-size:13px;cursor:pointer;backdrop-filter:blur(6px);">
+  🔇 Música: Off
+</button>
+    <script>
+(function () {
+  const btn = document.getElementById('inmexpara-audio-btn');
+  if (!btn) return;
+
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return;
+
+  let ctx = null;
+  let masterGain = null;
+  let isPlaying = false;
+  let nodes = [];
+
+  function actualizarBoton() {
+    btn.textContent = isPlaying ? '🔊 Música: On' : '🔇 Música: Off';
+  }
+
+  function iniciarAmbienteCinematografico() {
+    if (!ctx) {
+      ctx = new AudioCtx();
+      masterGain = ctx.createGain();
+      masterGain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      masterGain.connect(ctx.destination);
+
+      // Filtro pasa-bajos cálido para dar sensación atmosférica
+      const lowpass = ctx.createBiquadFilter();
+      lowpass.type = 'lowpass';
+      lowpass.frequency.setValueAtTime(420, ctx.currentTime);
+      lowpass.Q.setValueAtTime(1.2, ctx.currentTime);
+
+      // LFO lento para abrir y cerrar el filtro suavemente
+      const lfo = ctx.createOscillator();
+      const lfoGain = ctx.createGain();
+      lfo.type = 'sine';
+      lfo.frequency.setValueAtTime(0.08, ctx.currentTime); // ciclo lento cada ~12.5s
+      lfoGain.gain.setValueAtTime(180, ctx.currentTime);
+      lfo.connect(lfoGain);
+      lfoGain.connect(lowpass.frequency);
+
+      // Acorde cinematográfico abierto (D2, A2, E3, F#3 / Re menor-mayor atmosférico)
+      const notas = [73.42, 110.00, 146.83, 220.00];
+
+      notas.forEach((freq, idx) => {
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const voiceGain = ctx.createGain();
+
+        osc1.type = idx === 0 ? 'triangle' : 'sawtooth';
+        osc2.type = 'sine';
+
+        osc1.frequency.setValueAtTime(freq, ctx.currentTime);
+        // Ligero desafinado (detune) para dar amplitud tipo pad
+        osc2.frequency.setValueAtTime(freq, ctx.currentTime);
+        osc2.detune.setValueAtTime(idx % 2 === 0 ? 7 : -7, ctx.currentTime);
+
+        const nivelVoz = idx === 0 ? 0.16 : 0.06;
+        voiceGain.gain.setValueAtTime(nivelVoz, ctx.currentTime);
+
+        osc1.connect(voiceGain);
+        osc2.connect(voiceGain);
+        voiceGain.connect(lowpass);
+
+        osc1.start();
+        osc2.start();
+        nodes.push(osc1, osc2);
+      });
+
+      lowpass.connect(masterGain);
+      lfo.start();
+      nodes.push(lfo);
+    }
+
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+
+    // Entrada suave (fade-in) para que no entre de golpe
+    const now = ctx.currentTime;
+    masterGain.gain.cancelScheduledValues(now);
+    masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value, 0.0001), now);
+    masterGain.gain.exponentialRampToValueAtTime(0.18, now + 1.8);
+
+    isPlaying = true;
+    actualizarBoton();
+  }
+
+  function detenerAmbiente() {
+    if (!ctx || !masterGain) {
+      isPlaying = false;
+      actualizarBoton();
+      return;
+    }
+
+    const now = ctx.currentTime;
+    masterGain.gain.cancelScheduledValues(now);
+    masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value, 0.0001), now);
+    masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+
+    setTimeout(() => {
+      if (!isPlaying && ctx && ctx.state === 'running') {
+        ctx.suspend();
+      }
+    }, 650);
+
+    isPlaying = false;
+    actualizarBoton();
+  }
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (isPlaying) {
+      detenerAmbiente();
+    } else {
+      iniciarAmbienteCinematografico();
+    }
+  });
+
+  // Arranca suave tras la primera interacción en la página
+  document.addEventListener('click', () => {
+    if (!isPlaying) {
+      iniciarAmbienteCinematografico();
+    }
+  }, { once: true });
+
+  actualizarBoton();
+})();
+</script>
 </body>
 </html>
