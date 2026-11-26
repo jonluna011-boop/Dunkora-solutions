@@ -335,7 +335,7 @@ input:-webkit-autofill:focus {
             <div class="flex items-center gap-2.5">
                 <button id="theme-toggle-btn" type="button" onclick="toggleColorTheme()"
                     class="inline-flex items-center gap-2 rounded-full border b-strong bg-field px-3.5 py-1.5 text-xs font-medium t-primary hover:opacity-85 transition-opacity cursor-pointer">
-                    <span id="theme-toggle-icon">☀</span>
+                    <span id="theme-toggle-icon"></span>
                     <span id="theme-toggle-label">Tema Blanco</span>
                 </button>
 
@@ -1095,7 +1095,7 @@ input:-webkit-autofill:focus {
             if (isLight) {
                 htmlEl.classList.remove('dark');
                 htmlEl.classList.add('light-theme');
-                if (iconEl) iconEl.textContent = '☾';
+                if (iconEl) iconEl.textContent = '';
                 if (labelEl) labelEl.textContent = 'Tema Negro';
             } else {
                 htmlEl.classList.remove('light-theme');
@@ -1802,7 +1802,7 @@ onValue(ref(rtdb, 'projects'), (snapshot) => {
   ];
 
   function actualizarBoton() {
-    btn.textContent = isPlaying ? '🔊 Música: On' : '🔇 Música: Off';
+    btn.textContent = isPlaying ? ' Música: On' : ' Música: Off';
   }
 
   function crearReverbImpulse(context, duracion = 3.8, decaimiento = 2.2) {
