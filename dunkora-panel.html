@@ -369,6 +369,7 @@
             </div>
 
             <form id="form-caso" class="cinema-card rounded-2xl p-6 grid gap-4 sm:grid-cols-3">
+                <input type="hidden" id="caso-edit-index" value="">
                 <div>
                     <label for="caso-titulo" class="block text-xs font-medium t-secondary mb-1.5">Nombre de la empresa / proyecto *</label>
                     <input id="caso-titulo" type="text" required placeholder="Ej. Portal Logístico Bajío"
@@ -394,9 +395,13 @@
                         class="w-full rounded-xl border b-subtle bg-field px-3.5 py-2 text-xs t-primary focus:outline-none">
                 </div>
                 <div class="sm:col-span-3 flex flex-wrap items-center gap-3">
-                    <button type="submit"
+                    <button id="btn-submit-caso" type="submit"
                         class="rounded-full btn-contrast px-5 py-2.5 text-xs font-semibold uppercase tracking-wider hover:opacity-90 cursor-pointer">
                         Publicar Caso
+                    </button>
+                    <button id="btn-cancelar-caso" type="button" onclick="cancelarEdicionCaso()"
+                        class="hidden rounded-full border b-strong bg-field px-4 py-2.5 font-mono text-xs t-primary hover:opacity-85 cursor-pointer">
+                        Cancelar
                     </button>
                     <span id="msg-casos" class="font-mono text-xs t-primary"></span>
                 </div>
@@ -1120,8 +1125,12 @@
                                             ${esc(caso.categoria || 'Web / Apps')}
                                         </span>
                                     </div>
-                                    <button type="button" onclick="eliminarCaso(${idx})"
-                                        class="font-mono text-[11px] t-muted hover:t-primary cursor-pointer shrink-0">Eliminar ✕</button>
+                                    <div class="flex items-center gap-3 shrink-0">
+                                        <button type="button" onclick="editarCaso(${idx})"
+                                            class="font-mono text-[11px] t-primary hover:opacity-80 cursor-pointer">Editar</button>
+                                        <button type="button" onclick="eliminarCaso(${idx})"
+                                            class="font-mono text-[11px] t-muted hover:t-primary cursor-pointer">Eliminar ✕</button>
+                                    </div>
                                 </div>
                                 <h3 class="font-editorial text-2xl font-semibold t-primary">${esc(caso.titulo)}</h3>
                                 <p class="text-xs sm:text-sm t-secondary leading-relaxed">${esc(caso.resumen)}</p>
@@ -1153,6 +1162,46 @@
             setVal('cred-usuario', creds.usuario);
             setVal('cred-password', creds.password);
         }
+
+        window.editarCaso = function(idx) {
+            const caso = state.casos[idx];
+            if (!caso) return;
+
+            const idxInput = document.getElementById('caso-edit-index');
+            const tituloInput = document.getElementById('caso-titulo');
+            const categoriaInput = document.getElementById('caso-categoria');
+            const urlInput = document.getElementById('caso-url');
+            const resumenInput = document.getElementById('caso-resumen');
+            const btnSubmit = document.getElementById('btn-submit-caso');
+            const btnCancelar = document.getElementById('btn-cancelar-caso');
+            const msg = document.getElementById('msg-casos');
+
+            if (idxInput instanceof HTMLInputElement) idxInput.value = String(idx);
+            if (tituloInput instanceof HTMLInputElement) tituloInput.value = caso.titulo || '';
+            if (categoriaInput instanceof HTMLSelectElement) categoriaInput.value = caso.categoria || 'Web / Apps';
+            if (urlInput instanceof HTMLInputElement) urlInput.value = caso.url || '';
+            if (resumenInput instanceof HTMLInputElement) resumenInput.value = caso.resumen || '';
+            if (btnSubmit) btnSubmit.textContent = 'Guardar Cambios';
+            if (btnCancelar) btnCancelar.classList.remove('hidden');
+            if (msg) msg.textContent = `Editando: ${caso.titulo}`;
+
+            const formCaso = document.getElementById('form-caso');
+            if (formCaso) formCaso.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+
+        window.cancelarEdicionCaso = function() {
+            const idxInput = document.getElementById('caso-edit-index');
+            const formCaso = document.getElementById('form-caso');
+            const btnSubmit = document.getElementById('btn-submit-caso');
+            const btnCancelar = document.getElementById('btn-cancelar-caso');
+            const msg = document.getElementById('msg-casos');
+
+            if (idxInput instanceof HTMLInputElement) idxInput.value = '';
+            if (formCaso instanceof HTMLFormElement) formCaso.reset();
+            if (btnSubmit) btnSubmit.textContent = 'Publicar Caso';
+            if (btnCancelar) btnCancelar.classList.add('hidden');
+            if (msg) msg.textContent = '';
+        };
 
         window.abrirDetalle = function(id) {
             const sub = state.submissions.find((s) => s.id === id);
@@ -1467,42 +1516,88 @@
             if (formCaso) {
                 formCaso.addEventListener('submit', (e) => {
                     e.preventDefault();
+                    const idxInput = document.getElementById('caso-edit-index');
+                    const editIdx = idxInput instanceof HTMLInputElement && idxInput.value !== ''
+                        ? Number(idxInput.value)
+                        : -1;
                     const titulo = document.getElementById('caso-titulo').value.trim();
                     const categoria = document.getElementById('caso-categoria').value;
                     const url = document.getElementById('caso-url').value.trim();
                     const resumen = document.getElementById('caso-resumen').value.trim();
+                    const logoUrl = obtenerLogoEmpresaUrl(url);
 
-                   const casoId = `cs-${Date.now()}`;
-const logoUrl = obtenerLogoEmpresaUrl(url);
-const nuevoCaso = {
-    id: casoId,
-    titulo,
-    categoria,
-    url,
-    logoUrl,
-    resumen
-};
+                    if (editIdx >= 0 && state.casos[editIdx]) {
+                        const existente = state.casos[editIdx];
+                        const casoId = existente.id || `cs-${Date.now()}`;
+                        const casoActualizado = {
+                            ...existente,
+                            id: casoId,
+                            titulo,
+                            categoria,
+                            url,
+                            logoUrl,
+                            resumen
+                        };
 
-state.casos.unshift(nuevoCaso);
+                        state.casos[editIdx] = casoActualizado;
 
-if (window.__dunkoraDbSet && window.__dunkoraDbRef && window.__dunkoraRtdb) {
-    window.__dunkoraDbSet(
-        window.__dunkoraDbRef(window.__dunkoraRtdb, `projects/${casoId}`),
-        {
-            id: casoId,
-            code: titulo.toUpperCase(),
-            subtitle: categoria,
-            title: titulo,
-            description: resumen,
-            category: categoria,
-            clientUrl: url,
-            badge: 'EN PRODUCCIÓN',
-            stack: 'Live',
-            featured: true,
-            published: true
-        }
-    ).catch(() => {});
-}
+                        if (window.__dunkoraDbSet && window.__dunkoraDbRef && window.__dunkoraRtdb) {
+                            window.__dunkoraDbSet(
+                                window.__dunkoraDbRef(window.__dunkoraRtdb, `projects/${casoId}`),
+                                {
+                                    id: casoId,
+                                    code: titulo.toUpperCase(),
+                                    subtitle: categoria,
+                                    title: titulo,
+                                    description: resumen,
+                                    category: categoria,
+                                    clientUrl: url,
+                                    badge: 'EN PRODUCCIÓN',
+                                    stack: 'Live',
+                                    featured: true,
+                                    published: true
+                                }
+                            ).catch(() => {});
+                        }
+
+                        guardarEstado(true);
+                        renderTodo();
+                        window.cancelarEdicionCaso();
+                        const msg = document.getElementById('msg-casos');
+                        if (msg) msg.textContent = 'Caso actualizado.';
+                        return;
+                    }
+
+                    const casoId = `cs-${Date.now()}`;
+                    const nuevoCaso = {
+                        id: casoId,
+                        titulo,
+                        categoria,
+                        url,
+                        logoUrl,
+                        resumen
+                    };
+
+                    state.casos.unshift(nuevoCaso);
+
+                    if (window.__dunkoraDbSet && window.__dunkoraDbRef && window.__dunkoraRtdb) {
+                        window.__dunkoraDbSet(
+                            window.__dunkoraDbRef(window.__dunkoraRtdb, `projects/${casoId}`),
+                            {
+                                id: casoId,
+                                code: titulo.toUpperCase(),
+                                subtitle: categoria,
+                                title: titulo,
+                                description: resumen,
+                                category: categoria,
+                                clientUrl: url,
+                                badge: 'EN PRODUCCIÓN',
+                                stack: 'Live',
+                                featured: true,
+                                published: true
+                            }
+                        ).catch(() => {});
+                    }
 
                     guardarEstado(true);
                     renderTodo();
@@ -1578,8 +1673,8 @@ if (window.__dunkoraDbSet && window.__dunkoraDbRef && window.__dunkoraRtdb) {
         const db = getFirestore(app);
         const rtdb = getDatabase(app);
         window.__dunkoraRtdb = rtdb;
-window.__dunkoraDbRef = ref;
-window.__dunkoraDbSet = set;
+        window.__dunkoraDbRef = ref;
+        window.__dunkoraDbSet = set;
         const colRef = collection(db, 'submissions');
         const rtdbRef = ref(rtdb, 'submissions');
         const statusEl = document.getElementById('sync-status-label');
@@ -1605,19 +1700,19 @@ window.__dunkoraDbSet = set;
             isApplyingRemoteSnapshot = true;
             try {
                 const combinedMap = new Map();
-const localItems = Array.isArray(state?.submissions) ? state.submissions : [];
+                const localItems = Array.isArray(state?.submissions) ? state.submissions : [];
 
-localItems.forEach((item) => {
-    if (item && item.id) combinedMap.set(item.id, item);
-});
+                localItems.forEach((item) => {
+                    if (item && item.id) combinedMap.set(item.id, item);
+                });
 
-latestFirestoreItems.forEach((item) => {
-    if (item && item.id) combinedMap.set(item.id, item);
-});
+                latestFirestoreItems.forEach((item) => {
+                    if (item && item.id) combinedMap.set(item.id, item);
+                });
 
-latestRtdbItems.forEach((item) => {
-    if (item && item.id) combinedMap.set(item.id, item);
-});
+                latestRtdbItems.forEach((item) => {
+                    if (item && item.id) combinedMap.set(item.id, item);
+                });
 
                 const ordenados = ordenarPorFechaDesc(Array.from(combinedMap.values()));
                 if (typeof state === 'object' && state) {
